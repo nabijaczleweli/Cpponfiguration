@@ -65,7 +65,6 @@ static void generic_list_update(const T & from, string & out, ios_base & (*mod)(
 	out = temp;
 }
 
-
 template <class T>
 static void generic_single_update(const T & from, string & out, ios_base & (*mod)(ios_base &) = empty_modifier) {
 	out = dynamic_cast<const ostringstream &>(ostringstream() << mod << from).str();
@@ -104,23 +103,24 @@ void property::compute_list() {
 		unsigned_list_value = make_unique<unsigned_list_type>();
 		floating_list_value = make_unique<floating_list_type>();
 
-		list<string> elements;
+		vector<string> elements;
 		size_t comma_idx;
 		string temp = raw_value.substr(1, raw_value.find_first_of(']') - 1);
 		trim(temp);
 		temp.push_back(',');
 
+		elements.reserve(count(temp.begin(), temp.end(), ','));
 		while((comma_idx = temp.find_first_of(',')) != string::npos) {
-			elements.emplace_front(trim(temp.substr(0, comma_idx)));
+			elements.emplace_back(trim(temp.substr(0, comma_idx)));
 			temp = temp.substr(temp.find_first_of(',') + 1);
 			ltrim(temp);
 		}
 
 		for(const auto & element : elements) {
-			boolean_list_value->emplace_front(string_to_boolean(element));
-			signed_list_value->emplace_front(strtoll(element.c_str(), nullptr, 0));
-			unsigned_list_value->emplace_front(strtoull(element.c_str(), nullptr, 0));
-			floating_list_value->emplace_front(strtold(element.c_str(), nullptr));
+			boolean_list_value->emplace_back(string_to_boolean(element));
+			signed_list_value->emplace_back(strtoll(element.c_str(), nullptr, 0));
+			unsigned_list_value->emplace_back(strtoull(element.c_str(), nullptr, 0));
+			floating_list_value->emplace_back(strtold(element.c_str(), nullptr));
 		}
 	}
 
@@ -182,13 +182,15 @@ UPDATE(unsigned_list, unsigned_integer_list, list, empty_modifier)
 UPDATE(floating_list, floating_list, list, precision_modifier)
 
 void property::update_from_textual() {
-	clear();
+	clear_except(nullptr);
 }
 
 #undef UPDATE
 
-void property::clear() {
-	clear_except(nullptr);
+property & property::operator=(const property & other) {
+	property temp(other);
+	swap(temp);
+	return *this;
 }
 
 void property::swap(property & other) {
@@ -230,4 +232,8 @@ property::property(property && other)
 
 bool operator==(const property & lhs, const property & rhs) {
 	return lhs.textual() == rhs.textual() && lhs.comment == rhs.comment;
+}
+
+bool operator!=(const property & lhs, const property & rhs) {
+	return !(lhs == rhs);
 }

@@ -30,7 +30,7 @@
 #include <limits>
 #include <memory>
 #include <string>
-#include <list>
+#include <vector>
 
 
 namespace cpponfiguration {
@@ -40,10 +40,10 @@ namespace cpponfiguration {
 		using signed_type        = long long int;
 		using unsigned_type      = unsigned long long int;
 		using floating_type      = long double;
-		using signed_list_type   = std::list<signed_type>;
-		using unsigned_list_type = std::list<unsigned_type>;
-		using floating_list_type = std::list<floating_type>;
-		using boolean_list_type  = std::list<bool>;
+		using signed_list_type   = std::vector<signed_type>;
+		using unsigned_list_type = std::vector<unsigned_type>;
+		using floating_list_type = std::vector<floating_type>;
+		using boolean_list_type  = std::vector<bool>;
 
 	private:
 		std::string raw_value;
@@ -104,10 +104,7 @@ namespace cpponfiguration {
 		void update_from_floating_list();
 
 
-		void clear();
-
-
-		property & operator=(const property & other) = default;
+		property & operator=(const property & other);
 		property & operator=(property && other) = default;
 
 		virtual void swap(property & other) override;
@@ -122,6 +119,7 @@ namespace cpponfig = cpponfiguration;
 
 
 bool operator==(const cpponfig::property & lhs, const cpponfig::property & rhs);
+bool operator!=(const cpponfig::property & lhs, const cpponfig::property & rhs);
 
 
 #endif  // PROPERTY_HPP
