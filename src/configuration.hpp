@@ -20,8 +20,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#pragma once
+#ifndef CONFIGURATION_HPP
+#define CONFIGURATION_HPP
 
 
 #include "property.hpp"
@@ -36,7 +37,11 @@ class configuration {
 		std::string * filename;
 
 		void load_properties(std::istream & from);
+
+	public:
+		static char comment_character;
+		static char assignment_character;
 };
 
 
-#endif // CONFIG_HPP
+#endif // CONFIGURATION_HPP

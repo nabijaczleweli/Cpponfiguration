@@ -27,5 +27,7 @@
 *.out
 *.app
 
-# Ouptput directory
+# Miscellaneous
 out/
+*.s*-toks
+*.s*-workspace

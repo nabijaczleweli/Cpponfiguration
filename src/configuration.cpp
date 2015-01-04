@@ -21,13 +21,35 @@
 
 
 #include "configuration.hpp"
+#include "util/strings.hpp"
 #include <istream>
 
 using namespace std;
 
 
+char configuration::comment_character = '#';
+char configuration::assignment_character = '=';
+
+
 void configuration::load_properties(istream & from) {
-	for(string line; static_cast<void *>(getline(from, line));) {
-		// TODO
+	for(string line; getline(from, line);) {
+		size_t equals_idx;
+
+		if(line.empty() || line[0] == comment_character || (equals_idx = line.find_first_of(assignment_character)) == string::npos)
+			continue;
+
+		ltrim(line);
+		if(line.empty() || line[0] == comment_character)
+			continue;
+
+		if(const size_t comment_idx = line.find_first_of(comment_character) && comment_idx != string::npos) {
+			line = line.substr(line.find_first_of(comment_character));
+			rtrim(line);
+			if(line.empty() || comment_idx > equals_idx)
+				continue;
+		} else
+			rtrim(line);
+
+		// TODO process things now, add to map, whatever
 	}
 }
