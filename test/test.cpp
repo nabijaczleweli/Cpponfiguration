@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) 2015 nabijaczlweli
+// Copyright (c) 2015 nabijaczleweli
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -19,31 +19,18 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include "../src/configuration.hpp"
+#include <sstream>
 
-#pragma once
-#ifndef CONFIGURATION_HPP
-#define CONFIGURATION_HPP
+using namespace std;
 
-
-#include "property.hpp"
-#include <iosfwd>
-#include <string>
-#include <unordered_map>
-
-
-class configuration {
-	private:
-		friend int main(); // Temporary for testing, to be replaced soon
-
-		std::unordered_map<std::string, property> properties;
-		std::string * filename;
-
-		void load_properties(std::istream & from);
-
-	public:
-		static char comment_character;
-		static char assignment_character;
-};
-
-
-#endif // CONFIGURATION_HPP
+int main() {
+	configuration cfg;
+	stringstream stream(
+	             "m00 = asdf" "\n"
+	             "asdf=m#00" "\n"
+	             "moo=asdf # asdf moo" "\n"
+	             "#moo=asdf" "\n"
+	             );
+	cfg.load_properties(stream);
+}

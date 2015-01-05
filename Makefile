@@ -21,15 +21,25 @@
 
 include configMakefile
 
-.PHONY : clean all
+.PHONY : clean all dll test
 
-all : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ)
-	$(CPP) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
+all : dll test
 
 clean :
 	rm -rf $(BUILD)
+
+dll : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ)
+	$(CPP) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
+
+test : $(TEST)/test$(EXE)
+	@cp $(BUILD)/cpponfig$(DLL) $(TEST)
+	$^
+	@rm -rf $(TEST)/cpponfig$(DLL)
 
 
 $(BUILD)/%$(OBJ) : src/%.cpp
 	@mkdir $(BUILD) 2>$(nul) | $(nop)
 	$(CPP) $(CPPAR) -c -o$@ $^
+
+%$(EXE) : %.cpp
+	$(CPP) $(CPPAR) -Lout -lcpponfig -o$@ $^

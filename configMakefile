@@ -41,3 +41,4 @@ AR = ar
 CPP = c++
 CPPAR = -s -Os -std=c++11 -Wall -Wextra -pipe -fomit-frame-pointer
 BUILD = out
+TEST = test

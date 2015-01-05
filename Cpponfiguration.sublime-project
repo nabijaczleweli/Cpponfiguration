@@ -2,7 +2,7 @@
 	"build_systems":
 	[
 		{
-			"cmd": "make all",
+			"cmd": "make -C\"$project_path\" all",
 			"name": "Build Cpponfiguration"
 		}
 	],
@@ -12,6 +12,16 @@
 			"follow_symlinks": true,
 			"name": "Source",
 			"path": "src"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Test source",
+			"path": "test",
+			"file_exclude_patterns":
+			[
+				"*.exe",
+				"*.out"
+			]
 		},
 		{
 			"file_include_patterns":
