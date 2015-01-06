@@ -19,18 +19,56 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 #include "../src/configuration.hpp"
 #include <sstream>
+#include <iostream>
+#include <exception>
+
 
 using namespace std;
 
+
+class dumping_configuration : public configuration {
+	public:
+		dumping_configuration() : configuration() {}
+		dumping_configuration(const std::string & name) : configuration(name) {}
+
+		void dump(ostream & stream) {
+			if(!properties.empty())
+				for(const auto & prop : properties)
+					stream << '<' << prop.first << ",property(" << prop.second.textual() << ")>\n";
+			else
+				stream << "<<NO ENTRIES>>\n";
+		}
+};
+
+
 int main() {
-	configuration cfg;
+	dumping_configuration cfg;
 	stringstream stream(
-	             "m00 = asdf" "\n"
-	             "asdf=m#00" "\n"
-	             "moo=asdf # asdf moo" "\n"
-	             "#moo=asdf" "\n"
-	             );
-	cfg.load_properties(stream);
+	                    "m00 = asdf" "\n"
+	                    "asdf=m#00" "\n"
+	                    "moo=asdf # asdf moo" "\n"
+	                    "#moo=asdf" "\n"
+	                    "#moo=asdf" "\n"
+	                    );
+	try {
+		cfg.load(stream);
+		cout << "Loading succeeded!\n";
+	} catch(...) {
+		const char * what = nullptr;
+		const auto exc = current_exception();
+		if(exc)
+			try {
+				rethrow_exception(exc);
+			} catch(const exception & e) {
+				what = e.what();
+			} catch(...) {}
+		if(what)
+			clog << "Loading failed! What: " << what << ".\n";
+		else
+			clog << "Loading failed!\n";
+	}
+	cfg.dump(cout);
 }

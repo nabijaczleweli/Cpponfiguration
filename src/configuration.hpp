@@ -32,17 +32,26 @@
 
 
 class configuration {
-	private:
-		friend int main(); // Temporary for testing, to be replaced soon
-
+	protected:
 		std::unordered_map<std::string, property> properties;
-		std::string * filename;
+		std::string * filename = nullptr;
+
+		configuration(std::string * name);
 
 		void load_properties(std::istream & from);
 
 	public:
 		static char comment_character;
 		static char assignment_character;
+
+		configuration();
+		configuration(const std::string & name);
+
+		~configuration();
+
+		bool load();
+		bool load(const std::string & name);
+		bool load(std::istream & stream);
 };
 
 

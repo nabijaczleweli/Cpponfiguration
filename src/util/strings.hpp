@@ -67,5 +67,16 @@ static inline std::string & trim(std::string & s) {
 	return ltrim(rtrim(s));
 }
 
+static inline std::string & ltrim(std::string && s) {
+	return ltrim(s);
+}
+
+static inline std::string & rtrim(std::string && s) {
+	return rtrim(s);
+}
+
+static inline std::string & trim(std::string && s) {
+	return trim(s);
+}
 
 #endif  // STRINGS_HPP

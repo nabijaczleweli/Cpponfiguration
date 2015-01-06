@@ -23,6 +23,7 @@
 #include "configuration.hpp"
 #include "util/strings.hpp"
 #include <istream>
+#include <fstream>
 
 using namespace std;
 
@@ -31,25 +32,63 @@ char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
 
 
+configuration::configuration() : configuration(nullptr) {}
+configuration::configuration(string * name) : filename(name) {}
+configuration::configuration(const string & name) : configuration(new string(name)) {}
+
+configuration::~configuration() {
+	if(filename) {
+		delete filename;
+		filename = nullptr;
+	}
+}
+
 void configuration::load_properties(istream & from) {
 	for(string line; getline(from, line);) {
-		size_t equals_idx;
+		size_t equals_idx = 0;
 
 		if(line.empty() || line[0] == comment_character || (equals_idx = line.find_first_of(assignment_character)) == string::npos)
 			continue;
 
 		ltrim(line);
+		equals_idx = line.find_first_of(assignment_character);
 		if(line.empty() || line[0] == comment_character)
 			continue;
 
-		if(const size_t comment_idx = line.find_first_of(comment_character) && comment_idx != string::npos) {
-			line = line.substr(line.find_first_of(comment_character));
+		const size_t comment_idx = line.find_first_of(comment_character);
+		if(comment_idx != string::npos) {
+			line = line.substr(0, line.find_first_of(comment_character));
 			rtrim(line);
-			if(line.empty() || comment_idx > equals_idx)
+			if(line.empty() || comment_idx < equals_idx)
 				continue;
-		} else
-			rtrim(line);
+		}
 
-		// TODO process things now, add to map, whatever
+		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1)))));
 	}
+}
+
+bool configuration::load() {
+	if(filename) {
+		ifstream file(*filename);
+		if(file.is_open()) {
+			load_properties(file);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool configuration::load(const string & name) {
+	if(filename)
+		delete filename;
+	filename = new string(name);
+	return load();
+}
+
+bool configuration::load(istream & stream) {
+	if(stream) {
+		load_properties(stream);
+		return true;
+	}
+	return false;
 }
