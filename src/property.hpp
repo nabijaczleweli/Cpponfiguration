@@ -26,6 +26,7 @@
 
 
 #include <string>
+#include <list>
 
 
 class property {
@@ -33,6 +34,10 @@ class property {
 		typedef long long int signed_type;
 		typedef unsigned long long int unsigned_type;
 		typedef long double floating_type;
+		typedef std::list<signed_type> signed_list_type;
+		typedef std::list<unsigned_type> unsigned_list_type;
+		typedef std::list<floating_type> floating_list_type;
+		typedef std::list<bool> boolean_list_type;
 
 	private:
 		std::string raw_value;
@@ -41,20 +46,19 @@ class property {
 		signed_type * int_signed_value = nullptr;
 		unsigned_type * int_unsigned_value = nullptr;
 		floating_type * floating_value = nullptr;
+		signed_list_type * signed_list_value = nullptr;
+		unsigned_list_type * unsigned_list_value = nullptr;
+		floating_list_type * floating_list_value = nullptr;
+		boolean_list_type * boolean_list_value = nullptr;
 
-
-		template<class T>
-		inline void re_create(T *& ptr) const {
-			if(ptr)
-				delete ptr;
-			ptr = new T;
-		}
 
 		void compute_integer();
 
 		void compute_floating();
 
 		void compute_logical();
+
+		void compute_list();
 
 	public:
 		const signed_type & integer();
@@ -68,6 +72,14 @@ class property {
 		inline const std::string & textual() const {
 			return raw_value;
 		}
+
+		const signed_list_type & integer_list();
+
+		const unsigned_list_type & unsigned_integer_list();
+
+		const floating_list_type & floating_list();
+
+		const boolean_list_type & boolean_list();
 
 
 		property(const std::string & val);
