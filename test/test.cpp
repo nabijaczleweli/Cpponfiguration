@@ -73,10 +73,7 @@ int main() {
 			} catch(const exception & e) {
 				what = e.what();
 			} catch(...) {}
-		if(what)
-			clog << "Loading failed! What: " << what << ".\n";
-		else
-			clog << "Loading failed!\n";
+		cout << "Loading failed!" << (what ? (string(" What: ") + what + '.') : "") << '\n';
 	}
 	cfg.dump(cout);
 }

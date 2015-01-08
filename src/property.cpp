@@ -102,49 +102,47 @@ void property::compute_list() {
 	}
 }
 
-const signed_type & property::integer() {
+signed_type & property::integer() {
 	compute_integer();
 	return *int_signed_value;
 }
 
-const unsigned_type & property::unsigned_integer() {
+unsigned_type & property::unsigned_integer() {
 	compute_integer();
 	return *int_unsigned_value;
 }
 
-const floating_type & property::floating() {
+floating_type & property::floating() {
 	compute_floating();
 	return *floating_value;
 }
 
-const bool & property::boolean() {
+bool & property::boolean() {
 	compute_logical();
 	return *boolean_value;
 }
 
-const signed_list_type & property::integer_list() {
+signed_list_type & property::integer_list() {
 	compute_list();
 	return *signed_list_value;
 }
 
-const unsigned_list_type & property::unsigned_integer_list() {
+unsigned_list_type & property::unsigned_integer_list() {
 	compute_list();
 	return *unsigned_list_value;
 }
 
-const floating_list_type & property::floating_list() {
+floating_list_type & property::floating_list() {
 	compute_list();
 	return *floating_list_value;
 }
 
-const boolean_list_type & property::boolean_list() {
+boolean_list_type & property::boolean_list() {
 	compute_list();
 	return *boolean_list_value;
 }
 
-property::property(const string & val) : raw_value(val) {}
-
-property::~property() {
+void property::clear() {
 	if(boolean_value) {
 		delete boolean_value;
 		boolean_value = nullptr;
@@ -161,4 +159,26 @@ property::~property() {
 		delete floating_value;
 		floating_value = nullptr;
 	}
+	if(signed_list_value) {
+		delete signed_list_value;
+		signed_list_value = nullptr;
+	}
+	if(unsigned_list_value) {
+		delete unsigned_list_value;
+		unsigned_list_value = nullptr;
+	}
+	if(floating_list_value) {
+		delete floating_list_value;
+		floating_list_value = nullptr;
+	}
+	if(boolean_list_value) {
+		delete boolean_list_value;
+		boolean_list_value = nullptr;
+	}
+}
+
+property::property(const string & val) : raw_value(val) {}
+
+property::~property() {
+	clear();
 }

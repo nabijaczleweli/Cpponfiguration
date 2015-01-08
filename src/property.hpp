@@ -61,25 +61,26 @@ class property {
 		void compute_list();
 
 	public:
-		const signed_type & integer();
+		signed_type & integer();
 
-		const unsigned_type & unsigned_integer();
+		unsigned_type & unsigned_integer();
 
-		const floating_type & floating();
+		floating_type & floating();
 
-		const bool & boolean();
+		bool & boolean();
 
-		inline const std::string & textual() const {
-			return raw_value;
-		}
+		inline std::string & textual () { return raw_value; }
 
-		const signed_list_type & integer_list();
+		signed_list_type & integer_list();
 
-		const unsigned_list_type & unsigned_integer_list();
+		unsigned_list_type & unsigned_integer_list();
 
-		const floating_list_type & floating_list();
+		floating_list_type & floating_list();
 
-		const boolean_list_type & boolean_list();
+		boolean_list_type & boolean_list();
+
+
+		void clear();
 
 
 		property(const std::string & val);
@@ -88,4 +89,4 @@ class property {
 };
 
 
-#endif // PROPERTY_HPP
+#endif  // PROPERTY_HPP
