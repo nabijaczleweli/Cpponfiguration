@@ -21,6 +21,7 @@
 
 
 #include "../src/configuration.hpp"
+#include "../src/util/strings.hpp"
 #include <sstream>
 #include <iostream>
 #include <exception>
@@ -36,13 +37,8 @@ class dumping_configuration : public configuration {
 
 		void dump(ostream & stream) {
 			if(!properties.empty())
-				for(auto & prop : properties) {
-					stream << '<' << prop.first << ",property([";
-					auto left = prop.second.floating_list().size();
-					for(const auto & val : prop.second.floating_list())
-						stream << val << (--left ? ", " : "");
-					stream << "])>\n";
-				}
+				for(auto & prop : properties)
+					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() << ")>\n";
 			else
 				stream << "<<NO ENTRIES>>\n";
 		}
@@ -51,18 +47,17 @@ class dumping_configuration : public configuration {
 
 int main() {
 	dumping_configuration cfg;
-	stringstream stream(
-	                    //"m00 = asdf" "\n"
-	                    //"asdf=m#00" "\n"
-	                    //"moo=asdf # asdf moo" "\n"
-	                    //"#moo=asdf" "\n"
-	                    //"#moo=asdf" "\n"
-	                    //"m00=[0,1,2,3,4]" "\n"
-	                    //"m00=[false,true,false,false,true]" "\n"
-	                    "m00=[1.25,3.7,233.7,20,1.99090909909]" "\n"
-	                    );
+	istringstream input_stream(
+	                          "mo0 = asdf" "\n"
+	                          "asdf=m#00" "\n"
+	                          "moo=asdf # asdf moo" "\n"
+	                          "#moo=asdf" "\n"
+	                          "m0o=[0,1,2,3,4]" "\n"
+	                          "0m0=[false,true,false,false,true]" "\n"
+	                          "m00=[1.25,3.7,233.7,20,1.99090909909]" "\n"
+	                          );
 	try {
-		cfg.load(stream);
+		cfg.load(input_stream);
 		cout << "Loading succeeded!\n";
 	} catch(...) {
 		const char * what = nullptr;
@@ -76,4 +71,20 @@ int main() {
 		cout << "Loading failed!" << (what ? (string(" What: ") + what + '.') : "") << '\n';
 	}
 	cfg.dump(cout);
+
+	cfg.get("0m0").boolean_list().emplace_back(false);
+	cfg.get("m00").floating_list().emplace_back(3.14159);
+	cfg.get("0m0").update_from_boolean_list();
+	cfg.get("m00").update_from_floating_list();
+
+	cout << '\n';
+	stringstream output_stream;
+	if(cfg.save(output_stream)) {
+		ostringstream temp_stream;
+		for(string temp; getline(output_stream, temp);)
+			if(!temp.empty())
+				temp_stream << temp << '\n';
+		cout << "Saved: \"" << rtrim(temp_stream.str()) << "\".\n";
+	} else
+		cout << "Didn\'t save.\n";
 }

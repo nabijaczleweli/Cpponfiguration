@@ -67,6 +67,11 @@ void configuration::load_properties(istream & from) {
 	}
 }
 
+void configuration::save_properties(std::ostream & to) {
+	for(const auto & pr : properties)
+		to << pr.first << '=' << pr.second.textual() << "\n\n";
+}
+
 bool configuration::load() {
 	if(filename) {
 		ifstream file(*filename);
@@ -91,4 +96,37 @@ bool configuration::load(istream & stream) {
 		return true;
 	}
 	return false;
+}
+
+bool configuration::save() {
+	if(filename) {
+		ofstream file(*filename);
+		if(file.is_open()) {
+			save_properties(file);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool configuration::save(const string & name) {
+	if(filename)
+		delete filename;
+	filename = new string(name);
+	return save();
+}
+
+bool configuration::save(ostream & stream) {
+	if(stream) {
+		save_properties(stream);
+		return true;
+	}
+	return false;
+}
+
+property & configuration::get(const string & key, const string & default_value) {
+	auto itr = properties.find(key);
+	if(itr == properties.end())
+		itr = properties.emplace(trim(move(string(key))), property(trim(move(string(default_value))))).first;  // Construct strings because `*trim()`s are mutating
+	return itr->second;
 }

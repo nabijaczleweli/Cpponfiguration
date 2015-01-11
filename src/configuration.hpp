@@ -39,6 +39,7 @@ class configuration {
 		configuration(std::string * name);
 
 		void load_properties(std::istream & from);
+		void save_properties(std::ostream & to);
 
 	public:
 		static char comment_character;
@@ -52,7 +53,14 @@ class configuration {
 		bool load();
 		bool load(const std::string & name);
 		bool load(std::istream & stream);
+
+		bool save();
+		bool save(const std::string & name);
+		bool save(std::ostream & stream);
+
+		property & get(const std::string & key, const std::string & default_value);
+		inline property & get(const std::string & key) { return get(key, ""); }
 };
 
 
-#endif // CONFIGURATION_HPP
+#endif  // CONFIGURATION_HPP

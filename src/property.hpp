@@ -60,6 +60,8 @@ class property {
 
 		void compute_list();
 
+		void clear_except(const void * except);
+
 	public:
 		signed_type & integer();
 
@@ -69,7 +71,8 @@ class property {
 
 		bool & boolean();
 
-		inline std::string & textual () { return raw_value; }
+		inline const std::string & textual() const { return raw_value; }
+		inline std::string & textual() { return raw_value; }
 
 		signed_list_type & integer_list();
 
@@ -78,6 +81,25 @@ class property {
 		floating_list_type & floating_list();
 
 		boolean_list_type & boolean_list();
+
+
+		void update_from_integer();
+
+		void update_from_unsigned_integer();
+
+		void update_from_floating();
+
+		void update_from_boolean();
+
+		void update_from_textual();
+
+		void update_from_integer_list();
+
+		void update_from_unsigned_integer_list();
+
+		void update_from_floating_list();
+
+		void update_from_boolean_list();
 
 
 		void clear();

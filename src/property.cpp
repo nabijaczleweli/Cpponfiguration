@@ -42,6 +42,27 @@ inline void re_create(T *& ptr) {
 	ptr = new T;
 }
 
+template<class T>
+void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = nullptr) {
+	stringstream strm;
+	if(mod)
+		mod(strm);
+	size_t left = from.size();
+	for(const auto & i : from)
+		strm << i << (--left ? "," : "");
+	out = '[' + strm.str() + ']';
+}
+
+
+template<class T>
+void generic_single_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = nullptr) {
+	stringstream strm;
+	if(mod)
+		mod(strm);
+	strm << from;
+	out = strm.str();
+}
+
 bool string_to_boolean(const string & str) {
 	bool temp0, temp1;
 	stringstream(str) >> temp0;
@@ -102,6 +123,41 @@ void property::compute_list() {
 	}
 }
 
+void property::clear_except(const void * except) {
+	if(boolean_value && boolean_value != except) {
+		delete boolean_value;
+		boolean_value = nullptr;
+	}
+	if(int_signed_value && boolean_value != except) {
+		delete int_signed_value;
+		int_signed_value = nullptr;
+	}
+	if(int_unsigned_value && boolean_value != except) {
+		delete int_unsigned_value;
+		int_unsigned_value = nullptr;
+	}
+	if(floating_value && boolean_value != except) {
+		delete floating_value;
+		floating_value = nullptr;
+	}
+	if(signed_list_value && boolean_value != except) {
+		delete signed_list_value;
+		signed_list_value = nullptr;
+	}
+	if(unsigned_list_value && boolean_value != except) {
+		delete unsigned_list_value;
+		unsigned_list_value = nullptr;
+	}
+	if(floating_list_value && boolean_value != except) {
+		delete floating_list_value;
+		floating_list_value = nullptr;
+	}
+	if(boolean_list_value && boolean_value != except) {
+		delete boolean_list_value;
+		boolean_list_value = nullptr;
+	}
+}
+
 signed_type & property::integer() {
 	compute_integer();
 	return *int_signed_value;
@@ -142,39 +198,52 @@ boolean_list_type & property::boolean_list() {
 	return *boolean_list_value;
 }
 
+void property::update_from_integer() {
+	generic_single_update(integer(), raw_value);
+	clear_except(int_signed_value);
+}
+
+void property::update_from_unsigned_integer() {
+	generic_single_update(unsigned_integer(), raw_value);
+	clear_except(int_unsigned_value);
+}
+
+void property::update_from_floating() {
+	generic_single_update(floating(), raw_value);
+	clear_except(floating_value);
+}
+
+void property::update_from_boolean() {
+	generic_single_update(boolean(), raw_value, boolalpha);
+	clear_except(boolean_value);
+}
+
+void property::update_from_textual() {
+	clear();
+}
+
+void property::update_from_integer_list() {
+	generic_list_update(integer_list(), raw_value);
+	clear_except(signed_list_value);
+}
+
+void property::update_from_unsigned_integer_list() {
+	generic_list_update(unsigned_integer_list(), raw_value);
+	clear_except(unsigned_list_value);
+}
+
+void property::update_from_floating_list() {
+	generic_list_update(floating_list(), raw_value);
+	clear_except(floating_list_value);
+}
+
+void property::update_from_boolean_list() {
+	generic_list_update(boolean_list(), raw_value, boolalpha);
+	clear_except(boolean_list_value);
+}
+
 void property::clear() {
-	if(boolean_value) {
-		delete boolean_value;
-		boolean_value = nullptr;
-	}
-	if(int_signed_value) {
-		delete int_signed_value;
-		int_signed_value = nullptr;
-	}
-	if(int_unsigned_value) {
-		delete int_unsigned_value;
-		int_unsigned_value = nullptr;
-	}
-	if(floating_value) {
-		delete floating_value;
-		floating_value = nullptr;
-	}
-	if(signed_list_value) {
-		delete signed_list_value;
-		signed_list_value = nullptr;
-	}
-	if(unsigned_list_value) {
-		delete unsigned_list_value;
-		unsigned_list_value = nullptr;
-	}
-	if(floating_list_value) {
-		delete floating_list_value;
-		floating_list_value = nullptr;
-	}
-	if(boolean_list_value) {
-		delete boolean_list_value;
-		boolean_list_value = nullptr;
-	}
+	clear_except(nullptr);
 }
 
 property::property(const string & val) : raw_value(val) {}
