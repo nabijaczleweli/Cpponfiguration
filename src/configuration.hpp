@@ -60,6 +60,8 @@ class configuration {
 
 		property & get(const std::string & key, const std::string & default_value);
 		inline property & get(const std::string & key) { return get(key, ""); }
+
+		bool contains(const std::string & key);
 };
 
 

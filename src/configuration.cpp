@@ -25,6 +25,7 @@
 #include <istream>
 #include <fstream>
 
+
 using namespace std;
 
 
@@ -51,9 +52,9 @@ void configuration::load_properties(istream & from) {
 			continue;
 
 		ltrim(line);
-		equals_idx = line.find_first_of(assignment_character);
 		if(line.empty() || line[0] == comment_character)
 			continue;
+		equals_idx = line.find_first_of(assignment_character);
 
 		const size_t comment_idx = line.find_first_of(comment_character);
 		if(comment_idx != string::npos) {
@@ -129,4 +130,8 @@ property & configuration::get(const string & key, const string & default_value) 
 	if(itr == properties.end())
 		itr = properties.emplace(trim(move(string(key))), property(trim(move(string(default_value))))).first;  // Construct strings because `*trim()`s are mutating
 	return itr->second;
+}
+
+bool configuration::contains(const std::string & key) {
+	return properties.find(key) != properties.end();
 }
