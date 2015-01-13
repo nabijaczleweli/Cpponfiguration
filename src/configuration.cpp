@@ -24,6 +24,7 @@
 #include "util/strings.hpp"
 #include <istream>
 #include <fstream>
+#include <iostream>
 
 
 using namespace std;
@@ -57,20 +58,22 @@ void configuration::load_properties(istream & from) {
 		equals_idx = line.find_first_of(assignment_character);
 
 		const size_t comment_idx = line.find_first_of(comment_character);
+		string comment;
 		if(comment_idx != string::npos) {
+			comment = line.substr(line.find_first_of(comment_character) + 1);
 			line = line.substr(0, line.find_first_of(comment_character));
 			rtrim(line);
 			if(line.empty() || comment_idx < equals_idx)
 				continue;
 		}
 
-		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1)))));
+		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1))), trim(comment)));
 	}
 }
 
 void configuration::save_properties(std::ostream & to) {
 	for(const auto & pr : properties)
-		to << pr.first << '=' << pr.second.textual() << "\n\n";
+		to << pr.first << '=' << pr.second.textual() << (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
 }
 
 bool configuration::load() {

@@ -25,7 +25,9 @@
 #include <cstdlib>
 #include <sstream>
 
+
 using namespace std;
+
 
 typedef property::signed_type signed_type;
 typedef property::unsigned_type unsigned_type;
@@ -35,11 +37,19 @@ typedef property::unsigned_list_type unsigned_list_type;
 typedef property::floating_list_type floating_list_type;
 typedef property::boolean_list_type boolean_list_type;
 
+
 template<class T>
 inline void re_create(T *& ptr) {
 	if(ptr)
 		delete ptr;
 	ptr = new T;
+}
+
+template<class T, class... A>
+inline void re_create(T *& ptr, A&&... args) {
+	if(ptr)
+		delete ptr;
+	ptr = new T(forward<A...>(args...));
 }
 
 template<class T>
@@ -73,25 +83,19 @@ bool string_to_boolean(const string & str) {
 
 void property::compute_integer() {
 	if(!int_signed_value || !int_unsigned_value) {
-		re_create(int_signed_value);
-		re_create(int_unsigned_value);
-		*int_signed_value = strtoll(raw_value.c_str(), nullptr, 0);
-		*int_unsigned_value = strtoull(raw_value.c_str(), nullptr, 0);
+		re_create(int_signed_value, strtoll(raw_value.c_str(), nullptr, 0));
+		re_create(int_unsigned_value, strtoull(raw_value.c_str(), nullptr, 0));
 	}
 }
 
 void property::compute_floating() {
-	if(!floating_value) {
-		re_create(floating_value);
-		*floating_value = strtold(raw_value.c_str(), nullptr);
-	}
+	if(!floating_value)
+		re_create(floating_value, strtold(raw_value.c_str(), nullptr));
 }
 
 void property::compute_logical() {
-	if(!boolean_value) {
-		re_create(boolean_value);
-		*boolean_value = string_to_boolean(raw_value);
-	}
+	if(!boolean_value)
+		re_create(boolean_value, string_to_boolean(raw_value));
 }
 
 void property::compute_list() {
@@ -246,7 +250,7 @@ void property::clear() {
 	clear_except(nullptr);
 }
 
-property::property(const string & val) : raw_value(val) {}
+property::property(const string & val, const string & cmt) : raw_value(val), comment(cmt) {}
 
 property::~property() {
 	clear();

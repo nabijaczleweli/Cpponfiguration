@@ -38,7 +38,8 @@ class dumping_configuration : public configuration {
 		void dump(ostream & stream) {
 			if(!properties.empty())
 				for(auto & prop : properties)
-					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() << ")>\n";
+					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() <<
+					                                                            (prop.second.comment.empty() ? "" : ',' + prop.second.comment) << ")>\n";
 			else
 				stream << "<<NO ENTRIES>>\n";
 		}

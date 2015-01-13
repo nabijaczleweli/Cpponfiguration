@@ -63,6 +63,9 @@ class property {
 		void clear_except(const void * except);
 
 	public:
+		std::string comment;
+
+
 		signed_type & integer();
 
 		unsigned_type & unsigned_integer();
@@ -105,7 +108,7 @@ class property {
 		void clear();
 
 
-		property(const std::string & val);
+		property(const std::string & val, const std::string & cmt = "");
 
 		~property();
 };
