@@ -26,7 +26,7 @@ include configMakefile
 all : dll test
 
 clean :
-	rm -rf $(BUILD)
+	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
 dll : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ)
 	$(CPP) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
@@ -42,4 +42,4 @@ $(BUILD)/%$(OBJ) : src/%.cpp
 	$(CPP) $(CPPAR) -c -o$@ $^
 
 %$(EXE) : %.cpp
-	$(CPP) $(CPPAR) -Lout -lcpponfig -o$@ $^
+	$(CPP) $(CPPAR) -Isrc -Lout -lcpponfig -o$@ $^

@@ -250,8 +250,60 @@ void property::clear() {
 	clear_except(nullptr);
 }
 
+void property::swap(property & other) {
+	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
+
+	raw_value.swap(other.raw_value);
+	SWAP(int_signed_value)
+	SWAP(int_unsigned_value)
+	SWAP(floating_value)
+	SWAP(signed_list_value)
+	SWAP(unsigned_list_value)
+	SWAP(floating_list_value)
+	SWAP(boolean_list_value)
+	comment.swap(other.comment);
+
+	#undef SWAP
+}
+
 property::property(const string & val, const string & cmt) : raw_value(val), comment(cmt) {}
+
+property::property(const property & other) : property(other.raw_value, other.comment) {
+	if(other.int_signed_value)
+			re_create(int_signed_value, *other.int_signed_value);
+	if(other.int_unsigned_value)
+			re_create(int_unsigned_value, *other.int_unsigned_value);
+	if(other.floating_value)
+			re_create(floating_value, *other.floating_value);
+	if(other.signed_list_value)
+			re_create(signed_list_value, *other.signed_list_value);
+	if(other.unsigned_list_value)
+			re_create(unsigned_list_value, *other.unsigned_list_value);
+	if(other.floating_list_value)
+			re_create(floating_list_value, *other.floating_list_value);
+	if(other.boolean_list_value)
+			re_create(boolean_list_value, *other.boolean_list_value);
+}
+
+property::property(property && other) : raw_value(other.raw_value), int_signed_value(other.int_signed_value), int_unsigned_value(other.int_unsigned_value),
+                                        floating_value(other.floating_value), signed_list_value(other.signed_list_value),
+                                        unsigned_list_value(other.unsigned_list_value), floating_list_value(other.floating_list_value),
+                                        boolean_list_value(other.boolean_list_value), comment(other.comment) {
+	other.int_signed_value = nullptr;
+	other.int_unsigned_value = nullptr;
+	other.floating_value = nullptr;
+	other.signed_list_value = nullptr;
+	other.unsigned_list_value = nullptr;
+	other.floating_list_value = nullptr;
+	other.boolean_list_value = nullptr;
+}
 
 property::~property() {
 	clear();
+}
+
+
+template<>
+void std::swap(property & lhs, property & rhs) {
+	lhs.swap(rhs);
 }

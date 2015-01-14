@@ -20,8 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "../src/configuration.hpp"
-#include "../src/util/strings.hpp"
+#include "configuration.hpp"
+#include "util/strings.hpp"
 #include <sstream>
 #include <iostream>
 #include <exception>
@@ -37,7 +37,7 @@ class dumping_configuration : public configuration {
 
 		void dump(ostream & stream) {
 			if(!properties.empty())
-				for(auto & prop : properties)
+				for(const auto & prop : properties)
 					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() <<
 					                                                            (prop.second.comment.empty() ? "" : ',' + prop.second.comment) << ")>\n";
 			else

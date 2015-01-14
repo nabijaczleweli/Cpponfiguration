@@ -29,6 +29,7 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 
 class configuration {
@@ -47,8 +48,12 @@ class configuration {
 
 		configuration();
 		configuration(const std::string & name);
+		configuration(const configuration & other);
+		configuration(configuration && other);
 
 		~configuration();
+
+		void swap(configuration & other);
 
 		bool load();
 		bool load(const std::string & name);
@@ -58,11 +63,16 @@ class configuration {
 		bool save(const std::string & name);
 		bool save(std::ostream & stream);
 
-		property & get(const std::string & key, const std::string & default_value);
-		inline property & get(const std::string & key) { return get(key, ""); }
+		property & get(const std::string & key, const std::string & default_value = "");
 
 		bool contains(const std::string & key);
 };
+
+
+namespace std {
+	template<>
+	void swap(configuration & lhs, configuration & rhs);
+}
 
 
 #endif  // CONFIGURATION_HPP

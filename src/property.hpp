@@ -27,6 +27,7 @@
 
 #include <string>
 #include <list>
+#include <utility>
 
 
 class property {
@@ -108,10 +109,20 @@ class property {
 		void clear();
 
 
+		void swap(property & other);
+
 		property(const std::string & val, const std::string & cmt = "");
+		property(const property & other);
+		property(property && other);
 
 		~property();
 };
+
+
+namespace std {
+	template<>
+	void swap(property & lhs, property & rhs);
+}
 
 
 #endif  // PROPERTY_HPP

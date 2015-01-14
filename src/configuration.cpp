@@ -37,12 +37,25 @@ char configuration::assignment_character = '=';
 configuration::configuration() : configuration(nullptr) {}
 configuration::configuration(string * name) : filename(name) {}
 configuration::configuration(const string & name) : configuration(new string(name)) {}
+configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr) {}
+configuration::configuration(configuration && other) : properties(other.properties), filename(other.filename) {
+	other.filename = nullptr;
+}
 
 configuration::~configuration() {
 	if(filename) {
 		delete filename;
 		filename = nullptr;
 	}
+}
+
+void configuration::swap(configuration & other) {
+	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
+
+	properties.swap(other.properties);
+	SWAP(filename)
+
+	#undef SWAP
 }
 
 void configuration::load_properties(istream & from) {
@@ -137,4 +150,10 @@ property & configuration::get(const string & key, const string & default_value) 
 
 bool configuration::contains(const std::string & key) {
 	return properties.find(key) != properties.end();
+}
+
+
+template<>
+void std::swap(configuration & lhs, configuration & rhs) {
+	lhs.swap(rhs);
 }
