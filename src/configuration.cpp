@@ -58,6 +58,36 @@ void configuration::swap(configuration & other) {
 	#undef SWAP
 }
 
+configuration & configuration::operator=(const configuration & other) {
+	configuration temp(other);
+	swap(temp);
+	return *this;
+}
+
+configuration configuration::operator+(const configuration & other) {
+	configuration temp(*this);
+	temp += other;
+	return temp;
+}
+
+configuration & configuration::operator+=(const configuration & other) {
+	properties.insert(other.properties.begin(), other.properties.end());
+	return *this;
+}
+
+configuration configuration::operator-(const configuration & other) {
+	configuration temp(*this);
+	temp -= other;
+	return temp;
+}
+
+// Better version? This is (I think) from O(n) to O(n^2), where n: `other.properties.size()`.
+configuration & configuration::operator-=(const configuration & other) {
+	for(const auto & kv : other.properties)
+		properties.erase(kv.first);
+	return *this;
+}
+
 void configuration::load_properties(istream & from) {
 	for(string line; getline(from, line);) {
 		size_t equals_idx = 0;

@@ -29,10 +29,11 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 
 class configuration {
+	friend std::hash<configuration>;
+
 	protected:
 		std::unordered_map<std::string, property> properties;
 		std::string * filename = nullptr;
@@ -55,6 +56,12 @@ class configuration {
 
 		void swap(configuration & other);
 
+		configuration & operator=(const configuration & other);
+		configuration operator+(const configuration & other);
+		configuration & operator+=(const configuration & other);
+		configuration operator-(const configuration & other);
+		configuration & operator-=(const configuration & other);
+
 		bool load();
 		bool load(const std::string & name);
 		bool load(std::istream & stream);
@@ -72,6 +79,34 @@ class configuration {
 namespace std {
 	template<>
 	void swap(configuration & lhs, configuration & rhs);
+
+	//  All hex numbers here are primes
+	template<class T0, class T1>
+	struct hash<pair<T0, T1>> {
+		size_t operator()(const pair<T0, T1> & pr) {
+			static hash<T0> T0_hash;
+			static hash<T1> T1_hash;
+
+			return 0x2E48EDC9 ^ T0_hash(pr.first) ^ T1_hash(pr.second);
+		}
+	};
+
+	//  All hex numbers here are primes
+	template<>
+	struct hash<configuration> {
+		size_t operator()(const configuration & conf) {
+			static hash<pair<string, property>> kv_hash;
+			static hash<string> string_hash;
+
+			size_t result = 0x26FE1F8D;
+
+			result ^= (conf.filename ? string_hash(*conf.filename) : 0x12C0852B);
+			for(const auto & kv : conf.properties)
+				result ^= kv_hash(kv);
+
+			return result;
+		}
+	};
 }
 
 

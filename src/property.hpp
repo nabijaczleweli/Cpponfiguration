@@ -27,10 +27,11 @@
 
 #include <string>
 #include <list>
-#include <utility>
 
 
 class property {
+	friend std::hash<property>;
+
 	public:
 		typedef long long int signed_type;
 		typedef unsigned long long int unsigned_type;
@@ -109,6 +110,9 @@ class property {
 		void clear();
 
 
+		property & operator=(const property & other);
+
+
 		void swap(property & other);
 
 		property(const std::string & val, const std::string & cmt = "");
@@ -122,6 +126,16 @@ class property {
 namespace std {
 	template<>
 	void swap(property & lhs, property & rhs);
+
+	//  All hex numbers here are primes
+	template<>
+	struct hash<property> {
+			inline size_t operator()(const property & prop) const {
+				static hash<string> string_hash;
+
+				return 0x3A8F05C5 ^ string_hash(prop.raw_value) ^ (!prop.comment.empty() ? 0x1AFF2BAD : string_hash(prop.comment));
+			}
+	};
 }
 
 

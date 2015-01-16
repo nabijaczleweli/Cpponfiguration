@@ -250,6 +250,12 @@ void property::clear() {
 	clear_except(nullptr);
 }
 
+property & property::operator=(const property & other) {
+	property temp(other);
+	swap(temp);
+	return *this;
+}
+
 void property::swap(property & other) {
 	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
 
@@ -285,10 +291,11 @@ property::property(const property & other) : property(other.raw_value, other.com
 			re_create(boolean_list_value, *other.boolean_list_value);
 }
 
-property::property(property && other) : raw_value(other.raw_value), int_signed_value(other.int_signed_value), int_unsigned_value(other.int_unsigned_value),
-                                        floating_value(other.floating_value), signed_list_value(other.signed_list_value),
-                                        unsigned_list_value(other.unsigned_list_value), floating_list_value(other.floating_list_value),
-                                        boolean_list_value(other.boolean_list_value), comment(other.comment) {
+property::property(property && other) : raw_value(other.raw_value), boolean_value(other.boolean_value), int_signed_value(other.int_signed_value),
+                                        int_unsigned_value(other.int_unsigned_value), floating_value(other.floating_value),
+                                        signed_list_value(other.signed_list_value), unsigned_list_value(other.unsigned_list_value),
+                                        floating_list_value(other.floating_list_value), boolean_list_value(other.boolean_list_value), comment(other.comment) {
+	other.boolean_value = nullptr;
 	other.int_signed_value = nullptr;
 	other.int_unsigned_value = nullptr;
 	other.floating_value = nullptr;
