@@ -26,12 +26,13 @@
 
 
 #include "property.hpp"
+#include "swappable.hpp"
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
 
 
-class configuration {
+class configuration : swappable<configuration> {
 	friend std::hash<configuration>;
 
 	protected:
@@ -46,6 +47,7 @@ class configuration {
 	public:
 		static char comment_character;
 		static char assignment_character;
+		static bool force_create_files;
 
 		configuration();
 		configuration(const std::string & name);
@@ -54,7 +56,7 @@ class configuration {
 
 		~configuration();
 
-		void swap(configuration & other);
+		virtual void swap(configuration & other) override;
 
 		configuration & operator=(const configuration & other);
 		configuration operator+(const configuration & other);
@@ -77,10 +79,7 @@ class configuration {
 
 
 namespace std {
-	template<>
-	void swap(configuration & lhs, configuration & rhs);
-
-	//  All hex numbers here are primes
+	// All hex numbers here are primes
 	template<class T0, class T1>
 	struct hash<pair<T0, T1>> {
 		size_t operator()(const pair<T0, T1> & pr) {
@@ -91,7 +90,7 @@ namespace std {
 		}
 	};
 
-	//  All hex numbers here are primes
+	// All hex numbers here are primes
 	template<>
 	struct hash<configuration> {
 		size_t operator()(const configuration & conf) {

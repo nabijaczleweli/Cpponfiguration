@@ -25,11 +25,12 @@
 #define PROPERTY_HPP
 
 
+#include "swappable.hpp"
 #include <string>
 #include <list>
 
 
-class property {
+class property : swappable<property> {
 	friend std::hash<property>;
 
 	public:
@@ -113,7 +114,7 @@ class property {
 		property & operator=(const property & other);
 
 
-		void swap(property & other);
+		virtual void swap(property & other) override;
 
 		property(const std::string & val, const std::string & cmt = "");
 		property(const property & other);
@@ -124,9 +125,6 @@ class property {
 
 
 namespace std {
-	template<>
-	void swap(property & lhs, property & rhs);
-
 	//  All hex numbers here are primes
 	template<>
 	struct hash<property> {

@@ -32,6 +32,7 @@ using namespace std;
 
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
+bool configuration::force_create_files = true;
 
 
 configuration::configuration() : configuration(nullptr) {}
@@ -121,6 +122,8 @@ void configuration::save_properties(std::ostream & to) {
 
 bool configuration::load() {
 	if(filename) {
+		if(force_create_files)
+			ofstream(*filename).close();  // Constructor creates file, `.close()` to force compiler into not seeing this as a variable declaration
 		ifstream file(*filename);
 		if(file.is_open()) {
 			load_properties(file);
@@ -180,10 +183,4 @@ property & configuration::get(const string & key, const string & default_value) 
 
 bool configuration::contains(const std::string & key) {
 	return properties.find(key) != properties.end();
-}
-
-
-template<>
-void std::swap(configuration & lhs, configuration & rhs) {
-	lhs.swap(rhs);
 }

@@ -308,9 +308,3 @@ property::property(property && other) : raw_value(other.raw_value), boolean_valu
 property::~property() {
 	clear();
 }
-
-
-template<>
-void std::swap(property & lhs, property & rhs) {
-	lhs.swap(rhs);
-}
