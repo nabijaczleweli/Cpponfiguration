@@ -28,7 +28,7 @@ all : dll test
 clean :
 	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
-dll : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ)
+dll : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ)
 	$(CPP) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
 
 test : $(TEST)/test$(EXE)
@@ -38,7 +38,7 @@ test : $(TEST)/test$(EXE)
 
 
 $(BUILD)/%$(OBJ) : src/%.cpp
-	@mkdir $(BUILD) 2>$(nul) | $(nop)
+	@mkdir $(dir $@) 2>$(nul) | $(nop)
 	$(CPP) $(CPPAR) -c -o$@ $^
 
 %$(EXE) : %.cpp

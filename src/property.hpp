@@ -26,13 +26,12 @@
 
 
 #include "swappable.hpp"
+#include "hashable.hpp"
 #include <string>
 #include <list>
 
 
-class property : swappable<property> {
-	friend std::hash<property>;
-
+class property : swappable<property>, public hashable<property> {
 	public:
 		typedef long long int signed_type;
 		typedef unsigned long long int unsigned_type;
@@ -56,14 +55,13 @@ class property : swappable<property> {
 
 
 		void compute_integer();
-
 		void compute_floating();
-
 		void compute_logical();
-
 		void compute_list();
 
 		void clear_except(const void * except);
+
+		virtual size_t hash_code() const override;
 
 	public:
 		std::string comment;
@@ -122,19 +120,6 @@ class property : swappable<property> {
 
 		~property();
 };
-
-
-namespace std {
-	//  All hex numbers here are primes
-	template<>
-	struct hash<property> {
-			inline size_t operator()(const property & prop) const {
-				static hash<string> string_hash;
-
-				return 0x3A8F05C5 ^ string_hash(prop.raw_value) ^ (!prop.comment.empty() ? 0x1AFF2BAD : string_hash(prop.comment));
-			}
-	};
-}
 
 
 #endif  // PROPERTY_HPP

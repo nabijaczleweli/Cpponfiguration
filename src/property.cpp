@@ -22,6 +22,7 @@
 
 #include "property.hpp"
 #include "util/strings.hpp"
+#include "util/salt.hpp"
 #include <cstdlib>
 #include <sstream>
 
@@ -270,6 +271,14 @@ void property::swap(property & other) {
 	comment.swap(other.comment);
 
 	#undef SWAP
+}
+
+// All hex numbers here are primes
+size_t property::hash_code() const {
+	static salt slt;
+	static hash<string> string_hash;
+
+	return 0x3A8F05C5 ^ slt ^ string_hash(raw_value) ^ (!comment.empty() ? 0x1AFF2BAD : string_hash(comment));
 }
 
 property::property(const string & val, const string & cmt) : raw_value(val), comment(cmt) {}

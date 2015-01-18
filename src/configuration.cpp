@@ -22,6 +22,7 @@
 
 #include "configuration.hpp"
 #include "util/strings.hpp"
+#include "util/salt.hpp"
 #include <istream>
 #include <fstream>
 #include <iostream>
@@ -57,6 +58,21 @@ void configuration::swap(configuration & other) {
 	SWAP(filename)
 
 	#undef SWAP
+}
+
+// All hex numbers here are primes
+size_t configuration::hash_code() const {
+	static salt slt;
+	static hash<pair<string, property>> kv_hash;
+	static hash<string> string_hash;
+
+	size_t result = 0x26FE1F8D;
+
+	result ^= (filename ? string_hash(*filename) : 0x12C0852B);
+	for(const auto & kv : properties)
+		result ^= kv_hash(kv);
+
+	return result ^ slt;
 }
 
 configuration & configuration::operator=(const configuration & other) {

@@ -27,14 +27,14 @@
 
 #include "property.hpp"
 #include "swappable.hpp"
+#include "hashable.hpp"
+#include "util/salt.hpp"
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
 
 
-class configuration : swappable<configuration> {
-	friend std::hash<configuration>;
-
+class configuration : swappable<configuration>, public hashable<configuration> {
 	protected:
 		std::unordered_map<std::string, property> properties;
 		std::string * filename = nullptr;
@@ -43,6 +43,8 @@ class configuration : swappable<configuration> {
 
 		void load_properties(std::istream & from);
 		void save_properties(std::ostream & to);
+
+		virtual size_t hash_code() const override;
 
 	public:
 		static char comment_character;
@@ -83,27 +85,11 @@ namespace std {
 	template<class T0, class T1>
 	struct hash<pair<T0, T1>> {
 		size_t operator()(const pair<T0, T1> & pr) {
+			static salt slt;
 			static hash<T0> T0_hash;
 			static hash<T1> T1_hash;
 
-			return 0x2E48EDC9 ^ T0_hash(pr.first) ^ T1_hash(pr.second);
-		}
-	};
-
-	// All hex numbers here are primes
-	template<>
-	struct hash<configuration> {
-		size_t operator()(const configuration & conf) {
-			static hash<pair<string, property>> kv_hash;
-			static hash<string> string_hash;
-
-			size_t result = 0x26FE1F8D;
-
-			result ^= (conf.filename ? string_hash(*conf.filename) : 0x12C0852B);
-			for(const auto & kv : conf.properties)
-				result ^= kv_hash(kv);
-
-			return result;
+			return 0x2E48EDC9 ^ slt ^ T0_hash(pr.first) ^ T1_hash(pr.second);
 		}
 	};
 }
