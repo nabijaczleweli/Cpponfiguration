@@ -42,7 +42,8 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		configuration(std::string * name);
 
 		void load_properties(std::istream & from);
-		void save_properties(std::ostream & to);
+		void save_properties(std::ostream & to) const;
+		bool save(const std::string * name) const;
 
 		virtual size_t hash_code() const override;
 
@@ -70,13 +71,12 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		bool load(const std::string & name);
 		bool load(std::istream & stream);
 
-		bool save();
-		bool save(const std::string & name);
-		bool save(std::ostream & stream);
+		bool save() const;
+		bool save(const std::string & name) const;
+		bool save(std::ostream & stream) const;
 
 		property & get(const std::string & key, const std::string & default_value = "");
-
-		bool contains(const std::string & key);
+		bool contains(const std::string & key) const;
 };
 
 

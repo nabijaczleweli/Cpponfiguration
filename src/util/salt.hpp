@@ -46,7 +46,7 @@ class salt {
 	private:
 		static std::unique_ptr<std::mt19937> randomizer;  // Use a smart pointer here because static and `mt19937` is huge
 
-		size_t value = (*randomizer)();
+		const size_t value = (*randomizer)();
 
 	public:
 		constexpr inline operator size_t() const {

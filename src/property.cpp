@@ -42,15 +42,17 @@ typedef property::boolean_list_type boolean_list_type;
 template<class T>
 inline void re_create(T *& ptr) {
 	if(ptr)
-		delete ptr;
-	ptr = new T;
+		*ptr = T();
+	else
+		ptr = new T;
 }
 
 template<class T, class... A>
 inline void re_create(T *& ptr, A&&... args) {
 	if(ptr)
-		delete ptr;
-	ptr = new T(forward<A...>(args...));
+		*ptr = T(forward<A...>(args...));
+	else
+		ptr = new T(forward<A...>(args...));
 }
 
 template<class T>

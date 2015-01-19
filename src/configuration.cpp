@@ -131,15 +131,26 @@ void configuration::load_properties(istream & from) {
 	}
 }
 
-void configuration::save_properties(std::ostream & to) {
+void configuration::save_properties(ostream & to) const {
 	for(const auto & pr : properties)
 		to << pr.first << '=' << pr.second.textual() << (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
+}
+
+bool configuration::save(const string * name) const {
+	if(name) {
+		ofstream file(*name);
+		if(file.is_open()) {
+			save_properties(file);
+			return true;
+		}
+	}
+	return false;
 }
 
 bool configuration::load() {
 	if(filename) {
 		if(force_create_files)
-			ofstream(*filename).close();  // Constructor creates file, `.close()` to force compiler into not seeing this as a variable declaration
+			ofstream(*filename).rdstate();  // Constructor creates file, `.rdstate()` to force compiler into not seeing this as a variable declaration
 		ifstream file(*filename);
 		if(file.is_open()) {
 			load_properties(file);
@@ -151,8 +162,9 @@ bool configuration::load() {
 
 bool configuration::load(const string & name) {
 	if(filename)
-		delete filename;
-	filename = new string(name);
+		*filename = name;
+	else
+		filename = new string(name);
 	return load();
 }
 
@@ -164,25 +176,18 @@ bool configuration::load(istream & stream) {
 	return false;
 }
 
-bool configuration::save() {
-	if(filename) {
-		ofstream file(*filename);
-		if(file.is_open()) {
-			save_properties(file);
-			return true;
-		}
-	}
-	return false;
+bool configuration::save() const {
+	return save(filename);
 }
 
-bool configuration::save(const string & name) {
-	if(filename)
-		delete filename;
-	filename = new string(name);
-	return save();
+bool configuration::save(const string & name) const {
+	const string * fname = new string(name);
+	const bool retval = save(fname);
+	delete fname;
+	return retval;
 }
 
-bool configuration::save(ostream & stream) {
+bool configuration::save(ostream & stream) const {
 	if(stream) {
 		save_properties(stream);
 		return true;
@@ -197,6 +202,6 @@ property & configuration::get(const string & key, const string & default_value) 
 	return itr->second;
 }
 
-bool configuration::contains(const std::string & key) {
+bool configuration::contains(const string & key) const {
 	return properties.find(key) != properties.end();
 }
