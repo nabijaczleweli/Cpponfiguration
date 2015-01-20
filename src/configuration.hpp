@@ -77,6 +77,8 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 
 		property & get(const std::string & key, const std::string & default_value = "");
 		bool contains(const std::string & key) const;
+
+		void rename(const std::string & name);
 };
 
 

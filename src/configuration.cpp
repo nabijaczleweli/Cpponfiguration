@@ -161,10 +161,7 @@ bool configuration::load() {
 }
 
 bool configuration::load(const string & name) {
-	if(filename)
-		*filename = name;
-	else
-		filename = new string(name);
+	rename(name);
 	return load();
 }
 
@@ -181,10 +178,7 @@ bool configuration::save() const {
 }
 
 bool configuration::save(const string & name) const {
-	const string * fname = new string(name);
-	const bool retval = save(fname);
-	delete fname;
-	return retval;
+	return save(&name);
 }
 
 bool configuration::save(ostream & stream) const {
@@ -204,4 +198,11 @@ property & configuration::get(const string & key, const string & default_value) 
 
 bool configuration::contains(const string & key) const {
 	return properties.find(key) != properties.end();
+}
+
+void configuration::rename(const string & name) {
+	if(filename)
+		*filename = name;
+	else
+		filename = new string(name);
 }
