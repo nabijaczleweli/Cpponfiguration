@@ -21,12 +21,10 @@
 
 ifeq "$(OS)" "Windows_NT"
 	EXE = .exe
-	nop = echo > nul
 	nul = nul
 	DLL = .dll
 else
 	EXE = .out
-	nop = echo > /dev/null
 	nul = /dev/null
 	ifeq "$(OS)" "Darwin"
 		DLL = .dylib
@@ -34,6 +32,7 @@ else
 		DLL = .so
 	endif
 endif
+nop = echo > $(nul)
 
 OBJ = .o
 ARCH = .a

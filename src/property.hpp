@@ -68,41 +68,25 @@ class property : swappable<property>, public hashable<property> {
 
 
 		signed_type & integer();
-
 		unsigned_type & unsigned_integer();
-
 		floating_type & floating();
-
 		bool & boolean();
-
 		inline const std::string & textual() const { return raw_value; }
 		inline std::string & textual() { return raw_value; }
-
 		signed_list_type & integer_list();
-
 		unsigned_list_type & unsigned_integer_list();
-
 		floating_list_type & floating_list();
-
 		boolean_list_type & boolean_list();
 
 
 		void update_from_integer();
-
 		void update_from_unsigned_integer();
-
 		void update_from_floating();
-
 		void update_from_boolean();
-
 		void update_from_textual();
-
 		void update_from_integer_list();
-
 		void update_from_unsigned_integer_list();
-
 		void update_from_floating_list();
-
 		void update_from_boolean_list();
 
 
@@ -110,7 +94,6 @@ class property : swappable<property>, public hashable<property> {
 
 
 		property & operator=(const property & other);
-
 
 		virtual void swap(property & other) override;
 
