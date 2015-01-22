@@ -62,9 +62,9 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		virtual void swap(configuration & other) override;
 
 		configuration & operator=(const configuration & other);
-		configuration operator+(const configuration & other);
+		configuration operator+(const configuration & other) const;
 		configuration & operator+=(const configuration & other);
-		configuration operator-(const configuration & other);
+		configuration operator-(const configuration & other) const;
 		configuration & operator-=(const configuration & other);
 
 		bool load();
@@ -76,6 +76,8 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		bool save(std::ostream & stream) const;
 
 		property & get(const std::string & key, const std::string & default_value = "");
+		property & get(const std::string & key, const property & default_value);
+		void remove(const std::string & key);
 		bool contains(const std::string & key) const;
 
 		void rename(const std::string & name);

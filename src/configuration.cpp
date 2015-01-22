@@ -25,7 +25,6 @@
 #include "util/salt.hpp"
 #include <istream>
 #include <fstream>
-#include <iostream>
 
 
 using namespace std;
@@ -40,7 +39,7 @@ configuration::configuration() : configuration(nullptr) {}
 configuration::configuration(string * name) : filename(name) {}
 configuration::configuration(const string & name) : configuration(new string(name)) {}
 configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr) {}
-configuration::configuration(configuration && other) : properties(other.properties), filename(other.filename) {
+configuration::configuration(configuration && other) : properties(move(other.properties)), filename(other.filename) {
 	other.filename = nullptr;
 }
 
@@ -81,7 +80,7 @@ configuration & configuration::operator=(const configuration & other) {
 	return *this;
 }
 
-configuration configuration::operator+(const configuration & other) {
+configuration configuration::operator+(const configuration & other) const {
 	configuration temp(*this);
 	temp += other;
 	return temp;
@@ -92,7 +91,7 @@ configuration & configuration::operator+=(const configuration & other) {
 	return *this;
 }
 
-configuration configuration::operator-(const configuration & other) {
+configuration configuration::operator-(const configuration & other) const {
 	configuration temp(*this);
 	temp -= other;
 	return temp;
@@ -105,6 +104,7 @@ configuration & configuration::operator-=(const configuration & other) {
 	return *this;
 }
 
+// TODO - Start-of-file-only comments? Useful for descriptions
 void configuration::load_properties(istream & from) {
 	for(string line; getline(from, line);) {
 		size_t equals_idx = 0;
@@ -190,10 +190,18 @@ bool configuration::save(ostream & stream) const {
 }
 
 property & configuration::get(const string & key, const string & default_value) {
+	return get(key, property(trim(move(string(default_value)))));  // Construct string because `*trim()`s are mutating
+}
+
+property & configuration::get(const string & key, const property & default_value) {
 	auto itr = properties.find(key);
 	if(itr == properties.end())
-		itr = properties.emplace(trim(move(string(key))), property(trim(move(string(default_value))))).first;  // Construct strings because `*trim()`s are mutating
+		itr = properties.emplace(trim(move(string(key))), default_value).first;  // Construct string because `*trim()`s are mutating
 	return itr->second;
+}
+
+void configuration::remove(const string & key) {
+	properties.erase(key);
 }
 
 bool configuration::contains(const string & key) const {
