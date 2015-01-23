@@ -32,11 +32,13 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
+#include <forward_list>  // Maybe use an indexable container?
 
 
 class configuration : swappable<configuration>, public hashable<configuration> {
 	protected:
 		std::unordered_map<std::string, property> properties;
+		std::forward_list<std::string> sof_comments;
 		std::string * filename = nullptr;
 
 		configuration(std::string * name);

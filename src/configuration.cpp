@@ -38,8 +38,9 @@ bool configuration::force_create_files = true;
 configuration::configuration() : configuration(nullptr) {}
 configuration::configuration(string * name) : filename(name) {}
 configuration::configuration(const string & name) : configuration(new string(name)) {}
-configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr) {}
-configuration::configuration(configuration && other) : properties(move(other.properties)), filename(other.filename) {
+configuration::configuration(const configuration & other) : properties(other.properties), sof_comments(other.sof_comments),
+                                                            filename(other.filename ? new string(*other.filename) : nullptr) {}
+configuration::configuration(configuration && other) : properties(move(other.properties)), sof_comments(move(other.sof_comments)), filename(other.filename) {
 	other.filename = nullptr;
 }
 
@@ -104,17 +105,16 @@ configuration & configuration::operator-=(const configuration & other) {
 	return *this;
 }
 
-// TODO - Start-of-file-only comments? Useful for descriptions
 void configuration::load_properties(istream & from) {
-	for(string line; getline(from, line);) {
+	static auto readfromline = [&](string & line) {
 		size_t equals_idx = 0;
 
 		if(line.empty() || line[0] == comment_character || (equals_idx = line.find_first_of(assignment_character)) == string::npos)
-			continue;
+			return;
 
 		ltrim(line);
 		if(line.empty() || line[0] == comment_character)
-			continue;
+			return;
 		equals_idx = line.find_first_of(assignment_character);
 
 		const size_t comment_idx = line.find_first_of(comment_character);
@@ -124,14 +124,34 @@ void configuration::load_properties(istream & from) {
 			line = line.substr(0, line.find_first_of(comment_character));
 			rtrim(line);
 			if(line.empty() || comment_idx < equals_idx)
-				continue;
+				return;
 		}
 
 		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1))), trim(comment)));
+	};
+
+	for(string line; getline(from, line);) {
+		if(line.empty())
+			break;
+
+		ltrim(line);
+		if(line[0] != comment_character) {
+			readfromline(line);
+			break;
+		}
+
+		sof_comments.emplace_front(trim(move(string(line.c_str() + 1))));
 	}
+	sof_comments.reverse();
+
+	for(string line; getline(from, line);)
+		readfromline(line);
 }
 
 void configuration::save_properties(ostream & to) const {
+	for(const auto & cmt : sof_comments)
+		to << comment_character << ' ' << cmt << '\n';
+	to << (sof_comments.empty() ? "" : "\n");
 	for(const auto & pr : properties)
 		to << pr.first << '=' << pr.second.textual() << (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
 }

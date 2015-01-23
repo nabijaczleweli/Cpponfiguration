@@ -36,11 +36,14 @@ class dumping_configuration : public configuration {
 		dumping_configuration(const std::string & name) : configuration(name) {}
 
 		void dump(ostream & stream) {
-			if(!properties.empty())
+			if(!properties.empty()) {
+				for(const auto & cmt : sof_comments)
+					stream << comment_character << ' ' << cmt << '\n';
+				stream << (sof_comments.empty() ? "" : "\n");
 				for(const auto & prop : properties)
 					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() <<
 					                                                            (prop.second.comment.empty() ? "" : ',' + prop.second.comment) << ")>\n";
-			else
+			} else
 				stream << "<<NO ENTRIES>>\n";
 		}
 };
@@ -49,6 +52,9 @@ class dumping_configuration : public configuration {
 int main() {
 	dumping_configuration cfg;
 	istringstream input_stream(
+	                          "# This is a test" "\n"
+	                          "# SOF comment" "\n"
+	                          "\n"
 	                          "mo0 = asdf" "\n"
 	                          "asdf=m#00" "\n"
 	                          "moo=asdf # asdf moo" "\n"
