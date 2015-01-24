@@ -50,6 +50,8 @@ class dumping_configuration : public configuration {
 
 
 int main() {
+	configuration::add_datetime_to_footer = configuration::datetime_mode::gmt;
+
 	dumping_configuration cfg;
 	istringstream input_stream(
 	                          "# This is a test" "\n"

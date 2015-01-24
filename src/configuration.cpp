@@ -25,14 +25,19 @@
 #include "util/salt.hpp"
 #include <istream>
 #include <fstream>
+#include <cstring>
 
 
 using namespace std;
 
 
+typedef configuration::datetime_mode datetime_mode;
+
+
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
 bool configuration::force_create_files = true;
+datetime_mode configuration::add_datetime_to_footer = datetime_mode::none;
 
 
 configuration::configuration() : configuration(nullptr) {}
@@ -151,9 +156,26 @@ void configuration::load_properties(istream & from) {
 void configuration::save_properties(ostream & to) const {
 	for(const auto & cmt : sof_comments)
 		to << comment_character << ' ' << cmt << '\n';
-	to << (sof_comments.empty() ? "" : "\n");
+	to << (sof_comments.empty() ? "" : "\n\n");
 	for(const auto & pr : properties)
 		to << pr.first << '=' << pr.second.textual() << (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
+
+	if(add_datetime_to_footer) {
+		const bool isgmt = add_datetime_to_footer == datetime_mode::gmt;
+		const time_t * tme = new time_t(time(nullptr));
+		char * buf = new char[20];
+
+		to << "\n#  ";
+		memset(buf, 0, 20);
+		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(tme) : localtime(tme)))
+			to << buf << (isgmt ? " GMT" : "");
+		else
+			to << "<<DATE ERROR>>";
+		to << "\n\n";
+
+		delete tme; tme = nullptr;
+		delete[] buf; buf = nullptr;
+	}
 }
 
 bool configuration::save(const string * name) const {

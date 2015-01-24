@@ -50,9 +50,14 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		virtual size_t hash_code() const override;
 
 	public:
+		enum datetime_mode : unsigned char {none, gmt, local};
+		typedef datetime_mode dt_m;
+
+
 		static char comment_character;
 		static char assignment_character;
 		static bool force_create_files;
+		static dt_m add_datetime_to_footer;
 
 		configuration();
 		configuration(const std::string & name);
