@@ -3,7 +3,7 @@ Cpponfiguration
 
 A pretty simple configuration library, inspired by MCF's one.
 
-<h3>Example</h3>
+### Example
 
 ```c++
 #include "cpponfiguration/configuration.hpp"
@@ -27,3 +27,6 @@ int main() {
     throw runtime_error("Couldn\'t save configuration file!"); // Or ignore it
 }
 ```
+
+### Notes
+* Contrary to GitHub's belief, there is no JavaScript involved in this project.
