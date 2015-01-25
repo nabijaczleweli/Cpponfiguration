@@ -36,10 +36,10 @@ class dumping_configuration : public configuration {
 		dumping_configuration(const std::string & name) : configuration(name) {}
 
 		void dump(ostream & stream) {
+			for(const auto & cmt : sof_comments)
+				stream << comment_character << ' ' << cmt << '\n';
+			stream << (sof_comments.empty() ? "" : "\n");
 			if(!properties.empty()) {
-				for(const auto & cmt : sof_comments)
-					stream << comment_character << ' ' << cmt << '\n';
-				stream << (sof_comments.empty() ? "" : "\n");
 				for(const auto & prop : properties)
 					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() <<
 					                                                            (prop.second.comment.empty() ? "" : ',' + prop.second.comment) << ")>\n";

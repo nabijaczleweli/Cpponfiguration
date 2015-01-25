@@ -127,6 +127,12 @@ void property::compute_list() {
 			boolean_list_value->emplace_front(string_to_boolean(element));
 		}
 	}
+	if(!signed_list_value || !unsigned_list_value || !floating_list_value || !boolean_list_value) {
+		re_create(signed_list_value);
+		re_create(unsigned_list_value);
+		re_create(floating_list_value);
+		re_create(boolean_list_value);
+	}
 }
 
 void property::clear_except(const void * except) {

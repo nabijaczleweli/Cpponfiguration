@@ -32,7 +32,7 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
-#include <forward_list>  // Maybe use an indexable container?
+#include <forward_list>  // Maybe use an indexable container (if configuration needs accessors for SOFCs)?
 
 
 class configuration : swappable<configuration>, public hashable<configuration> {
@@ -59,6 +59,7 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		static bool force_create_files;
 		static dt_m add_datetime_to_footer;
 
+
 		configuration();
 		configuration(const std::string & name);
 		configuration(const configuration & other);
@@ -69,9 +70,7 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		virtual void swap(configuration & other) override;
 
 		configuration & operator=(const configuration & other);
-		configuration operator+(const configuration & other) const;
 		configuration & operator+=(const configuration & other);
-		configuration operator-(const configuration & other) const;
 		configuration & operator-=(const configuration & other);
 
 		bool load();
@@ -89,6 +88,10 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 
 		void rename(const std::string & name);
 };
+
+
+configuration operator+(const configuration & lhs, const configuration & rhs);
+configuration operator-(const configuration & lhs, const configuration & rhs);
 
 
 namespace std {

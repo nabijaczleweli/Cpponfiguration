@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) 2015 nabijaczlweli
+// Copyright (c) 2015 nabijaczleweli
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -86,21 +86,9 @@ configuration & configuration::operator=(const configuration & other) {
 	return *this;
 }
 
-configuration configuration::operator+(const configuration & other) const {
-	configuration temp(*this);
-	temp += other;
-	return temp;
-}
-
 configuration & configuration::operator+=(const configuration & other) {
 	properties.insert(other.properties.begin(), other.properties.end());
 	return *this;
-}
-
-configuration configuration::operator-(const configuration & other) const {
-	configuration temp(*this);
-	temp -= other;
-	return temp;
 }
 
 // Better version? This is (I think) from O(n) to O(n^2), where n: `other.properties.size()`.
@@ -158,14 +146,15 @@ void configuration::save_properties(ostream & to) const {
 		to << comment_character << ' ' << cmt << '\n';
 	to << (sof_comments.empty() ? "" : "\n\n");
 	for(const auto & pr : properties)
-		to << pr.first << '=' << pr.second.textual() << (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
+		to << pr.first << assignment_character << pr.second.textual() <<
+	                                            (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
 
 	if(add_datetime_to_footer) {
 		const bool isgmt = add_datetime_to_footer == datetime_mode::gmt;
 		const time_t * tme = new time_t(time(nullptr));
 		char * buf = new char[20];
 
-		to << "\n#  ";
+		to << '\n' << comment_character << "  ";
 		memset(buf, 0, 20);
 		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(tme) : localtime(tme)))
 			to << buf << (isgmt ? " GMT" : "");
@@ -192,7 +181,7 @@ bool configuration::save(const string * name) const {
 bool configuration::load() {
 	if(filename) {
 		if(force_create_files)
-			ofstream(*filename).rdstate();  // Constructor creates file, `.rdstate()` to force compiler into not seeing this as a variable declaration
+			static_cast<ios &&>(ofstream(*filename));  // Constructor creates file, cast -> no variable declaration
 		ifstream file(*filename);
 		if(file.is_open()) {
 			load_properties(file);
@@ -255,4 +244,17 @@ void configuration::rename(const string & name) {
 		*filename = name;
 	else
 		filename = new string(name);
+}
+
+
+configuration operator+(const configuration & lhs, const configuration & rhs) {
+	configuration temp(lhs);
+	temp += rhs;
+	return temp;
+}
+
+configuration operator-(const configuration & lhs, const configuration & rhs) {
+	configuration temp(lhs);
+	temp -= rhs;
+	return temp;
 }
