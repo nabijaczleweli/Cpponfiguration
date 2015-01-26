@@ -28,6 +28,7 @@
 #include "swappable.hpp"
 #include "hashable.hpp"
 #include <string>
+#include <limits>
 #include <list>
 
 
@@ -48,15 +49,15 @@ class property : swappable<property>, public hashable<property> {
 		signed_type * int_signed_value = nullptr;
 		unsigned_type * int_unsigned_value = nullptr;
 		floating_type * floating_value = nullptr;
+		boolean_list_type * boolean_list_value = nullptr;
 		signed_list_type * signed_list_value = nullptr;
 		unsigned_list_type * unsigned_list_value = nullptr;
 		floating_list_type * floating_list_value = nullptr;
-		boolean_list_type * boolean_list_value = nullptr;
 
 
+		void compute_logical();
 		void compute_integer();
 		void compute_floating();
-		void compute_logical();
 		void compute_list();
 
 		void clear_except(const void * except);
@@ -64,30 +65,33 @@ class property : swappable<property>, public hashable<property> {
 		virtual size_t hash_code() const override;
 
 	public:
+		static unsigned int floating_precision;
+
+
 		std::string comment;
 
 
+		bool & boolean();
 		signed_type & integer();
 		unsigned_type & unsigned_integer();
 		floating_type & floating();
-		bool & boolean();
 		inline const std::string & textual() const { return raw_value; }
 		inline std::string & textual() { return raw_value; }
+		boolean_list_type & boolean_list();
 		signed_list_type & integer_list();
 		unsigned_list_type & unsigned_integer_list();
 		floating_list_type & floating_list();
-		boolean_list_type & boolean_list();
 
 
+		void update_from_boolean();
 		void update_from_integer();
 		void update_from_unsigned_integer();
 		void update_from_floating();
-		void update_from_boolean();
 		void update_from_textual();
+		void update_from_boolean_list();
 		void update_from_integer_list();
 		void update_from_unsigned_integer_list();
 		void update_from_floating_list();
-		void update_from_boolean_list();
 
 
 		void clear();

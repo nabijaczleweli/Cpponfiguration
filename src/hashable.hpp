@@ -31,7 +31,6 @@
 template<class T>
 class hashable {
 	friend std::hash<hashable<T>>;
-	friend std::hash<T>;
 
 	protected:
 		virtual size_t hash_code() const = 0;
