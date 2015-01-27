@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) 2015 nabijaczlweli
+// Copyright (c) 2015 nabijaczleweli
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -87,6 +87,7 @@ class configuration : swappable<configuration>, public hashable<configuration> {
 		bool contains(const std::string & key) const;
 
 		void rename(const std::string & name);
+		bool empty();
 };
 
 
@@ -98,7 +99,7 @@ namespace std {
 	// All hex numbers here are primes
 	template<class T0, class T1>
 	struct hash<pair<T0, T1>> {
-		size_t operator()(const pair<T0, T1> & pr) {
+		size_t operator()(const pair<T0, T1> & pr) const {
 			static salt slt;
 			static hash<T0> T0_hash;
 			static hash<T1> T1_hash;

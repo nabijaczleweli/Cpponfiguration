@@ -67,17 +67,25 @@ void configuration::swap(configuration & other) {
 
 // All hex numbers here are primes
 size_t configuration::hash_code() const {
-	static salt slt;
-	static hash<pair<string, property>> kv_hash;
-	static hash<string> string_hash;
+	#define COLHASH(col, hash, prime) if(col.empty()) \
+	                             result ^= prime; \
+	                           else \
+	                             for(const auto & elem : col) \
+	                                result ^= hash(elem);
+
+	static const salt slt;
+	static const hash<pair<string, property>> kv_hash;
+	static const hash<string> string_hash;
 
 	size_t result = 0x26FE1F8D;
 
 	result ^= (filename ? string_hash(*filename) : 0x12C0852B);
-	for(const auto & kv : properties)
-		result ^= kv_hash(kv);
+	COLHASH(properties, kv_hash, 0x16447FAB)
+	COLHASH(sof_comments, string_hash, 0x39531FBF)
 
 	return result ^ slt;
+
+	#undef COLHASH
 }
 
 configuration & configuration::operator=(const configuration & other) {
@@ -170,7 +178,7 @@ void configuration::save_properties(ostream & to) const {
 bool configuration::save(const string * name) const {
 	if(name) {
 		ofstream file(*name);
-		if(file.is_open()) {
+		if(file && file.is_open()) {
 			save_properties(file);
 			return true;
 		}
@@ -179,11 +187,11 @@ bool configuration::save(const string * name) const {
 }
 
 bool configuration::load() {
-	if(filename) {
+	if(filename && !filename->empty()) {
 		if(force_create_files)
-			static_cast<ios &&>(ofstream(*filename));  // Constructor creates file, cast -> no variable declaration
+			static_cast<ios_base &&>(ofstream(*filename));  // Constructor creates file, cast -> no variable declaration
 		ifstream file(*filename);
-		if(file.is_open()) {
+		if(file && file.is_open()) {
 			load_properties(file);
 			return true;
 		}
@@ -244,6 +252,10 @@ void configuration::rename(const string & name) {
 		*filename = name;
 	else
 		filename = new string(name);
+}
+
+bool configuration::empty() {
+	return properties.empty() && sof_comments.empty();
 }
 
 
