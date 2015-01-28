@@ -107,7 +107,7 @@ configuration & configuration::operator-=(const configuration & other) {
 }
 
 void configuration::load_properties(istream & from) {
-	static auto readfromline = [&](string & line) {
+	static const auto readfromline = [&](string & line) {
 		size_t equals_idx = 0;
 
 		if(line.empty() || line[0] == comment_character || (equals_idx = line.find_first_of(assignment_character)) == string::npos)
@@ -157,7 +157,7 @@ void configuration::save_properties(ostream & to) const {
 		to << pr.first << assignment_character << pr.second.textual() <<
 	                                            (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
 
-	if(add_datetime_to_footer) {
+	if(add_datetime_to_footer != datetime_mode::none) {
 		const bool isgmt = add_datetime_to_footer == datetime_mode::gmt;
 		const time_t * tme = new time_t(time(nullptr));
 		char * buf = new char[20];

@@ -36,7 +36,7 @@
 //
 // Example usage:
 // size_t hash_code() {
-//   static salt slt;
+//   static const salt slt;
 //
 //   size_t result = /*prime*/;
 //   // Produce hash, store in result
@@ -44,7 +44,7 @@
 // }
 class salt {
 	private:
-		static std::unique_ptr<std::mt19937> randomizer;  // Use a smart pointer here because static and `mt19937` is huge
+		static const std::unique_ptr<std::mt19937> randomizer;  // Use a smart pointer here because static and `mt19937` is huge
 
 		const size_t value = (*randomizer)();
 
