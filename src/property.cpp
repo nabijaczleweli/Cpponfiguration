@@ -44,18 +44,14 @@ unsigned int property::floating_precision = std::numeric_limits<floating_type>::
 
 template<class T>
 void re_create(T *& ptr) {
-	if(ptr)
-		*ptr = T();
-	else
-		ptr = new T;
+	delete ptr;
+	ptr = new T;
 }
 
 template<class T, class... A>
 void re_create(T *& ptr, A&&... args) {
-	if(ptr)
-		*ptr = T(forward<A>(args)...);
-	else
-		ptr = new T(forward<A>(args)...);
+	delete ptr;
+	ptr = new T(forward<A>(args)...);
 }
 
 ios_base & empty_modifier(ios_base & base) {
@@ -135,6 +131,7 @@ void property::compute_list() {
 			floating_list_value->emplace_front(strtold(element.c_str(), nullptr));
 		}
 	}
+
 	if(!boolean_list_value || !signed_list_value || !unsigned_list_value || !floating_list_value) {
 		re_create(boolean_list_value);
 		re_create(signed_list_value);
@@ -274,8 +271,8 @@ void property::swap(property & other) {
 
 // All hex numbers here are primes
 size_t property::hash_code() const {
-	static salt slt;
-	static hash<string> string_hash;
+	static const salt slt;
+	static const hash<string> string_hash;
 
 	return 0x3A8F05C5 ^ slt ^ string_hash(raw_value) ^ (!comment.empty() ? 0x1AFF2BAD : string_hash(comment));
 }

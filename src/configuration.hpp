@@ -32,7 +32,7 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
-#include <forward_list>  // Maybe use an indexable container (if configuration needs accessors for SOFCs)?
+#include <forward_list>
 
 
 class configuration : swappable<configuration>, public hashable<configuration> {
