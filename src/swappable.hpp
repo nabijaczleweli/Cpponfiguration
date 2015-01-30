@@ -24,22 +24,26 @@
 #define SWAPPABLE_HPP
 
 
-// T must interhit swappable<T>, as in `class foo : swappable<foo> {};`
-template<class T>
-class swappable {
-	protected:
-		virtual void swap(T & other) = 0;
+namespace cpponfiguration {
+	// T must interhit swappable<T>, as in `class foo : swappable<foo> {};`
+	template<class T>
+	class swappable {
+		protected:
+			virtual void swap(T & other) = 0;
 
-	public:
-		inline void swap(swappable<T> & other) {
-			swap(dynamic_cast<T &>(other));
-		}
-};
+		public:
+			inline void swap(swappable<T> & other) {
+				swap(dynamic_cast<T &>(other));
+			}
+	};
+}
+
+namespace cpponfig = cpponfiguration;
 
 
 namespace std {
 	template<class T>
-	inline void swap(swappable<T> & lhs, swappable<T> & rhs) {
+	inline void swap(cpponfig::swappable<T> & lhs, cpponfig::swappable<T> & rhs) {
 		lhs.swap(rhs);
 	}
 }

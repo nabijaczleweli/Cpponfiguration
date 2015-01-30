@@ -35,64 +35,68 @@
 #include <forward_list>
 
 
-class configuration : swappable<configuration>, public hashable<configuration> {
-	protected:
-		std::unordered_map<std::string, property> properties;
-		std::forward_list<std::string> sof_comments;
-		std::string * filename = nullptr;
+namespace cpponfiguration {
+	class configuration : swappable<configuration>, public hashable<configuration> {
+		protected:
+			std::unordered_map<std::string, property> properties;
+			std::forward_list<std::string> sof_comments;
+			std::string * filename = nullptr;
 
-		configuration(std::string * name);
+			configuration(std::string * name);
 
-		void load_properties(std::istream & from);
-		void save_properties(std::ostream & to) const;
-		bool save(const std::string * name) const;
+			void load_properties(std::istream & from);
+			void save_properties(std::ostream & to) const;
+			bool save(const std::string * name) const;
 
-		virtual size_t hash_code() const override;
+			virtual size_t hash_code() const override;
 
-	public:
-		enum class datetime_mode : unsigned char {none, gmt, local};
-		typedef datetime_mode dt_m;
-
-
-		static char comment_character;
-		static char assignment_character;
-		static bool force_create_files;
-		static dt_m add_datetime_to_footer;
+		public:
+			enum class datetime_mode : unsigned char {none, gmt, local};
+			typedef datetime_mode dt_m;
 
 
-		configuration();
-		configuration(const std::string & name);
-		configuration(const configuration & other);
-		configuration(configuration && other);
-
-		~configuration();
-
-		virtual void swap(configuration & other) override;
-
-		configuration & operator=(const configuration & other);
-		configuration & operator+=(const configuration & other);
-		configuration & operator-=(const configuration & other);
-
-		bool load();
-		bool load(const std::string & name);
-		bool load(std::istream & stream);
-
-		bool save() const;
-		bool save(const std::string & name) const;
-		bool save(std::ostream & stream) const;
-
-		property & get(const std::string & key, const std::string & default_value = "");
-		property & get(const std::string & key, const property & default_value);
-		void remove(const std::string & key);
-		bool contains(const std::string & key) const;
-
-		void rename(const std::string & name);
-		bool empty();
-};
+			static char comment_character;
+			static char assignment_character;
+			static bool force_create_files;
+			static dt_m add_datetime_to_footer;
 
 
-configuration operator+(const configuration & lhs, const configuration & rhs);
-configuration operator-(const configuration & lhs, const configuration & rhs);
+			configuration();
+			configuration(const std::string & name);
+			configuration(const configuration & other);
+			configuration(configuration && other);
+
+			~configuration();
+
+			virtual void swap(configuration & other) override;
+
+			configuration & operator=(const configuration & other);
+			configuration & operator+=(const configuration & other);
+			configuration & operator-=(const configuration & other);
+
+			bool load();
+			bool load(const std::string & name);
+			bool load(std::istream & stream);
+
+			bool save() const;
+			bool save(const std::string & name) const;
+			bool save(std::ostream & stream) const;
+
+			property & get(const std::string & key, const std::string & default_value = "");
+			property & get(const std::string & key, const property & default_value);
+			void remove(const std::string & key);
+			bool contains(const std::string & key) const;
+
+			void rename(const std::string & name);
+			bool empty();
+	};
+}
+
+namespace cpponfig = cpponfiguration;
+
+
+cpponfig::configuration operator+(const cpponfig::configuration & lhs, const cpponfig::configuration & rhs);
+cpponfig::configuration operator-(const cpponfig::configuration & lhs, const cpponfig::configuration & rhs);
 
 
 namespace std {
@@ -100,7 +104,7 @@ namespace std {
 	template<class T0, class T1>
 	struct hash<pair<T0, T1>> {
 		size_t operator()(const pair<T0, T1> & pr) const {
-			static const salt slt;
+			static const cpponfig::salt slt;
 			static const hash<T0> T0_hash;
 			static const hash<T1> T1_hash;
 

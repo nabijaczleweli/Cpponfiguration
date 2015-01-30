@@ -29,6 +29,7 @@
 
 
 using namespace std;
+using namespace cpponfig;
 
 
 typedef configuration::datetime_mode datetime_mode;

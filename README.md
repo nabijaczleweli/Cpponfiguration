@@ -9,11 +9,11 @@ A pretty simple configuration library, inspired by MCF's one.
 #include "cpponfiguration/configuration.hpp"
 
 int main() {
-  configuration config("example.cfg");
+  cpponfiguration::configuration config("example.cfg");
   if(!config.load())
     throw runtime_error("Couldn\'t load configuration file!"); // Or ignore it
 
-  property & test0(config.get("test0"));
+  cpponfig::property & test0(config.get("test0")); // Both `cpponfiguration` and `cpponfig` are equal
   cout << "0:integer()=" << test0.integer() << ";"
           "textual()=" << test0.textual() << '\n';
   test0.integer() += 1;

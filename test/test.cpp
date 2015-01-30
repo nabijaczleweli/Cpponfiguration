@@ -28,6 +28,7 @@
 
 
 using namespace std;
+using namespace cpponfig;
 
 
 class dumping_configuration : public configuration {

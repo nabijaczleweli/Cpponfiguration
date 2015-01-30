@@ -28,6 +28,7 @@
 
 
 using namespace std;
+using namespace cpponfig;
 
 
 typedef property::signed_type signed_type;

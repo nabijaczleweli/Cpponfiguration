@@ -27,30 +27,34 @@
 #include <functional>
 
 
-// T must publicly interhit hashable<T>, as in `class foo : public hashable<foo> {};`
-template<class T>
-class hashable {
-	friend std::hash<hashable<T>>;
+namespace cpponfiguration {
+	// T must publicly interhit hashable<T>, as in `class foo : public hashable<foo> {};`
+	template<class T>
+	class hashable {
+		friend std::hash<hashable<T>>;
 
-	protected:
-		virtual size_t hash_code() const = 0;
-};
+		protected:
+			virtual size_t hash_code() const = 0;
+	};
+}
+
+namespace cpponfig = cpponfiguration;
 
 
 namespace std {
 	template<class T>
-	struct hash<hashable<T>> {
-		inline size_t operator()(const hashable<T> & tohash) const {
+	struct hash<cpponfig::hashable<T>> {
+		inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
 			return tohash.hash_code();
 		}
 	};
 
 	template<class T>
-	struct hash : hash<hashable<T>> {};
+	struct hash : hash<cpponfig::hashable<T>> {};
 
 #if defined(__GNUC__) || defined(__GNUG__)
 	template<class T>
-	struct __is_fast_hash<hashable<T>> : public false_type {};
+	struct __is_fast_hash<cpponfig::hashable<T>> : public false_type {};
 #endif
 }
 

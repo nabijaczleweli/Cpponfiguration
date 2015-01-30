@@ -25,6 +25,7 @@
 
 
 using namespace std;
+using namespace cpponfig;
 
 
-unique_ptr<mt19937> salt::randomizer(new mt19937(std::time(nullptr)));
+unique_ptr<mt19937> salt::randomizer(new mt19937(time(nullptr)));
