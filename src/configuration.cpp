@@ -61,6 +61,7 @@ void configuration::swap(configuration & other) {
 	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
 
 	properties.swap(other.properties);
+	sof_comments.swap(other.sof_comments);
 	SWAP(filename)
 
 	#undef SWAP
@@ -97,6 +98,8 @@ configuration & configuration::operator=(const configuration & other) {
 
 configuration & configuration::operator+=(const configuration & other) {
 	properties.insert(other.properties.begin(), other.properties.end());
+	sof_comments.insert(sof_comments.end(), other.sof_comments.begin(), other.sof_comments.end());
+
 	return *this;
 }
 
@@ -104,6 +107,10 @@ configuration & configuration::operator+=(const configuration & other) {
 configuration & configuration::operator-=(const configuration & other) {
 	for(const auto & kv : other.properties)
 		properties.erase(kv.first);
+
+	for(const auto & cmt : other.sof_comments)
+		sof_comments.remove(cmt);
+
 	return *this;
 }
 
@@ -142,9 +149,8 @@ void configuration::load_properties(istream & from) {
 			break;
 		}
 
-		sof_comments.emplace_front(trim(move(string(line.c_str() + 1))));
+		sof_comments.emplace_back(trim(move(string(line.c_str() + 1))));
 	}
-	sof_comments.reverse();
 
 	for(string line; getline(from, line);)
 		readfromline(line);
