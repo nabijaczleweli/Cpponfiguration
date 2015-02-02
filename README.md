@@ -13,7 +13,7 @@ int main() {
   if(!config.load())
     throw runtime_error("Couldn\'t load configuration file!"); // Or ignore it
 
-  cpponfig::property & test0(config.get("test0")); // Both `cpponfiguration` and `cpponfig` are equal
+  cpponfig::property & test0(config.get("test0")); // `cpponfiguration` and `cpponfig` are equal
   cout << "0:integer()=" << test0.integer() << ";"
           "textual()=" << test0.textual() << '\n';
   test0.integer() += 1;
