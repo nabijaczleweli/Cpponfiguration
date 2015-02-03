@@ -265,6 +265,11 @@ bool configuration::empty() {
 	return properties.empty() && sof_comments.empty();
 }
 
+void configuration::prepare_comments(const list<string> & new_cmt) {
+	if(sof_comments.empty())
+		sof_comments = new_cmt;
+}
+
 
 configuration operator+(const configuration & lhs, const configuration & rhs) {
 	configuration temp(lhs);

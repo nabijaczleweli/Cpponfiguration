@@ -89,6 +89,8 @@ namespace cpponfiguration {
 
 			void rename(const std::string & name);
 			bool empty();
+
+			void prepare_comments(const std::list<std::string> & new_cmt);
 	};
 }
 
