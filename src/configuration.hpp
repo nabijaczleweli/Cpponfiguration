@@ -39,8 +39,8 @@ namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
 			std::unordered_map<std::string, property> properties;
-			std::list<std::string> sof_comments;
 			std::string * filename = nullptr;
+
 
 			configuration(std::string * name);
 
@@ -59,6 +59,9 @@ namespace cpponfiguration {
 			static char assignment_character;
 			static bool force_create_files;
 			static dt_m add_datetime_to_footer;
+
+
+			std::list<std::string> sof_comments;
 
 
 			configuration();
@@ -89,8 +92,6 @@ namespace cpponfiguration {
 
 			void rename(const std::string & name);
 			bool empty();
-
-			void prepare_comments(const std::list<std::string> & new_cmt);
 	};
 }
 

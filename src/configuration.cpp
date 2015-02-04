@@ -44,9 +44,9 @@ datetime_mode configuration::add_datetime_to_footer = datetime_mode::none;
 configuration::configuration() : configuration(nullptr) {}
 configuration::configuration(string * name) : filename(name) {}
 configuration::configuration(const string & name) : configuration(new string(name)) {}
-configuration::configuration(const configuration & other) : properties(other.properties), sof_comments(other.sof_comments),
-                                                            filename(other.filename ? new string(*other.filename) : nullptr) {}
-configuration::configuration(configuration && other) : properties(move(other.properties)), sof_comments(move(other.sof_comments)), filename(other.filename) {
+configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr),
+                                                            sof_comments(other.sof_comments) {}
+configuration::configuration(configuration && other) : properties(move(other.properties)), filename(other.filename), sof_comments(move(other.sof_comments)) {
 	other.filename = nullptr;
 }
 
@@ -61,8 +61,8 @@ void configuration::swap(configuration & other) {
 	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
 
 	properties.swap(other.properties);
-	sof_comments.swap(other.sof_comments);
 	SWAP(filename)
+	sof_comments.swap(other.sof_comments);
 
 	#undef SWAP
 }
@@ -263,11 +263,6 @@ void configuration::rename(const string & name) {
 
 bool configuration::empty() {
 	return properties.empty() && sof_comments.empty();
-}
-
-void configuration::prepare_comments(const list<string> & new_cmt) {
-	if(sof_comments.empty())
-		sof_comments = new_cmt;
 }
 
 
