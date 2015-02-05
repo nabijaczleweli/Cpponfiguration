@@ -170,7 +170,6 @@ void configuration::save_properties(ostream & to) const {
 		char * buf = new char[20];
 
 		to << '\n' << comment_character << "  ";
-		memset(buf, 0, 20);
 		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(tme) : localtime(tme)))
 			to << buf << (isgmt ? " GMT" : "");
 		else
@@ -255,10 +254,8 @@ bool configuration::contains(const string & key) const {
 }
 
 void configuration::rename(const string & name) {
-	if(filename)
-		*filename = name;
-	else
-		filename = new string(name);
+	delete filename;
+	filename = new string(name);
 }
 
 bool configuration::empty() {
