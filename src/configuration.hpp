@@ -57,7 +57,7 @@ namespace cpponfiguration {
 
 			static char comment_character;
 			static char assignment_character;
-			static bool force_create_files;
+			static bool force_create_files_on_load;
 			static dt_m add_datetime_to_footer;
 
 
