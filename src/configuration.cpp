@@ -37,7 +37,6 @@ typedef configuration::datetime_mode datetime_mode;
 
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
-bool configuration::force_create_files_on_load = false;
 datetime_mode configuration::add_datetime_to_footer = datetime_mode::none;
 
 
@@ -195,8 +194,6 @@ bool configuration::save(const string * name) const {
 bool configuration::load() {
 	if(filename && !filename->empty()) {
 		ifstream file(*filename);
-		if(force_create_files_on_load && !file.is_open())
-			static_cast<ios_base &&>(ofstream(*filename));  // Constructor creates file, cast -> no variable declaration
 		if(file && file.is_open()) {
 			load_properties(file);
 			return true;
