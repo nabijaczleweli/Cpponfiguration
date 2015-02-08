@@ -37,7 +37,7 @@ typedef configuration::datetime_mode datetime_mode;
 
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
-datetime_mode configuration::add_datetime_to_footer = datetime_mode::none;
+datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 
 
 configuration::configuration() : configuration(nullptr) {}
@@ -163,8 +163,8 @@ void configuration::save_properties(ostream & to) const {
 		to << pr.first << assignment_character << pr.second.textual() <<
 	                                            (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
 
-	if(add_datetime_to_footer != datetime_mode::none) {
-		const bool isgmt = add_datetime_to_footer == datetime_mode::gmt;
+	if(datetime_footer_type != datetime_mode::none) {
+		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
 		const time_t * tme = new time_t(time(nullptr));
 		char * buf = new char[20];
 

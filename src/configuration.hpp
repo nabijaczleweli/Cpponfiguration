@@ -39,7 +39,7 @@ namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
 			std::unordered_map<std::string, property> properties;
-			std::string * filename = nullptr;
+			std::string * filename;
 
 
 			configuration(std::string * name);
@@ -57,7 +57,7 @@ namespace cpponfiguration {
 
 			static char comment_character;
 			static char assignment_character;
-			static dt_m add_datetime_to_footer;
+			static dt_m datetime_footer_type;
 
 
 			std::list<std::string> sof_comments;
