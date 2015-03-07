@@ -40,9 +40,8 @@ char configuration::assignment_character = '=';
 datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 
 
-configuration::configuration() : configuration(nullptr) {}
-configuration::configuration(string * name) : filename(name) {}
-configuration::configuration(const string & name) : configuration(new string(name)) {}
+configuration::configuration() {}
+configuration::configuration(const string & name) : filename(new string(name)) {}
 configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr),
                                                             sof_comments(other.sof_comments) {}
 configuration::configuration(configuration && other) : properties(move(other.properties)), filename(other.filename), sof_comments(move(other.sof_comments)) {

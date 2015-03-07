@@ -35,6 +35,8 @@ namespace cpponfiguration {
 			inline void swap(swappable<T> & other) {
 				swap(dynamic_cast<T &>(other));
 			}
+
+			inline virtual ~swappable() noexcept = default;
 	};
 }
 

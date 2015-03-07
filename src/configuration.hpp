@@ -39,7 +39,7 @@ namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
 			std::unordered_map<std::string, property> properties;
-			std::string * filename;
+			std::string * filename = nullptr;
 
 
 			configuration(std::string * name);
@@ -64,7 +64,7 @@ namespace cpponfiguration {
 
 
 			configuration();
-			configuration(const std::string & name);
+			explicit configuration(const std::string & name);
 			configuration(const configuration & other);
 			configuration(configuration && other);
 
