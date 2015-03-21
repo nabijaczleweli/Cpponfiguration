@@ -36,7 +36,7 @@ namespace cpponfiguration {
 		protected:
 			virtual size_t hash_code() const = 0;
 
-			inline virtual ~swappable() noexcept = default;
+			inline virtual ~hashable() noexcept = default;
 	};
 }
 
