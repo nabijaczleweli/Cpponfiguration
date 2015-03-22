@@ -21,12 +21,11 @@
 
 
 #include "salt.hpp"
-#include <ctime>
 
 
 using namespace std;
 using namespace cpponfig;
 
 
-const unique_ptr<mt19937> salt::randomizer(new mt19937(time(nullptr)));
+const unique_ptr<mt19937> salt::randomizer = make_unique<mt19937>(random_device()());
 bool salt::randomize_salt = true;
