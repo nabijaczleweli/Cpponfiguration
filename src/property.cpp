@@ -23,6 +23,7 @@
 #include "property.hpp"
 #include "util/strings.hpp"
 #include "util/salt.hpp"
+#include <iterator>
 #include <cstdlib>
 #include <sstream>
 
@@ -67,17 +68,17 @@ ios_base & precision_modifier(ios_base & base) {
 template<class T>
 void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
 	stringstream strm;
-	strm << mod;
-	size_t left = from.size();
-	for(const auto & i : from)
-		strm << i << (--left ? "," : "");
-	out = '[' + strm.str() + ']';
+	strm << mod << '[';
+	copy(from.begin(), from.end(), ostream_iterator<typename T::value_type>(strm, ","));
+	string temp = strm.str();
+	temp[temp.size() - 1] = ']';
+	out = temp;
 }
 
 
 template<class T>
 void generic_single_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
-	out = dynamic_cast<ostringstream &>(ostringstream() << mod << from).str();
+	out = dynamic_cast<const ostringstream &>(ostringstream() << mod << from).str();
 }
 
 bool string_to_boolean(const string & str) {

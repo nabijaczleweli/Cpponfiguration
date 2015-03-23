@@ -51,7 +51,7 @@ class dumping_configuration : public configuration {
 
 
 int main() {
-	configuration::add_datetime_to_footer = configuration::datetime_mode::gmt;
+	configuration::datetime_footer_type = configuration::datetime_mode::gmt;
 	property::floating_precision = 10;
 
 	dumping_configuration cfg;
