@@ -27,6 +27,7 @@
 
 #include "swappable.hpp"
 #include "hashable.hpp"
+#include <experimental/optional>
 #include <string>
 #include <limits>
 #include <list>
@@ -45,15 +46,14 @@ namespace cpponfiguration {
 
 		private:
 			std::string raw_value;
-			//  Pointers: computed yet?
-			bool * boolean_value = nullptr;
-			signed_type * int_signed_value = nullptr;
-			unsigned_type * int_unsigned_value = nullptr;
-			floating_type * floating_value = nullptr;
-			boolean_list_type * boolean_list_value = nullptr;
-			signed_list_type * signed_list_value = nullptr;
-			unsigned_list_type * unsigned_list_value = nullptr;
-			floating_list_type * floating_list_value = nullptr;
+			std::experimental::optional<bool> boolean_value;
+			std::experimental::optional<signed_type> int_signed_value;
+			std::experimental::optional<unsigned_type> int_unsigned_value;
+			std::experimental::optional<floating_type> floating_value;
+			std::experimental::optional<boolean_list_type> boolean_list_value;
+			std::experimental::optional<signed_list_type> signed_list_value;
+			std::experimental::optional<unsigned_list_type> unsigned_list_value;
+			std::experimental::optional<floating_list_type> floating_list_value;
 
 
 			void compute_logical();
@@ -62,6 +62,8 @@ namespace cpponfiguration {
 			void compute_list();
 
 			void clear_except(const void * except);
+			template<class T>
+			inline void clear_except(const std::experimental::optional<T> & except) { clear_except(except ? &*except : nullptr); }
 
 			virtual size_t hash_code() const override;
 
