@@ -29,24 +29,22 @@
 #include "swappable.hpp"
 #include "hashable.hpp"
 #include "util/salt.hpp"
+#include <list>
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
-#include <list>
+#include <experimental/optional>
 
 
 namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
 			std::unordered_map<std::string, property> properties;
-			std::string * filename = nullptr;
+			std::experimental::optional<std::string> filename;
 
-
-			configuration(std::string * name);
 
 			void load_properties(std::istream & from);
 			void save_properties(std::ostream & to) const;
-			bool save(const std::string * name) const;
 
 			virtual size_t hash_code() const override;
 

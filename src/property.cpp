@@ -45,17 +45,17 @@ typedef property::floating_list_type floating_list_type;
 unsigned int property::floating_precision = std::numeric_limits<floating_type>::digits10 + 1;
 
 
-ios_base & empty_modifier(ios_base & base) {
+static ios_base & empty_modifier(ios_base & base) {
 	return base;
 }
 
-ios_base & precision_modifier(ios_base & base) {
+static ios_base & precision_modifier(ios_base & base) {
 	base.precision(property::floating_precision);
 	return base;
 }
 
 template<class T>
-void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
+static void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
 	stringstream strm;
 	strm << mod << '[';
 	copy(from.begin(), from.end(), ostream_iterator<typename T::value_type>(strm, ","));
@@ -66,11 +66,11 @@ void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base
 
 
 template<class T>
-void generic_single_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
+static void generic_single_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
 	out = dynamic_cast<const ostringstream &>(ostringstream() << mod << from).str();
 }
 
-bool string_to_boolean(const string & str) {
+static bool string_to_boolean(const string & str) {
 	bool temp0, temp1;
 	stringstream(str) >> temp0;
 	stringstream(str) >> boolalpha >> temp1;

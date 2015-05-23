@@ -29,6 +29,7 @@
 
 
 using namespace std;
+using namespace std::experimental;
 using namespace cpponfig;
 
 
@@ -41,28 +42,18 @@ datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 
 
 configuration::configuration() {}
-configuration::configuration(const string & name) : filename(new string(name)) {}
-configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename ? new string(*other.filename) : nullptr),
+configuration::configuration(const string & name) : filename(name) {}
+configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename),
                                                             sof_comments(other.sof_comments) {}
-configuration::configuration(configuration && other) : properties(move(other.properties)), filename(other.filename), sof_comments(move(other.sof_comments)) {
-	other.filename = nullptr;
-}
+configuration::configuration(configuration && other) : properties(move(other.properties)), filename(move(other.filename)),
+                                                       sof_comments(move(other.sof_comments)) {}
 
-configuration::~configuration() {
-	if(filename) {
-		delete filename;
-		filename = nullptr;
-	}
-}
+configuration::~configuration() {}
 
 void configuration::swap(configuration & other) {
-	#define SWAP(a)	{const auto temp((a)); (a) = (other.a); (other.a) = temp;}
-
 	properties.swap(other.properties);
-	SWAP(filename)
+	filename.swap(other.filename);
 	sof_comments.swap(other.sof_comments);
-
-	#undef SWAP
 }
 
 // All hex numbers here are primes
@@ -179,17 +170,6 @@ void configuration::save_properties(ostream & to) const {
 	}
 }
 
-bool configuration::save(const string * name) const {
-	if(name) {
-		ofstream file(*name);
-		if(file && file.is_open()) {
-			save_properties(file);
-			return true;
-		}
-	}
-	return false;
-}
-
 bool configuration::load() {
 	if(filename && !filename->empty()) {
 		ifstream file(*filename);
@@ -215,11 +195,18 @@ bool configuration::load(istream & stream) {
 }
 
 bool configuration::save() const {
-	return save(filename);
+	return save(filename.value_or(""));
 }
 
 bool configuration::save(const string & name) const {
-	return save(&name);
+	if(!name.empty()) {
+		ofstream file(name);
+		if(file && file.is_open()) {
+			save_properties(file);
+			return true;
+		}
+	}
+	return false;
 }
 
 bool configuration::save(ostream & stream) const {
@@ -250,8 +237,7 @@ bool configuration::contains(const string & key) const {
 }
 
 void configuration::rename(const string & name) {
-	delete filename;
-	filename = new string(name);
+	filename = name;
 }
 
 bool configuration::empty() {
