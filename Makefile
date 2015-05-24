@@ -28,7 +28,7 @@ all : dll test
 clean :
 	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
-dll : $(BUILD)/configuration$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ) $(BUILD)/cpponfig_version$(OBJ)
+dll : $(BUILD)/configuration$(OBJ) $(BUILD)/configuration_category$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ) $(BUILD)/cpponfig_version$(OBJ)
 	$(CPP) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
 
 test : $(TEST)/test$(EXE)

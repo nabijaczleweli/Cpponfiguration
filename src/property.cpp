@@ -132,7 +132,7 @@ void property::compute_list() {
 }
 
 void property::clear_except(const void * except) {
-	#define DEL(which) if((which) && &*(which) != except) \
+	#define DEL(which) if((which) && addressof(which) != except) \
 	                     (which) = nullopt;
 
 	DEL(boolean_value)

@@ -38,20 +38,32 @@ typedef configuration::datetime_mode datetime_mode;
 
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
+char configuration::category_character = ':';
+char configuration::category_start_character = '{';
+char configuration::category_end_character = '}';
 datetime_mode configuration::datetime_footer_type = datetime_mode::none;
+
+
+std::pair<std::string, std::string> configuration::property_path(const std::string & name) {
+	const auto idx = name.find(category_character);
+	if(idx == string::npos)
+		return {"", trim(move(string(name)))};
+	else
+		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
+}
 
 
 configuration::configuration() {}
 configuration::configuration(const string & name) : filename(name) {}
-configuration::configuration(const configuration & other) : properties(other.properties), filename(other.filename),
+configuration::configuration(const configuration & other) : categories(other.categories), filename(other.filename),
                                                             sof_comments(other.sof_comments) {}
-configuration::configuration(configuration && other) : properties(move(other.properties)), filename(move(other.filename)),
+configuration::configuration(configuration && other) : categories(move(other.categories)), filename(move(other.filename)),
                                                        sof_comments(move(other.sof_comments)) {}
 
 configuration::~configuration() {}
 
 void configuration::swap(configuration & other) {
-	properties.swap(other.properties);
+	categories.swap(other.categories);
 	filename.swap(other.filename);
 	sof_comments.swap(other.sof_comments);
 }
@@ -65,13 +77,13 @@ size_t configuration::hash_code() const {
 	                                result ^= hash(elem);
 
 	static const salt slt;
-	static const hash<pair<string, property>> kv_hash;
+	static const hash<pair<string, configuration_category>> kv_hash;
 	static const hash<string> string_hash;
 
 	size_t result = 0x26FE1F8D;
 
 	result ^= (filename ? string_hash(*filename) : 0x12C0852B);
-	COLHASH(properties, kv_hash, 0x16447FAB)
+	COLHASH(categories, kv_hash, 0x16447FAB)
 	COLHASH(sof_comments, string_hash, 0x39531FBF)
 
 	return result ^ slt;
@@ -86,16 +98,16 @@ configuration & configuration::operator=(const configuration & other) {
 }
 
 configuration & configuration::operator+=(const configuration & other) {
-	properties.insert(other.properties.begin(), other.properties.end());
+	categories.insert(other.categories.begin(), other.categories.end());
 	sof_comments.insert(sof_comments.end(), other.sof_comments.begin(), other.sof_comments.end());
 
 	return *this;
 }
 
-// Better version? This is (I think) from O(n) to O(n^2), where n: `other.properties.size()`.
+// Better version? This is (I think) from O(n) to O(n^2), where n: `other.categories.size()`.
 configuration & configuration::operator-=(const configuration & other) {
-	for(const auto & kv : other.properties)
-		properties.erase(kv.first);
+	for(const auto & kv : other.categories)
+		categories.erase(kv.first);
 
 	for(const auto & cmt : other.sof_comments)
 		sof_comments.remove(cmt);
@@ -105,27 +117,17 @@ configuration & configuration::operator-=(const configuration & other) {
 
 void configuration::load_properties(istream & from) {
 	static const auto readfromline = [&](string & line) {
-		size_t equals_idx = 0;
+		size_t open_idx = 0;
 
-		if(line.empty() || line[0] == comment_character || (equals_idx = line.find_first_of(assignment_character)) == string::npos)
+		if(line.empty() || line[0] == comment_character || (open_idx = line.find_first_of(category_start_character)) == string::npos)
 			return;
 
 		ltrim(line);
 		if(line.empty() || line[0] == comment_character)
 			return;
-		equals_idx = line.find_first_of(assignment_character);
+		open_idx = line.find_first_of(category_start_character);
 
-		const size_t comment_idx = line.find_first_of(comment_character);
-		string comment;
-		if(comment_idx != string::npos) {
-			comment = line.substr(line.find_first_of(comment_character) + 1);
-			line = line.substr(0, line.find_first_of(comment_character));
-			rtrim(line);
-			if(line.empty() || comment_idx < equals_idx)
-				return;
-		}
-
-		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1))), trim(comment)));
+		categories.emplace(trim(move(line.substr(0, open_idx))), configuration_category()).first->second.load(from);
 	};
 
 	for(string line; getline(from, line);) {
@@ -149,9 +151,11 @@ void configuration::save_properties(ostream & to) const {
 	for(const auto & cmt : sof_comments)
 		to << comment_character << ' ' << cmt << '\n';
 	to << (sof_comments.empty() ? "" : "\n\n");
-	for(const auto & pr : properties)
-		to << pr.first << assignment_character << pr.second.textual() <<
-	                                            (pr.second.comment.empty() ? "" : string(" ") + comment_character + " " + pr.second.comment) << "\n\n";
+	for(const auto & pr : categories) {
+		to << pr.first << (pr.first.empty() ? "" : " ") << category_start_character << '\n';
+		pr.second.save(to);
+		to << category_end_character << "\n\n";
+	}
 
 	if(datetime_footer_type != datetime_mode::none) {
 		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
@@ -222,26 +226,36 @@ property & configuration::get(const string & key, const string & default_value) 
 }
 
 property & configuration::get(const string & key, const property & default_value) {
-	auto itr = properties.find(key);
-	if(itr == properties.end())
-		itr = properties.emplace(trim(move(string(key))), default_value).first;  // Construct string because `*trim()`s are mutating
-	return itr->second;
+	const auto path = property_path(key);
+	auto itr = categories.find(path.first);
+	if(itr == categories.end()) {
+		const auto kv = make_pair(path.second, default_value);
+		itr = categories.emplace(path.first, configuration_category(addressof(kv), addressof(kv) + 1)).first;
+	}
+	return itr->second.get(path.second, default_value);
 }
 
 void configuration::remove(const string & key) {
-	properties.erase(key);
+	const auto path = property_path(key);
+	const auto itr = categories.find(path.first);
+	if(itr != categories.end())
+		itr->second.remove(path.second);
 }
 
 bool configuration::contains(const string & key) const {
-	return properties.find(key) != properties.end();
+	const auto path = property_path(key);
+	const auto itr = categories.find(path.first);
+	return itr != categories.end() && itr->second.contains(path.second);
 }
 
 void configuration::rename(const string & name) {
 	filename = name;
 }
 
-bool configuration::empty() {
-	return properties.empty() && sof_comments.empty();
+bool configuration::empty() const {
+	return (categories.empty() || find_if(categories.begin(), categories.end(), [&](const auto & pr) {
+		return pr.second.empty();
+	}) != categories.end()) && sof_comments.empty();
 }
 
 

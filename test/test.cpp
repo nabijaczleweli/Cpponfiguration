@@ -40,11 +40,13 @@ class dumping_configuration : public configuration {
 			for(const auto & cmt : sof_comments)
 				stream << comment_character << ' ' << cmt << '\n';
 			stream << (sof_comments.empty() ? "" : "\n");
-			if(!properties.empty()) {
-				for(const auto & prop : properties)
-					stream << boolalpha << '<' << prop.first << ",property(" << prop.second.textual() <<
-					                                                            (prop.second.comment.empty() ? "" : ',' + prop.second.comment) << ")>\n";
-			} else
+			if(!categories.empty())
+				for(const auto & cat : categories) {
+					stream << cat.first << ' ' << category_start_character << '\n';
+					cat.second.save(stream);
+					stream << category_end_character << '\n';
+				}
+			else
 				stream << "<<NO ENTRIES>>\n";
 		}
 };

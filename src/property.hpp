@@ -63,7 +63,7 @@ namespace cpponfiguration {
 
 			void clear_except(const void * except);
 			template<class T>
-			inline void clear_except(const std::experimental::optional<T> & except) { clear_except(except ? &*except : nullptr); }
+			inline void clear_except(const std::experimental::optional<T> & except) { clear_except(except ? std::addressof(except) : nullptr); }
 
 			virtual size_t hash_code() const override;
 

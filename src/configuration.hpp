@@ -28,6 +28,7 @@
 #include "property.hpp"
 #include "swappable.hpp"
 #include "hashable.hpp"
+#include "configuration_category.hpp"
 #include "util/salt.hpp"
 #include <list>
 #include <iosfwd>
@@ -39,7 +40,7 @@
 namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
-			std::unordered_map<std::string, property> properties;
+			std::unordered_map<std::string, configuration_category> categories;
 			std::experimental::optional<std::string> filename;
 
 
@@ -55,7 +56,13 @@ namespace cpponfiguration {
 
 			static char comment_character;
 			static char assignment_character;
+			static char category_character;
+			static char category_start_character;
+			static char category_end_character;
 			static dt_m datetime_footer_type;
+
+
+			static std::pair<std::string, std::string> property_path(const std::string & name);
 
 
 			std::list<std::string> sof_comments;
@@ -88,7 +95,7 @@ namespace cpponfiguration {
 			bool contains(const std::string & key) const;
 
 			void rename(const std::string & name);
-			bool empty();
+			bool empty() const;
 	};
 }
 
