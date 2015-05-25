@@ -31,6 +31,7 @@
 using namespace std;
 using namespace std::experimental;
 using namespace cpponfig;
+using namespace cpponfig::util;
 
 
 typedef configuration::datetime_mode datetime_mode;

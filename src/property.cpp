@@ -31,6 +31,7 @@
 using namespace std;
 using namespace std::experimental;
 using namespace cpponfig;
+using namespace cpponfig::util;
 
 
 typedef property::signed_type signed_type;

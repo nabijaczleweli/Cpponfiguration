@@ -32,6 +32,7 @@
 using namespace std;
 using namespace std::experimental;
 using namespace cpponfig;
+using namespace cpponfig::util;
 
 
 configuration_category::configuration_category() {}

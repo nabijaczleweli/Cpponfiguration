@@ -32,7 +32,7 @@ int main() {
 }
 ```
 
-Would give a config file "example.cfg" containing
+Would create a config file "example.cfg" containing
 ```
 {
   test0=1
