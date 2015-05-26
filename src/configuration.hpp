@@ -33,14 +33,14 @@
 #include <list>
 #include <iosfwd>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <experimental/optional>
 
 
 namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 		protected:
-			std::unordered_map<std::string, configuration_category> categories;
+			std::map<std::string, configuration_category> categories;
 			std::experimental::optional<std::string> filename;
 
 

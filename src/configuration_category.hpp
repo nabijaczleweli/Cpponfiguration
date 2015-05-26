@@ -30,13 +30,13 @@
 #include "hashable.hpp"
 #include <iosfwd>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 
 namespace cpponfiguration {
 	class configuration_category : swappable<configuration_category>, public hashable<configuration_category> {
 		protected:
-			std::unordered_map<std::string, property> properties;
+			std::map<std::string, property> properties;
 
 
 			virtual size_t hash_code() const override;
