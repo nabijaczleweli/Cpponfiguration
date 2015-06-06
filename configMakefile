@@ -37,7 +37,6 @@ nop = echo > $(nul)
 OBJ = .o
 ARCH = .a
 AR = ar
-CPP = c++
-CPPAR = -s -Os -std=c++14 -Wall -Wextra -pipe -fomit-frame-pointer
+CPPAR = -pedantic -s -Os -std=c++14 -Wall -Wextra -pipe -fomit-frame-pointer -fPIC
 BUILD = out
 TEST = test
