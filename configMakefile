@@ -23,6 +23,7 @@ ifeq "$(OS)" "Windows_NT"
 	EXE = .exe
 	nul = nul
 	DLL = .dll
+	PREDLL =
 else
 	EXE = .out
 	nul = /dev/null
@@ -31,6 +32,7 @@ else
 	else
 		DLL = .so
 	endif
+	PREDLL = lib
 endif
 nop = echo > $(nul)
 

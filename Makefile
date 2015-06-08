@@ -29,12 +29,12 @@ clean :
 	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
 dll : $(BUILD)/configuration$(OBJ) $(BUILD)/configuration_category$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ) $(BUILD)/cpponfig_version$(OBJ)
-	$(CXX) $(CPPAR) -shared -fpic -o$(BUILD)/cpponfig$(DLL) $^
+	$(CXX) $(CPPAR) -shared -fpic -o$(BUILD)/$(PREDLL)cpponfig$(DLL) $^
 
 test : $(TEST)/test$(EXE)
-	@cp $(BUILD)/cpponfig$(DLL) $(TEST)
+	@cp $(BUILD)/$(PREDLL)cpponfig$(DLL) $(TEST)
 	$^
-	@rm -rf $(TEST)/cpponfig$(DLL)
+	@rm -rf $(TEST)/$(PREDLL)cpponfig$(DLL)
 
 
 $(BUILD)/%$(OBJ) : src/%.cpp
