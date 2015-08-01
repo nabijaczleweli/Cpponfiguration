@@ -24,6 +24,7 @@ ifeq "$(OS)" "Windows_NT"
 	nul = nul
 	DLL = .dll
 	PREDLL =
+	PIC =
 else
 	EXE = .out
 	nul = /dev/null
@@ -33,12 +34,13 @@ else
 		DLL = .so
 	endif
 	PREDLL = lib
+	PIC = -fPIC
 endif
 nop = echo > $(nul)
 
 OBJ = .o
 ARCH = .a
 AR = ar
-CPPAR = -pedantic -s -Os -std=c++14 -Wall -Wextra -pipe -fomit-frame-pointer -fPIC
+CPPAR = -pedantic -s -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(PIC)
 BUILD = out
 TEST = test
