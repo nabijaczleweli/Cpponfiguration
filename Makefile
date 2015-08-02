@@ -29,7 +29,7 @@ clean :
 	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
 dll : $(BUILD)/configuration$(OBJ) $(BUILD)/configuration_category$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ) $(BUILD)/cpponfig_version$(OBJ)
-	$(CXX) $(CPPAR) -shared -fpic -o$(BUILD)/$(PREDLL)cpponfig$(DLL) $^
+	$(CXX) $(CPPAR) -shared $(PIC) -o$(BUILD)/$(PREDLL)cpponfig$(DLL) $^
 
 test : $(TEST)/test$(EXE)
 	@cp $(BUILD)/$(PREDLL)cpponfig$(DLL) $(TEST)
