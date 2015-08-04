@@ -65,7 +65,13 @@ configuration::~configuration() {}
 
 void configuration::swap(configuration & other) {
 	categories.swap(other.categories);
+#if defined(__clang__) && __clang_minor__ <= 6
+	const auto filename_temp(filename);
+	filename = other.filename;
+	other.filename = filename_temp
+#else
 	filename.swap(other.filename);
+#endif
 	sof_comments.swap(other.sof_comments);
 }
 
@@ -77,9 +83,9 @@ size_t configuration::hash_code() const {
 	                             for(const auto & elem : col) \
 	                                result ^= hash(elem);
 
-	static const salt slt;
-	static const hash<pair<string, configuration_category>> kv_hash;
-	static const hash<string> string_hash;
+	static const salt slt{};
+	static const hash<pair<string, configuration_category>> kv_hash{};
+	static const hash<string> string_hash{};
 
 	size_t result = 0x26FE1F8D;
 

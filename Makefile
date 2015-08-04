@@ -21,7 +21,7 @@
 
 include configMakefile
 
-.PHONY : clean all dll test  $(BUILD)/cpponfig_version$(OBJ)
+.PHONY : clean all dll test $(BUILD)/cpponfig_version$(OBJ)
 
 all : dll test
 
