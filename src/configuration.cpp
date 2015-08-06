@@ -68,7 +68,7 @@ void configuration::swap(configuration & other) {
 #if defined(__clang__) && __clang_minor__ <= 6
 	const auto filename_temp(filename);
 	filename = other.filename;
-	other.filename = filename_temp
+	other.filename = filename_temp;
 #else
 	filename.swap(other.filename);
 #endif
