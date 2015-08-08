@@ -36,11 +36,16 @@ else
 	PREDLL = lib
 	PIC = -fPIC
 endif
+ifneq (,$(findstring g++,$(CXX)))
+	ADDCPPAR = -s
+else
+	ADDCPPAR =
+endif
 nop = echo > $(nul)
 
 OBJ = .o
 ARCH = .a
 AR = ar
-CPPAR = -pedantic -s -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(PIC)
+CPPAR = -pedantic $(ADDCPPAR) -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(PIC)
 BUILD = out
 TEST = test

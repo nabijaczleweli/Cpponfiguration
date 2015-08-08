@@ -53,8 +53,8 @@ size_t configuration_category::hash_code() const {
 	                             for(const auto & elem : col) \
 	                                result ^= hash(elem);
 
-	static const salt slt;
-	static const hash<pair<string, property>> kv_hash;
+	static const salt slt{};
+	static const hash<pair<string, property>> kv_hash{};
 
 	size_t result = 0x13EBB53B;
 
