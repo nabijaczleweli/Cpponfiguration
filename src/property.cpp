@@ -243,22 +243,23 @@ property & property::operator=(const property & other) {
 }
 
 void property::swap(property & other) {
-	raw_value.swap(other.raw_value);
-	boolean_value.swap(other.boolean_value);
-	int_signed_value.swap(other.int_signed_value);
-	int_unsigned_value.swap(other.int_unsigned_value);
-	floating_value.swap(other.floating_value);
-	boolean_list_value.swap(other.boolean_list_value);
-	signed_list_value.swap(other.signed_list_value);
-	unsigned_list_value.swap(other.unsigned_list_value);
-	floating_list_value.swap(other.floating_list_value);
-	comment.swap(other.comment);
+	using std::swap;
+	swap(raw_value, other.raw_value);
+	swap(boolean_value, other.boolean_value);
+	swap(int_signed_value, other.int_signed_value);
+	swap(int_unsigned_value, other.int_unsigned_value);
+	swap(floating_value, other.floating_value);
+	swap(boolean_list_value, other.boolean_list_value);
+	swap(signed_list_value, other.signed_list_value);
+	swap(unsigned_list_value, other.unsigned_list_value);
+	swap(floating_list_value, other.floating_list_value);
+	swap(comment, other.comment);
 }
 
 // All hex numbers here are primes
 size_t property::hash_code() const {
-	static const salt slt;
-	static const hash<string> string_hash;
+	static const salt slt{};
+	static const hash<string> string_hash{};
 
 	return 0x3A8F05C5 ^ slt ^ string_hash(raw_value) ^ (!comment.empty() ? 0x1AFF2BAD : string_hash(comment));
 }

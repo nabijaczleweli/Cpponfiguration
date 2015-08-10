@@ -36,10 +36,10 @@ else
 	PREDLL = lib
 	PIC = -fPIC
 endif
-ifneq (,$(findstring g++,$(CXX)))
-	ADDCPPAR = -s
-else
+ifneq (,$(findstring clang++,$(CXX)))
 	ADDCPPAR =
+else
+	ADDCPPAR = -s
 endif
 nop = echo > $(nul)
 

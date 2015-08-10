@@ -64,15 +64,10 @@ configuration::configuration(configuration && other) : categories(move(other.cat
 configuration::~configuration() {}
 
 void configuration::swap(configuration & other) {
-	categories.swap(other.categories);
-#if defined(__clang__) && __clang_minor__ <= 6
-	const auto filename_temp(filename);
-	filename = other.filename;
-	other.filename = filename_temp;
-#else
-	filename.swap(other.filename);
-#endif
-	sof_comments.swap(other.sof_comments);
+	using std::swap;
+	swap(categories, other.categories);
+	swap(filename, other.filename);
+	swap(sof_comments, other.sof_comments);
 }
 
 // All hex numbers here are primes
