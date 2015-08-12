@@ -243,17 +243,25 @@ property & property::operator=(const property & other) {
 }
 
 void property::swap(property & other) {
+#if defined(__clang__) && __clang_minor__ <= 6
+	#define OPTIONAL_SWAP(what) const auto what##_swap_temp = what; what = other.what; other.what = what##_swap_temp;
+#else
+	#define OPTIONAL_SWAP(what) swap(what, other.what);
+#endif
+
 	using std::swap;
 	swap(raw_value, other.raw_value);
-	swap(boolean_value, other.boolean_value);
-	swap(int_signed_value, other.int_signed_value);
-	swap(int_unsigned_value, other.int_unsigned_value);
-	swap(floating_value, other.floating_value);
-	swap(boolean_list_value, other.boolean_list_value);
-	swap(signed_list_value, other.signed_list_value);
-	swap(unsigned_list_value, other.unsigned_list_value);
-	swap(floating_list_value, other.floating_list_value);
+OPTIONAL_SWAP(boolean_value)
+OPTIONAL_SWAP(int_signed_value)
+OPTIONAL_SWAP(int_unsigned_value)
+OPTIONAL_SWAP(floating_value)
+OPTIONAL_SWAP(boolean_list_value)
+OPTIONAL_SWAP(signed_list_value)
+OPTIONAL_SWAP(unsigned_list_value)
+OPTIONAL_SWAP(floating_list_value)
 	swap(comment, other.comment);
+
+#undef OPTIONAL_SWAP
 }
 
 // All hex numbers here are primes

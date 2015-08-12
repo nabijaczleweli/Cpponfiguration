@@ -64,10 +64,18 @@ configuration::configuration(configuration && other) : categories(move(other.cat
 configuration::~configuration() {}
 
 void configuration::swap(configuration & other) {
+#if defined(__clang__) && __clang_minor__ <= 6
+	#define OPTIONAL_SWAP(what) const auto what##_swap_temp = what; what = other.what; other.what = what##_swap_temp;
+#else
+	#define OPTIONAL_SWAP(what) swap(what, other.what);
+#endif
+
 	using std::swap;
 	swap(categories, other.categories);
-	swap(filename, other.filename);
+	OPTIONAL_SWAP(filename);
 	swap(sof_comments, other.sof_comments);
+
+#undef OPTIONAL_SWAP
 }
 
 // All hex numbers here are primes
