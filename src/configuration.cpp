@@ -37,6 +37,7 @@ using namespace cpponfig::util;
 typedef configuration::datetime_mode datetime_mode;
 
 
+bool configuration::save_on_destruction = true;
 char configuration::comment_character = '#';
 char configuration::assignment_character = '=';
 char configuration::category_character = ':';
@@ -61,7 +62,10 @@ configuration::configuration(const configuration & other) : categories(other.cat
 configuration::configuration(configuration && other) : categories(move(other.categories)), filename(move(other.filename)),
                                                        sof_comments(move(other.sof_comments)) {}
 
-configuration::~configuration() {}
+configuration::~configuration() {
+	if(save_on_destruction)
+		save();
+}
 
 void configuration::swap(configuration & other) {
 #if defined(__clang__) && __clang_minor__ <= 6

@@ -54,6 +54,7 @@ namespace cpponfiguration {
 			typedef datetime_mode dt_m;
 
 
+			static bool save_on_destruction;
 			static char comment_character;
 			static char assignment_character;
 			static char category_character;
