@@ -37,17 +37,13 @@ test : $(TEST)/test$(EXE)
 	@rm -rf $(TEST)/$(PREDLL)cpponfig$(DLL)
 
 
-$(BUILD)/%$(OBJ) : src/%.cpp
+$(BUILD)/%$(OBJ) : $(SOURCE)/%.cpp
 	@mkdir $(dir $@) 2>$(nul) | $(nop)
 	$(CXX) $(CPPAR) -c -o$@ $^
 
 $(BUILD)/cpponfig_version$(OBJ) :
 	@mkdir $(dir $@) 2>$(nul) | $(nop)
-	@echo "#include <string>" > $(BUILD)/temp.cpp
-	@echo "extern const std::string cpponfiguration_version;" >> $(BUILD)/temp.cpp
-	@echo "const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" >> $(BUILD)/temp.cpp
-	@$(CXX) $(CPPAR) -c -o$@ $(BUILD)/temp.cpp
-	@rm -f $(BUILD)/temp.cpp
+	echo -e "#include <string>\nextern const std::string cpponfiguration_version;const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" | $(CXX) $(CPPAR) -x c++ -c -o$@ -
 
 %$(EXE) : %.cpp
-	$(CXX) $(CPPAR) -Isrc -Lout -lcpponfig -o$@ $^
+	$(CXX) $(CPPAR) -I$(SOURCE) -Lout -lcpponfig -o$@ $^

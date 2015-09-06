@@ -25,6 +25,7 @@ ifeq "$(OS)" "Windows_NT"
 	DLL = .dll
 	PREDLL =
 	PIC =
+	FIND = busybox find
 else
 	EXE = .out
 	nul = /dev/null
@@ -35,6 +36,7 @@ else
 	endif
 	PREDLL = lib
 	PIC = -fPIC
+	FIND = find
 endif
 ifneq (,$(findstring clang++,$(CXX)))
 	ADDCPPAR =
@@ -46,6 +48,8 @@ nop = echo > $(nul)
 OBJ = .o
 ARCH = .a
 AR = ar
-CPPAR = -pedantic $(ADDCPPAR) -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(PIC)
 BUILD = out
 TEST = test
+SOURCE = src
+INCLUDE = include
+CPPAR = -pedantic $(ADDCPPAR) -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(foreach includedir,$(shell $(FIND) $(INCLUDE) -type d),-I$(includedir)) $(PIC)
