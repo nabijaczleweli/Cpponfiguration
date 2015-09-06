@@ -38,7 +38,7 @@ else
 	PIC = -fPIC
 	FIND = find
 endif
-ifneq (,$(findstring clang++,$(CXX)))
+ifneq (,$(findstring clang,$(CXX)))
 	ADDCPPAR =
 else
 	ADDCPPAR = -s
