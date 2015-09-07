@@ -26,6 +26,7 @@ ifeq "$(OS)" "Windows_NT"
 	PREDLL =
 	PIC =
 	FIND = busybox find
+	ECHO = busybox echo
 else
 	EXE = .out
 	nul = /dev/null
@@ -37,6 +38,7 @@ else
 	PREDLL = lib
 	PIC = -fPIC
 	FIND = find
+	ECHO = /bin/echo
 endif
 ifneq (,$(findstring clang,$(CXX)))
 	ADDCPPAR =

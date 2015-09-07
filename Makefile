@@ -43,7 +43,7 @@ $(BUILD)/%$(OBJ) : $(SOURCE)/%.cpp
 
 $(BUILD)/cpponfig_version$(OBJ) :
 	@mkdir $(dir $@) 2>$(nul) | $(nop)
-	@echo -e "#include <string>\nextern const std::string cpponfiguration_version;const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" | $(CXX) $(CPPAR) -x c++ -c -o$@ -
+	@$(ECHO) -e "#include <string>\nextern const std::string cpponfiguration_version;const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" | tee asdfasdfasdf | $(CXX) $(CPPAR) -x c++ -c -o$@ -
 
 %$(EXE) : %.cpp
 	$(CXX) $(CPPAR) -I$(SOURCE) -Lout -lcpponfig -o$@ $^
