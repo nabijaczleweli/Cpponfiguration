@@ -21,15 +21,20 @@
 
 include configMakefile
 
-.PHONY : clean all dll test $(BUILD)/cpponfig_version$(OBJ)
+ALLOBJ = $(foreach objfile,configuration configuration_category property util/salt cpponfig_version,$(BUILD)/$(objfile)$(OBJ))
 
-all : dll test
+.PHONY : clean all dll static test $(BUILD)/cpponfig_version$(OBJ)
+
+all : dll static test
 
 clean :
 	rm -rf $(BUILD) $(TEST)/*$(EXE)
 
-dll : $(BUILD)/configuration$(OBJ) $(BUILD)/configuration_category$(OBJ) $(BUILD)/property$(OBJ) $(BUILD)/util/salt$(OBJ) $(BUILD)/cpponfig_version$(OBJ)
+dll : $(ALLOBJ)
 	$(CXX) $(CPPAR) -shared $(PIC) -o$(BUILD)/$(PREDLL)cpponfig$(DLL) $^
+
+static : $(ALLOBJ)
+	ar crs $(BUILD)/libcpponfig.a $^
 
 test : $(TEST)/test$(EXE)
 	@cp $(BUILD)/$(PREDLL)cpponfig$(DLL) $(TEST)
@@ -43,7 +48,7 @@ $(BUILD)/%$(OBJ) : $(SOURCE)/%.cpp
 
 $(BUILD)/cpponfig_version$(OBJ) :
 	@mkdir $(dir $@) 2>$(nul) | $(nop)
-	@$(ECHO) -e "#include <string>\nextern const std::string cpponfiguration_version;const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" | tee asdfasdfasdf | $(CXX) $(CPPAR) -x c++ -c -o$@ -
+	@$(ECHO) -e "#include <string>\nextern const std::string cpponfiguration_version;const std::string cpponfiguration_version(__DATE__ \" \" __TIME__);" | $(CXX) $(CPPAR) -x c++ -c -o$@ -
 
 %$(EXE) : %.cpp
 	$(CXX) $(CPPAR) -I$(SOURCE) -Lout -lcpponfig -o$@ $^
