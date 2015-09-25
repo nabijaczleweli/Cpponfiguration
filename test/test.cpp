@@ -20,8 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
-#include "util/strings.hpp"
+#include "../include/configuration.hpp"
+#include "../include/util/strings.hpp"
 #include <sstream>
 #include <iostream>
 #include <exception>

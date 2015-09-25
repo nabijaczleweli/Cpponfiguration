@@ -20,10 +20,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration_category.hpp"
-#include "configuration.hpp"
-#include "util/strings.hpp"
-#include "util/salt.hpp"
+#include "../include/configuration_category.hpp"
+#include "../include/configuration.hpp"
+#include "../include/util/strings.hpp"
+#include "../include/util/salt.hpp"
 #include <istream>
 #include <fstream>
 #include <cstring>

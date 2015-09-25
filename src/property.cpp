@@ -20,9 +20,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "property.hpp"
-#include "util/strings.hpp"
-#include "util/salt.hpp"
+#include "../include/property.hpp"
+#include "../include/util/strings.hpp"
+#include "../include/util/salt.hpp"
 #include <iterator>
 #include <cstdlib>
 #include <sstream>

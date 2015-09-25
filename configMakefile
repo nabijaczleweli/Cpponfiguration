@@ -54,4 +54,4 @@ BUILD = out
 TEST = test
 SOURCE = src
 INCLUDE = include
-CPPAR = -pedantic $(ADDCPPAR) -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(foreach includedir,$(shell $(FIND) $(INCLUDE) -type d),-I$(includedir)) $(PIC)
+CPPAR = -pedantic $(ADDCPPAR) -Os -fomit-frame-pointer -std=c++14 -Wall -Wextra -pipe $(PIC)

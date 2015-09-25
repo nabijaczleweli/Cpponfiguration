@@ -20,7 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "salt.hpp"
+#include "../../include/util/salt.hpp"
 
 
 using namespace std;
