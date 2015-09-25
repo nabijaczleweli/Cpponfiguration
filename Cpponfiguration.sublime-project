@@ -11,7 +11,7 @@
 		{
 			"follow_symlinks": true,
 			"name": "Include",
-			"path": "include"
+			"path": "include/cpponfig"
 		},
 		{
 			"follow_symlinks": true,
