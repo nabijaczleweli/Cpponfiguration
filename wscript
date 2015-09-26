@@ -6,6 +6,7 @@ import glob
 
 def options(opts):
 	opts.load('compiler_cxx')
+	opts.add_option('--build-test', dest='build_test', default=False, action='store_true', help='build tests')
 
 def configure(conf):
 	conf.load('compiler_cxx')
@@ -13,4 +14,5 @@ def configure(conf):
 
 def build(buld):
 	buld(features='cxx cxxstlib', source=glob.glob('src/*.cpp') + glob.glob('src/*/*.cpp'), target='cpponfig', use='M')
-	buld(features='cxx cxxprogram', source=glob.glob('test/*.cpp'), target='test', use=['M', 'cpponfig'], cxxflags=['-I../include/cpponfig'])
+	if buld.options.build_test:
+		buld(features='cxx cxxprogram', source=glob.glob('test/*.cpp'), target='test', use=['M', 'cpponfig'], cxxflags=['-I../include/cpponfig'])
