@@ -31,3 +31,5 @@
 out/
 *.s*-toks
 *.s*-workspace
+.*waf*
+build
