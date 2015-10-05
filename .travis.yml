@@ -27,7 +27,8 @@ install:
   -
   - mkdir ~/bin
   - wget --no-check-certificate --no-clobber -O /tmp/tools/waf https://waf.io/waf-1.8.14 || true
-  - install -t ~/bin /tmp/tools/waf
+  - cp /tmp/tools/waf ~/bin
+  - chmod +x ~/bin/*
 
 script:
   - waf configure
