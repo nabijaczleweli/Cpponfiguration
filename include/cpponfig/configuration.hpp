@@ -110,11 +110,11 @@ cpponfig::configuration operator-(const cpponfig::configuration & lhs, const cpp
 namespace std {
 	// All hex numbers here are primes
 	template <class T0, class T1>
-	struct CPPONFIGURATION_STDHASH<pair<T0, T1>> {
+	struct hash<pair<T0, T1>> {
 		size_t operator()(const pair<T0, T1> & pr) const {
 			static const cpponfig::salt slt{};
-			static const CPPONFIGURATION_STDHASH<T0> T0_hash{};
-			static const CPPONFIGURATION_STDHASH<T1> T1_hash{};
+			static const hash<T0> T0_hash{};
+			static const hash<T1> T1_hash{};
 
 			return 0x2E48EDC9 ^ slt ^ T0_hash(pr.first) ^ T1_hash(pr.second);
 		}
