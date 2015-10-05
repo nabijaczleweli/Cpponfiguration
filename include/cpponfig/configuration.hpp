@@ -29,7 +29,6 @@
 #include "swappable.hpp"
 #include "hashable.hpp"
 #include "configuration_category.hpp"
-#include "workaround/hash.hpp"
 #include "util/salt.hpp"
 #include <list>
 #include <iosfwd>

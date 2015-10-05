@@ -24,7 +24,6 @@
 #define HASHABLE_HPP
 
 
-#include "workaround/hash.hpp"
 #include <functional>
 
 

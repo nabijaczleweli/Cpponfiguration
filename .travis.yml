@@ -19,7 +19,7 @@ matrix:
           packages:
             - clang-3.7
           sources: *sources
-    - env: _CXX=clang++ _CC=clang
+    - env: _CXX=clang++ _CC=clang CXXFLAGS="-stdlib=libstdc++"
       os: osx
       osx_image: xcode7
 
