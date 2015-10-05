@@ -34,69 +34,68 @@
 #include <iosfwd>
 #include <string>
 #include <map>
-#include <experimental/optional>
 
 
 namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
-		protected:
-			std::map<std::string, configuration_category> categories;
-			std::experimental::optional<std::string> filename;
+	protected:
+		std::map<std::string, configuration_category> categories;
+		std::string filename;
 
 
-			void load_properties(std::istream & from);
-			void save_properties(std::ostream & to) const;
+		void load_properties(std::istream & from);
+		void save_properties(std::ostream & to) const;
 
-			virtual size_t hash_code() const override;
+		virtual size_t hash_code() const override;
 
-		public:
-			enum class datetime_mode : unsigned char {none, gmt, local};
-			typedef datetime_mode dt_m;
-
-
-			static bool save_on_destruction;
-			static char comment_character;
-			static char assignment_character;
-			static char category_character;
-			static char category_start_character;
-			static char category_end_character;
-			static dt_m datetime_footer_type;
+	public:
+		enum class datetime_mode : unsigned char { none, gmt, local };
+		typedef datetime_mode dt_m;
 
 
-			static std::pair<std::string, std::string> property_path(const std::string & name);
+		static bool save_on_destruction;
+		static char comment_character;
+		static char assignment_character;
+		static char category_character;
+		static char category_start_character;
+		static char category_end_character;
+		static dt_m datetime_footer_type;
 
 
-			std::list<std::string> sof_comments;
+		static std::pair<std::string, std::string> property_path(const std::string & name);
 
 
-			configuration();
-			explicit configuration(const std::string & name);
-			configuration(const configuration & other);
-			configuration(configuration && other);
+		std::list<std::string> sof_comments;
 
-			~configuration();
 
-			virtual void swap(configuration & other) override;
+		configuration();
+		explicit configuration(const std::string & name);
+		configuration(const configuration & other);
+		configuration(configuration && other);
 
-			configuration & operator=(const configuration & other);
-			configuration & operator+=(const configuration & other);
-			configuration & operator-=(const configuration & other);
+		~configuration();
 
-			bool load();
-			bool load(const std::string & name);
-			bool load(std::istream & stream);
+		virtual void swap(configuration & other) override;
 
-			bool save() const;
-			bool save(const std::string & name) const;
-			bool save(std::ostream & stream) const;
+		configuration & operator=(const configuration & other);
+		configuration & operator+=(const configuration & other);
+		configuration & operator-=(const configuration & other);
 
-			property & get(const std::string & key, const std::string & default_value = "");
-			property & get(const std::string & key, const property & default_value);
-			void remove(const std::string & key);
-			bool contains(const std::string & key) const;
+		bool load();
+		bool load(const std::string & name);
+		bool load(std::istream & stream);
 
-			void rename(const std::string & name);
-			bool empty() const;
+		bool save() const;
+		bool save(const std::string & name) const;
+		bool save(std::ostream & stream) const;
+
+		property & get(const std::string & key, const std::string & default_value = "");
+		property & get(const std::string & key, const property & default_value);
+		void remove(const std::string & key);
+		bool contains(const std::string & key) const;
+
+		void rename(const std::string & name);
+		bool empty() const;
 	};
 }
 
@@ -109,7 +108,7 @@ cpponfig::configuration operator-(const cpponfig::configuration & lhs, const cpp
 
 namespace std {
 	// All hex numbers here are primes
-	template<class T0, class T1>
+	template <class T0, class T1>
 	struct hash<pair<T0, T1>> {
 		size_t operator()(const pair<T0, T1> & pr) const {
 			static const cpponfig::salt slt{};

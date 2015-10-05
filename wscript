@@ -12,4 +12,4 @@ def configure(conf):
 def build(buld):
 	buld(features='cxx cxxstlib', source=buld.path.ant_glob('src/**/*.cpp'), target='cpponfig', use='M')
 	if buld.options.build_test:
-		buld(features='cxx cxxprogram', source=buld.path.ant_glob('test/**/*.cpp'), target='test', use=['M', 'cpponfig'], cxxflags=['-I../include/cpponfig'])
+		buld(features='cxx cxxprogram', source=buld.path.ant_glob('test/**/*.cpp'), target='tester', use=['M', 'cpponfig'], cxxflags=['-I../include/cpponfig'])

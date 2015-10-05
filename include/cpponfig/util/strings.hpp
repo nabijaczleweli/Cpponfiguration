@@ -33,9 +33,7 @@
 
 namespace cpponfiguration {
 	namespace {
-		const static auto whitespace_selector = [](char c) {
-			return !std::isspace(c);
-		};
+		const static auto whitespace_selector = [](char c) { return !std::isspace(c); };
 	}
 
 	namespace util {

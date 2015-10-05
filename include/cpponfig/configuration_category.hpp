@@ -35,37 +35,37 @@
 
 namespace cpponfiguration {
 	class configuration_category : swappable<configuration_category>, public hashable<configuration_category> {
-		protected:
-			std::map<std::string, property> properties;
+	protected:
+		std::map<std::string, property> properties;
 
 
-			virtual size_t hash_code() const override;
+		virtual size_t hash_code() const override;
 
-		public:
-			configuration_category();
-			template<class Iterator>
-			configuration_category(const Iterator & begin, const Iterator & end) {
-				properties.insert(begin, end);
-			}
-			configuration_category(const configuration_category & other);
-			configuration_category(configuration_category && other);
+	public:
+		configuration_category();
+		template <class Iterator>
+		configuration_category(const Iterator & begin, const Iterator & end) {
+			properties.insert(begin, end);
+		}
+		configuration_category(const configuration_category & other);
+		configuration_category(configuration_category && other);
 
-			~configuration_category();
+		~configuration_category();
 
-			virtual void swap(configuration_category & other) override;
+		virtual void swap(configuration_category & other) override;
 
-			configuration_category & operator=(const configuration_category & other);
-			configuration_category & operator+=(const configuration_category & other);
-			configuration_category & operator-=(const configuration_category & other);
+		configuration_category & operator=(const configuration_category & other);
+		configuration_category & operator+=(const configuration_category & other);
+		configuration_category & operator-=(const configuration_category & other);
 
-			void load(std::istream & stream);
-			void save(std::ostream & stream) const;
+		void load(std::istream & stream);
+		void save(std::ostream & stream) const;
 
-			property & get(const std::string & key, const property & default_value);
-			void remove(const std::string & key);
-			bool contains(const std::string & key) const;
+		property & get(const std::string & key, const property & default_value);
+		void remove(const std::string & key);
+		bool contains(const std::string & key) const;
 
-			bool empty() const;
+		bool empty() const;
 	};
 }
 

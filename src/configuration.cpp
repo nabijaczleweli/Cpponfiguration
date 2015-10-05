@@ -29,7 +29,6 @@
 
 
 using namespace std;
-using namespace std::experimental;
 using namespace cpponfig;
 using namespace cpponfig::util;
 
@@ -37,19 +36,19 @@ using namespace cpponfig::util;
 typedef configuration::datetime_mode datetime_mode;
 
 
-bool configuration::save_on_destruction = true;
-char configuration::comment_character = '#';
-char configuration::assignment_character = '=';
-char configuration::category_character = ':';
-char configuration::category_start_character = '{';
-char configuration::category_end_character = '}';
+bool configuration::save_on_destruction           = true;
+char configuration::comment_character             = '#';
+char configuration::assignment_character          = '=';
+char configuration::category_character            = ':';
+char configuration::category_start_character      = '{';
+char configuration::category_end_character        = '}';
 datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 
 
 std::pair<std::string, std::string> configuration::property_path(const std::string & name) {
 	const auto idx = name.find(category_character);
 	if(idx == string::npos)
-		return {"", trim(move(string(name)))};
+		return {"", trim(string(name))};
 	else
 		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
 }
@@ -57,10 +56,9 @@ std::pair<std::string, std::string> configuration::property_path(const std::stri
 
 configuration::configuration() {}
 configuration::configuration(const string & name) : filename(name) {}
-configuration::configuration(const configuration & other) : categories(other.categories), filename(other.filename),
-                                                            sof_comments(other.sof_comments) {}
-configuration::configuration(configuration && other) : categories(move(other.categories)), filename(move(other.filename)),
-                                                       sof_comments(move(other.sof_comments)) {}
+configuration::configuration(const configuration & other) : categories(other.categories), filename(other.filename), sof_comments(other.sof_comments) {}
+configuration::configuration(configuration && other)
+      : categories(move(other.categories)), filename(move(other.filename)), sof_comments(move(other.sof_comments)) {}
 
 configuration::~configuration() {
 	if(save_on_destruction)
@@ -68,27 +66,20 @@ configuration::~configuration() {
 }
 
 void configuration::swap(configuration & other) {
-#if defined(__clang__) && __clang_minor__ <= 6
-	#define OPTIONAL_SWAP(what) const auto what##_swap_temp = what; what = other.what; other.what = what##_swap_temp;
-#else
-	#define OPTIONAL_SWAP(what) swap(what, other.what);
-#endif
-
 	using std::swap;
 	swap(categories, other.categories);
-	OPTIONAL_SWAP(filename);
+	swap(filename, other.filename);
 	swap(sof_comments, other.sof_comments);
-
-#undef OPTIONAL_SWAP
 }
 
 // All hex numbers here are primes
 size_t configuration::hash_code() const {
-	#define COLHASH(col, hash, prime) if(col.empty()) \
-	                             result ^= prime; \
-	                           else \
-	                             for(const auto & elem : col) \
-	                                result ^= hash(elem);
+#define COLHASH(col, hash, prime) \
+	if(col.empty())                 \
+		result ^= prime;              \
+	else                            \
+		for(const auto & elem : col)  \
+			result ^= hash(elem);
 
 	static const salt slt{};
 	static const hash<pair<string, configuration_category>> kv_hash{};
@@ -96,13 +87,13 @@ size_t configuration::hash_code() const {
 
 	size_t result = 0x26FE1F8D;
 
-	result ^= (filename ? string_hash(*filename) : 0x12C0852B);
+	result ^= (filename.empty() ? 0x12C0852B : string_hash(filename));
 	COLHASH(categories, kv_hash, 0x16447FAB)
 	COLHASH(sof_comments, string_hash, 0x39531FBF)
 
 	return result ^ slt;
 
-	#undef COLHASH
+#undef COLHASH
 }
 
 configuration & configuration::operator=(const configuration & other) {
@@ -131,7 +122,7 @@ configuration & configuration::operator-=(const configuration & other) {
 
 void configuration::load_properties(istream & from) {
 	static const auto readfromline = [&](string & line) {
-		size_t open_idx = 0;
+		size_t open_idx              = 0;
 
 		if(line.empty() || line[0] == comment_character || (open_idx = line.find_first_of(category_start_character)) == string::npos)
 			return;
@@ -141,7 +132,7 @@ void configuration::load_properties(istream & from) {
 			return;
 		open_idx = line.find_first_of(category_start_character);
 
-		categories.emplace(trim(move(line.substr(0, open_idx))), configuration_category()).first->second.load(from);
+		categories.emplace(trim(line.substr(0, open_idx)), configuration_category()).first->second.load(from);
 	};
 
 	for(string line; getline(from, line);) {
@@ -154,7 +145,7 @@ void configuration::load_properties(istream & from) {
 			break;
 		}
 
-		sof_comments.emplace_back(trim(move(string(line.c_str() + 1))));
+		sof_comments.emplace_back(trim(string(line.c_str() + 1)));
 	}
 
 	for(string line; getline(from, line);)
@@ -172,9 +163,9 @@ void configuration::save_properties(ostream & to) const {
 	}
 
 	if(datetime_footer_type != datetime_mode::none) {
-		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
+		const bool isgmt   = datetime_footer_type == datetime_mode::gmt;
 		const time_t * tme = new time_t(time(nullptr));
-		char * buf = new char[20];
+		char * buf         = new char[20];
 
 		to << '\n' << comment_character << "  ";
 		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(tme) : localtime(tme)))
@@ -183,14 +174,16 @@ void configuration::save_properties(ostream & to) const {
 			to << "<<DATE ERROR>>";
 		to << "\n\n";
 
-		delete tme; tme = nullptr;
-		delete[] buf; buf = nullptr;
+		delete tme;
+		tme = nullptr;
+		delete[] buf;
+		buf = nullptr;
 	}
 }
 
 bool configuration::load() {
-	if(filename && !filename->empty()) {
-		ifstream file(*filename);
+	if(!filename.empty()) {
+		ifstream file(filename);
 		if(file && file.is_open()) {
 			load_properties(file);
 			return true;
@@ -213,7 +206,7 @@ bool configuration::load(istream & stream) {
 }
 
 bool configuration::save() const {
-	return save(filename.value_or(""));
+	return save(filename);
 }
 
 bool configuration::save(const string & name) const {
@@ -236,7 +229,7 @@ bool configuration::save(ostream & stream) const {
 }
 
 property & configuration::get(const string & key, const string & default_value) {
-	return get(key, property(trim(move(string(default_value)))));  // Construct string because `*trim()`s are mutating
+	return get(key, property(trim(string(default_value))));  // Construct string because `*trim()`s are mutating
 }
 
 property & configuration::get(const string & key, const property & default_value) {
@@ -244,7 +237,7 @@ property & configuration::get(const string & key, const property & default_value
 	auto itr = categories.find(path.first);
 	if(itr == categories.end()) {
 		const auto kv = make_pair(path.second, default_value);
-		itr = categories.emplace(path.first, configuration_category(addressof(kv), addressof(kv) + 1)).first;
+		itr           = categories.emplace(path.first, configuration_category(addressof(kv), addressof(kv) + 1)).first;
 	}
 	return itr->second.get(path.second, default_value);
 }
@@ -267,9 +260,8 @@ void configuration::rename(const string & name) {
 }
 
 bool configuration::empty() const {
-	return (categories.empty() || find_if(categories.begin(), categories.end(), [&](const auto & pr) {
-		return pr.second.empty();
-	}) != categories.end()) && sof_comments.empty();
+	return (categories.empty() || find_if(categories.begin(), categories.end(), [&](const auto & pr) { return pr.second.empty(); }) != categories.end()) &&
+	       sof_comments.empty();
 }
 
 
