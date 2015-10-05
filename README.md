@@ -1,4 +1,4 @@
-Cpponfiguration
+Cpponfiguration [![Build Status](https://travis-ci.org/nabijaczleweli/Cpponfiguration.svg?branch=master)](https://travis-ci.org/nabijaczleweli/Cpponfiguration)
 ===============
 
 A pretty simple configuration library, inspired by MCF's one.
