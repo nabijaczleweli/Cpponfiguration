@@ -53,11 +53,6 @@ namespace std {
 
 	template <class T>
 	struct hash : hash<cpponfig::hashable<T>> {};
-
-#if defined(__GNUC__) || defined(__GNUG__)
-	template <class T>
-	struct __is_fast_hash<cpponfig::hashable<T>> : public false_type {};
-#endif
 }
 
 
