@@ -52,7 +52,7 @@ namespace std {
 	};
 
 	template <class T>
-	struct hash : std::hash<cpponfig::hashable<T>> {};
+	struct hash : hash<cpponfig::hashable<T>> {};
 }
 
 
