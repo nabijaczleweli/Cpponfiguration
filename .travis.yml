@@ -2,6 +2,8 @@ sudo: false
 language: cpp
 
 matrix:
+  allow_failures:
+    - env: _CXX=clang++-3.8 _CC=clang-3.8
   include:
     - env: _CXX=g++-5 _CC=gcc-5
       addons:
@@ -18,6 +20,7 @@ matrix:
           packages:
             - clang-3.7
           sources: *sources
+    # Clang trunk (allowed to fail)
     - env: _CXX=clang++-3.8 _CC=clang-3.8
       addons:
         apt:
@@ -29,10 +32,9 @@ install:
   - export PATH="$HOME/bin:$PATH"
   - export CXX="$_CXX" CC="$_CC"
   -
-  - mkdir -p ~/bin /tmp/tools
+  - mkdir ~/bin
   - wget --no-check-certificate --no-clobber -O /tmp/tools/waf https://waf.io/waf-1.8.14 || true
-  - cp /tmp/tools/waf ~/bin
-  - chmod +x ~/bin/*
+  - install -t ~/bin /tmp/tools/waf
 
 script:
   - waf configure
