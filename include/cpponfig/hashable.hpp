@@ -44,19 +44,17 @@ namespace cpponfiguration {
 namespace cpponfig = cpponfiguration;
 
 
-namespace std {
-	CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_BEGIN
-	template <class T>
-	struct hash<cpponfig::hashable<T>> {
-		inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
-			return tohash.hash_code();
-		}
-	};
+CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_BEGIN
+template <class T>
+struct hash<cpponfig::hashable<T>> {
+	inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
+		return tohash.hash_code();
+	}
+};
 
-	template <class T>
-	struct hash : hash<cpponfig::hashable<T>> {};
-	CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_END
-}
+template <class T>
+struct hash : hash<cpponfig::hashable<T>> {};
+CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_END
 
 
 #endif  // HASHABLE_HPP
