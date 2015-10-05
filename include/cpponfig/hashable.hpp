@@ -24,6 +24,7 @@
 #define HASHABLE_HPP
 
 
+#include "workaround/hash.hpp"
 #include <functional>
 
 
@@ -31,7 +32,7 @@ namespace cpponfiguration {
 	// T must publicly interhit hashable<T>, as in `class foo : public hashable<foo> {};`
 	template <class T>
 	class hashable {
-		friend std::hash<hashable<T>>;
+		friend std::CPPONFIGURATION_STDHASH<hashable<T>>;
 
 	protected:
 		virtual size_t hash_code() const = 0;
@@ -45,14 +46,14 @@ namespace cpponfig = cpponfiguration;
 
 namespace std {
 	template <class T>
-	struct std::__1::hash<cpponfig::hashable<T>> {
+	struct CPPONFIGURATION_STDHASH<cpponfig::hashable<T>> {
 		inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
 			return tohash.hash_code();
 		}
 	};
 
 	template <class T>
-	struct hash : std::__1::hash<cpponfig::hashable<T>> {};
+	struct hash : CPPONFIGURATION_STDHASH<cpponfig::hashable<T>> {};
 }
 
 
