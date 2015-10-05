@@ -30,7 +30,6 @@
 
 
 using namespace std;
-using namespace std::experimental;
 using namespace cpponfig;
 using namespace cpponfig::util;
 
@@ -112,7 +111,7 @@ void configuration_category::load(istream & from) {
 				return;
 		}
 
-		properties.emplace(trim(move(line.substr(0, equals_idx))), property(trim(move(line.substr(equals_idx + 1))), trim(comment)));
+		properties.emplace(trim(line.substr(0, equals_idx)), property(trim(line.substr(equals_idx + 1)), trim(comment)));
 	}
 }
 
@@ -125,7 +124,7 @@ void configuration_category::save(ostream & to) const {
 property & configuration_category::get(const string & key, const property & default_value) {
 	auto itr = properties.find(key);
 	if(itr == properties.end())
-		itr = properties.emplace(trim(move(string(key))), default_value).first;  // Construct string because `*trim()`s are mutating
+		itr = properties.emplace(trim(string(key)), default_value).first;  // Construct string because `*trim()`s are mutating
 	return itr->second;
 }
 

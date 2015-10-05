@@ -20,6 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+#include "../include/cpponfig/cpponfig_version.hpp"
 #include "../include/cpponfig/configuration.hpp"
 #include "../include/cpponfig/util/strings.hpp"
 #include <sstream>
@@ -54,6 +55,8 @@ public:
 
 
 int main() {
+	cout << "Cpponfiguration v. " << cpponfiguration_version << "\n\n";
+
 	configuration::datetime_footer_type = configuration::datetime_mode::gmt;
 	property::floating_precision        = 10;
 

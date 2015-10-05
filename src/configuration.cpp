@@ -87,7 +87,7 @@ size_t configuration::hash_code() const {
 
 	size_t result = 0x26FE1F8D;
 
-	result ^= (filename ? string_hash(*filename) : 0x12C0852B);
+	result ^= (filename.empty() ? 0x12C0852B : string_hash(filename));
 	COLHASH(categories, kv_hash, 0x16447FAB)
 	COLHASH(sof_comments, string_hash, 0x39531FBF)
 
@@ -132,7 +132,7 @@ void configuration::load_properties(istream & from) {
 			return;
 		open_idx = line.find_first_of(category_start_character);
 
-		categories.emplace(trim(move(line.substr(0, open_idx))), configuration_category()).first->second.load(from);
+		categories.emplace(trim(line.substr(0, open_idx)), configuration_category()).first->second.load(from);
 	};
 
 	for(string line; getline(from, line);) {
@@ -145,7 +145,7 @@ void configuration::load_properties(istream & from) {
 			break;
 		}
 
-		sof_comments.emplace_back(trim(move(string(line.c_str() + 1))));
+		sof_comments.emplace_back(trim(string(line.c_str() + 1)));
 	}
 
 	for(string line; getline(from, line);)
@@ -182,8 +182,8 @@ void configuration::save_properties(ostream & to) const {
 }
 
 bool configuration::load() {
-	if(filename && !filename->empty()) {
-		ifstream file(*filename);
+	if(!filename.empty()) {
+		ifstream file(filename);
 		if(file && file.is_open()) {
 			load_properties(file);
 			return true;
@@ -206,7 +206,7 @@ bool configuration::load(istream & stream) {
 }
 
 bool configuration::save() const {
-	return save(filename.value_or(""));
+	return save(filename);
 }
 
 bool configuration::save(const string & name) const {
@@ -229,7 +229,7 @@ bool configuration::save(ostream & stream) const {
 }
 
 property & configuration::get(const string & key, const string & default_value) {
-	return get(key, property(trim(move(string(default_value)))));  // Construct string because `*trim()`s are mutating
+	return get(key, property(trim(string(default_value))));  // Construct string because `*trim()`s are mutating
 }
 
 property & configuration::get(const string & key, const property & default_value) {

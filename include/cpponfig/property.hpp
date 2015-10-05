@@ -36,19 +36,20 @@
 namespace cpponfiguration {
 	class property : swappable<property>, public hashable<property> {
 	public:
-		typedef long long int signed_type;
-		typedef unsigned long long int unsigned_type;
-		typedef long double floating_type;
-		typedef std::list<signed_type> signed_list_type;
-		typedef std::list<unsigned_type> unsigned_list_type;
-		typedef std::list<floating_type> floating_list_type;
-		typedef std::list<bool> boolean_list_type;
+		using boolean_type       = bool;
+		using signed_type        = long long int;
+		using unsigned_type      = unsigned long long int;
+		using floating_type      = long double;
+		using signed_list_type   = std::list<signed_type>;
+		using unsigned_list_type = std::list<unsigned_type>;
+		using floating_list_type = std::list<floating_type>;
+		using boolean_list_type  = std::list<bool>;
 
 	private:
 		std::string raw_value;
-		std::unique_ptr<bool> boolean_value;
-		std::unique_ptr<signed_type> int_signed_value;
-		std::unique_ptr<unsigned_type> int_unsigned_value;
+		std::unique_ptr<boolean_type> boolean_value;
+		std::unique_ptr<signed_type> signed_value;
+		std::unique_ptr<unsigned_type> unsigned_value;
 		std::unique_ptr<floating_type> floating_value;
 		std::unique_ptr<boolean_list_type> boolean_list_value;
 		std::unique_ptr<signed_list_type> signed_list_value;
@@ -113,8 +114,6 @@ namespace cpponfiguration {
 		property(const std::string & val, const std::string & cmt = "");
 		property(const property & other);
 		property(property && other);
-
-		~property();
 	};
 }
 

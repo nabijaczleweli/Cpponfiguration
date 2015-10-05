@@ -34,14 +34,13 @@
 #include <iosfwd>
 #include <string>
 #include <map>
-#include <experimental/optional>
 
 
 namespace cpponfiguration {
 	class configuration : swappable<configuration>, public hashable<configuration> {
 	protected:
 		std::map<std::string, configuration_category> categories;
-		std::experimental::optional<std::string> filename;
+		std::string filename;
 
 
 		void load_properties(std::istream & from);

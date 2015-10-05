@@ -20,11 +20,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#pragma once
-#ifndef CPPONFIG_VERSION_HPP
-#define CPPONFIG_VERSION_HPP
+#include "../include/cpponfig/cpponfig_version.hpp"
+#include "config.h"
 
 
-extern const char * const cpponfiguration_version;
+const char * const cpponfiguration_version = CPPONFIGURATION_VERSION;
 
-#endif  // CPPONFIG_VERSION_HPP
