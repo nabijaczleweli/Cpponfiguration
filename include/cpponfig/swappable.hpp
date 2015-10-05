@@ -26,17 +26,17 @@
 
 namespace cpponfiguration {
 	// T must interhit swappable<T>, as in `class foo : swappable<foo> {};`
-	template<class T>
+	template <class T>
 	class swappable {
-		protected:
-			virtual void swap(T & other) = 0;
+	protected:
+		virtual void swap(T & other) = 0;
 
-		public:
-			inline void swap(swappable<T> & other) {
-				swap(dynamic_cast<T &>(other));
-			}
+	public:
+		inline void swap(swappable<T> & other) {
+			swap(dynamic_cast<T &>(other));
+		}
 
-			inline virtual ~swappable() noexcept = default;
+		inline virtual ~swappable() noexcept = default;
 	};
 }
 
@@ -44,7 +44,7 @@ namespace cpponfig = cpponfiguration;
 
 
 namespace std {
-	template<class T>
+	template <class T>
 	inline void swap(cpponfig::swappable<T> & lhs, cpponfig::swappable<T> & rhs) {
 		lhs.swap(rhs);
 	}

@@ -29,7 +29,6 @@
 
 
 using namespace std;
-using namespace std::experimental;
 using namespace cpponfig;
 using namespace cpponfig::util;
 
@@ -55,8 +54,8 @@ static ios_base & precision_modifier(ios_base & base) {
 	return base;
 }
 
-template<class T>
-static void generic_list_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
+template <class T>
+static void generic_list_update(const T & from, string & out, ios_base & (*mod)(ios_base &) = empty_modifier) {
 	stringstream strm;
 	strm << mod << '[';
 	copy(from.begin(), from.end(), ostream_iterator<typename T::value_type>(strm, ","));
@@ -66,8 +65,8 @@ static void generic_list_update(const T & from, string & out, ios_base &(*mod)(i
 }
 
 
-template<class T>
-static void generic_single_update(const T & from, string & out, ios_base &(*mod)(ios_base &) = empty_modifier) {
+template <class T>
+static void generic_single_update(const T & from, string & out, ios_base & (*mod)(ios_base &) = empty_modifier) {
 	out = dynamic_cast<const ostringstream &>(ostringstream() << mod << from).str();
 }
 
@@ -81,13 +80,13 @@ static bool string_to_boolean(const string & str) {
 
 void property::compute_logical() {
 	if(!boolean_value)
-		boolean_value = string_to_boolean(raw_value);
+		boolean_value = make_unique<bool>(string_to_boolean(raw_value));
 }
 
 void property::compute_integer() {
 	if(!int_signed_value || !int_unsigned_value) {
-		int_signed_value = strtoll(raw_value.c_str(), nullptr, 0);
-		int_unsigned_value = strtoull(raw_value.c_str(), nullptr, 0);
+		int_signed_value   = make_unique<signed_type>(strtoll(raw_value.c_str(), nullptr, 0));
+		int_unsigned_value = make_unique<unsigned_type>(strtoull(raw_value.c_str(), nullptr, 0));
 	}
 }
 
@@ -99,8 +98,8 @@ void property::compute_floating() {
 void property::compute_list() {
 	if(!raw_value.empty() && raw_value[0] == '[' && raw_value.find(']') != string::npos && raw_value.find(',') != string::npos &&
 	   (!boolean_list_value || !signed_list_value || !unsigned_list_value || !floating_list_value)) {
-		boolean_list_value = decltype(boolean_list_value)::value_type();
-		signed_list_value = decltype(signed_list_value)::value_type();
+		boolean_list_value  = decltype(boolean_list_value)::value_type();
+		signed_list_value   = decltype(signed_list_value)::value_type();
 		unsigned_list_value = decltype(unsigned_list_value)::value_type();
 		floating_list_value = decltype(floating_list_value)::value_type();
 
@@ -111,7 +110,7 @@ void property::compute_list() {
 		temp.push_back(',');
 
 		while((comma_idx = temp.find_first_of(',')) != string::npos) {
-			elements.emplace_front(trim(move(temp.substr(0, comma_idx))));
+			elements.emplace_front(trim(temp.substr(0, comma_idx)));
 			temp = temp.substr(temp.find_first_of(',') + 1);
 			ltrim(temp);
 		}
@@ -125,16 +124,17 @@ void property::compute_list() {
 	}
 
 	if(!boolean_list_value || !signed_list_value || !unsigned_list_value || !floating_list_value) {
-		boolean_list_value = decltype(boolean_list_value)::value_type();
-		signed_list_value = decltype(signed_list_value)::value_type();
+		boolean_list_value  = decltype(boolean_list_value)::value_type();
+		signed_list_value   = decltype(signed_list_value)::value_type();
 		unsigned_list_value = decltype(unsigned_list_value)::value_type();
 		floating_list_value = decltype(floating_list_value)::value_type();
 	}
 }
 
 void property::clear_except(const void * except) {
-	#define DEL(which) if((which) && addressof(which) != except) \
-	                     (which) = nullopt;
+#define DEL(which)                          \
+	if((which) && addressof(which) != except) \
+		(which) = nullopt;
 
 	DEL(boolean_value)
 	DEL(int_signed_value)
@@ -145,7 +145,7 @@ void property::clear_except(const void * except) {
 	DEL(unsigned_list_value)
 	DEL(floating_list_value)
 
-	#undef DEL
+#undef DEL
 }
 
 bool & property::boolean() {
@@ -244,21 +244,24 @@ property & property::operator=(const property & other) {
 
 void property::swap(property & other) {
 #if defined(__clang__) && __clang_minor__ <= 6
-	#define OPTIONAL_SWAP(what) const auto what##_swap_temp = what; what = other.what; other.what = what##_swap_temp;
+#define OPTIONAL_SWAP(what)                 \
+	const auto what##_swap_temp = what;       \
+	what                        = other.what; \
+	other.what                  = what##_swap_temp;
 #else
-	#define OPTIONAL_SWAP(what) swap(what, other.what);
+#define OPTIONAL_SWAP(what) swap(what, other.what);
 #endif
 
 	using std::swap;
 	swap(raw_value, other.raw_value);
-OPTIONAL_SWAP(boolean_value)
-OPTIONAL_SWAP(int_signed_value)
-OPTIONAL_SWAP(int_unsigned_value)
-OPTIONAL_SWAP(floating_value)
-OPTIONAL_SWAP(boolean_list_value)
-OPTIONAL_SWAP(signed_list_value)
-OPTIONAL_SWAP(unsigned_list_value)
-OPTIONAL_SWAP(floating_list_value)
+	OPTIONAL_SWAP(boolean_value)
+	OPTIONAL_SWAP(int_signed_value)
+	OPTIONAL_SWAP(int_unsigned_value)
+	OPTIONAL_SWAP(floating_value)
+	OPTIONAL_SWAP(boolean_list_value)
+	OPTIONAL_SWAP(signed_list_value)
+	OPTIONAL_SWAP(unsigned_list_value)
+	OPTIONAL_SWAP(floating_list_value)
 	swap(comment, other.comment);
 
 #undef OPTIONAL_SWAP
@@ -274,15 +277,15 @@ size_t property::hash_code() const {
 
 property::property(const string & val, const string & cmt) : raw_value(val), comment(cmt) {}
 
-property::property(const property & other) : raw_value(other.raw_value), boolean_value(other.	boolean_value), int_signed_value(other.int_signed_value),
-                                             int_unsigned_value(other.int_unsigned_value), floating_value(other.floating_value),
-                                             boolean_list_value(other.boolean_list_value), signed_list_value(other.signed_list_value),
-                                             unsigned_list_value(other.unsigned_list_value), floating_list_value(other.floating_list_value),
-                                             comment(other.comment) {}
+property::property(const property & other)
+      : raw_value(other.raw_value), boolean_value(other.boolean_value), int_signed_value(other.int_signed_value), int_unsigned_value(other.int_unsigned_value),
+        floating_value(other.floating_value), boolean_list_value(other.boolean_list_value), signed_list_value(other.signed_list_value),
+        unsigned_list_value(other.unsigned_list_value), floating_list_value(other.floating_list_value), comment(other.comment) {}
 
 #define CTR(var) var(move(other.var))
-property::property(property && other) : CTR(raw_value), CTR(boolean_value), CTR(int_signed_value), CTR(int_unsigned_value), CTR(floating_value),
-                                        CTR(boolean_list_value), CTR(signed_list_value), CTR(unsigned_list_value), CTR(floating_list_value), CTR(comment) {}
+property::property(property && other)
+      : CTR(raw_value), CTR(boolean_value), CTR(int_signed_value), CTR(int_unsigned_value), CTR(floating_value), CTR(boolean_list_value),
+        CTR(signed_list_value), CTR(unsigned_list_value), CTR(floating_list_value), CTR(comment) {}
 #undef CTR
 
 property::~property() {}

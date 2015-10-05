@@ -28,4 +28,4 @@ using namespace cpponfig;
 
 
 const unique_ptr<mt19937> salt::randomizer = make_unique<mt19937>(random_device()());
-bool salt::randomize_salt = true;
+bool salt::randomize_salt                  = true;

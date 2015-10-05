@@ -33,43 +33,50 @@ using namespace cpponfig::util;
 
 
 class dumping_configuration : public configuration {
-	public:
-		dumping_configuration() : configuration() {}
-		dumping_configuration(const std::string & name) : configuration(name) {}
+public:
+	dumping_configuration() : configuration() {}
+	dumping_configuration(const std::string & name) : configuration(name) {}
 
-		void dump(ostream & stream) {
-			for(const auto & cmt : sof_comments)
-				stream << comment_character << ' ' << cmt << '\n';
-			stream << (sof_comments.empty() ? "" : "\n");
-			if(!categories.empty())
-				for(const auto & cat : categories) {
-					stream << cat.first << ' ' << category_start_character << '\n';
-					cat.second.save(stream);
-					stream << category_end_character << '\n';
-				}
-			else
-				stream << "<<NO ENTRIES>>\n";
-		}
+	void dump(ostream & stream) {
+		for(const auto & cmt : sof_comments)
+			stream << comment_character << ' ' << cmt << '\n';
+		stream << (sof_comments.empty() ? "" : "\n");
+		if(!categories.empty())
+			for(const auto & cat : categories) {
+				stream << cat.first << ' ' << category_start_character << '\n';
+				cat.second.save(stream);
+				stream << category_end_character << '\n';
+			}
+		else
+			stream << "<<NO ENTRIES>>\n";
+	}
 };
 
 
 int main() {
 	configuration::datetime_footer_type = configuration::datetime_mode::gmt;
-	property::floating_precision = 10;
+	property::floating_precision        = 10;
 
 	dumping_configuration cfg;
-	istringstream input_stream(
-	                          "# This is a test" "\n"
-	                          "# SOF comment" "\n"
-	                          "\n"
-	                          "mo0 = asdf" "\n"
-	                          "asdf=m#00" "\n"
-	                          "moo=asdf # asdf moo" "\n"
-	                          "#moo=asdf" "\n"
-	                          "m0o=[0,1,2,3,4]" "\n"
-	                          "0m0=[false,true,false,false,true]" "\n"
-	                          "m00=[1.25,3.7,233.7,20,1.99090909909]" "\n"
-	                          );
+	istringstream input_stream("# This is a test"
+	                           "\n"
+	                           "# SOF comment"
+	                           "\n"
+	                           "\n"
+	                           "mo0 = asdf"
+	                           "\n"
+	                           "asdf=m#00"
+	                           "\n"
+	                           "moo=asdf # asdf moo"
+	                           "\n"
+	                           "#moo=asdf"
+	                           "\n"
+	                           "m0o=[0,1,2,3,4]"
+	                           "\n"
+	                           "0m0=[false,true,false,false,true]"
+	                           "\n"
+	                           "m00=[1.25,3.7,233.7,20,1.99090909909]"
+	                           "\n");
 	try {
 		cfg.load(input_stream);
 		cout << "Loading succeeded!\n";
@@ -81,7 +88,8 @@ int main() {
 				rethrow_exception(exc);
 			} catch(const exception & e) {
 				what = e.what();
-			} catch(...) {}
+			} catch(...) {
+			}
 		cout << "Loading failed!" << (what ? (string(" What: ") + what + '.') : "") << '\n';
 	}
 	cfg.dump(cout);

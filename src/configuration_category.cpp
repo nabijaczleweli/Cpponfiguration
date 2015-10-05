@@ -47,11 +47,12 @@ void configuration_category::swap(configuration_category & other) {
 
 // All hex numbers here are primes
 size_t configuration_category::hash_code() const {
-	#define COLHASH(col, hash, prime) if(col.empty()) \
-	                             result ^= prime; \
-	                           else \
-	                             for(const auto & elem : col) \
-	                                result ^= hash(elem);
+#define COLHASH(col, hash, prime) \
+	if(col.empty())                 \
+		result ^= prime;              \
+	else                            \
+		for(const auto & elem : col)  \
+			result ^= hash(elem);
 
 	static const salt slt{};
 	static const hash<pair<string, property>> kv_hash{};
@@ -62,7 +63,7 @@ size_t configuration_category::hash_code() const {
 
 	return result ^ slt;
 
-	#undef COLHASH
+#undef COLHASH
 }
 
 configuration_category & configuration_category::operator=(const configuration_category & other) {
@@ -117,8 +118,8 @@ void configuration_category::load(istream & from) {
 
 void configuration_category::save(ostream & to) const {
 	for(const auto & pr : properties)
-		to << '\t' << pr.first << configuration::assignment_character << pr.second.textual() <<
-	                            (pr.second.comment.empty() ? "" : " "s + configuration::comment_character + " " + pr.second.comment) << '\n';
+		to << '\t' << pr.first << configuration::assignment_character << pr.second.textual()
+		   << (pr.second.comment.empty() ? "" : " "s + configuration::comment_character + " " + pr.second.comment) << '\n';
 }
 
 property & configuration_category::get(const string & key, const property & default_value) {
