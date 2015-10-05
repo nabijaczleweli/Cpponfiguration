@@ -259,7 +259,7 @@ void property::swap(property & other) {
 // All hex numbers here are primes
 size_t property::hash_code() const {
 	static const salt slt{};
-	static const hash<string> string_hash{};
+	static const CPPONFIGURATION_STDHASH<string> string_hash{};
 
 	return 0x3A8F05C5 ^ slt ^ string_hash(raw_value) ^ (!comment.empty() ? 0x1AFF2BAD : string_hash(comment));
 }

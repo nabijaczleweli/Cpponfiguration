@@ -82,8 +82,8 @@ size_t configuration::hash_code() const {
 			result ^= hash(elem);
 
 	static const salt slt{};
-	static const hash<pair<string, configuration_category>> kv_hash{};
-	static const hash<string> string_hash{};
+	static const CPPONFIGURATION_STDHASH<pair<string, configuration_category>> kv_hash{};
+	static const CPPONFIGURATION_STDHASH<string> string_hash{};
 
 	size_t result = 0x26FE1F8D;
 

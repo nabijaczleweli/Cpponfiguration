@@ -54,7 +54,7 @@ size_t configuration_category::hash_code() const {
 			result ^= hash(elem);
 
 	static const salt slt{};
-	static const hash<pair<string, property>> kv_hash{};
+	static const CPPONFIGURATION_STDHASH<pair<string, property>> kv_hash{};
 
 	size_t result = 0x13EBB53B;
 
