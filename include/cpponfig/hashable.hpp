@@ -32,7 +32,7 @@ namespace cpponfiguration {
 	// T must publicly interhit hashable<T>, as in `class foo : public hashable<foo> {};`
 	template <class T>
 	class hashable {
-		friend CPPONFIGURATION_STDHASH<hashable<T>>;
+		friend std::CPPONFIGURATION_STDHASH<hashable<T>>;
 
 	protected:
 		virtual size_t hash_code() const = 0;
@@ -44,17 +44,17 @@ namespace cpponfiguration {
 namespace cpponfig = cpponfiguration;
 
 
-CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_BEGIN
-template <class T>
-struct hash<cpponfig::hashable<T>> {
-	inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
-		return tohash.hash_code();
-	}
-};
+namespace std {
+	template <class T>
+	struct CPPONFIGURATION_STDHASH<cpponfig::hashable<T>> {
+		inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
+			return tohash.hash_code();
+		}
+	};
 
-template <class T>
-struct hash : hash<cpponfig::hashable<T>> {};
-CPPONFIGURATION_STDHASH_OVERLOAD_NAMESPACE_END
+	template <class T>
+	struct hash : CPPONFIGURATION_STDHASH<cpponfig::hashable<T>> {};
+}
 
 
 #endif  // HASHABLE_HPP
