@@ -2,6 +2,8 @@ sudo: false
 language: cpp
 
 matrix:
+  allow_failures:
+    - os: osx
   include:
     - env: _CXX=g++-5 _CC=gcc-5
       addons:
