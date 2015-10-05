@@ -25,7 +25,7 @@ install:
   - export PATH="$HOME/bin:$PATH"
   - export CXX="$_CXX" CC="$_CC"
   -
-  - mkdir ~/bin
+  - mkdir -p ~/bin /tmp/tools
   - wget --no-check-certificate --no-clobber -O /tmp/tools/waf https://waf.io/waf-1.8.14 || true
   - cp /tmp/tools/waf ~/bin
   - chmod +x ~/bin/*
