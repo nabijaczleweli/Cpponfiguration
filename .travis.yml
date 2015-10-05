@@ -8,20 +8,19 @@ matrix:
         apt:
           packages:
             - g++-5
-          sources:
+          sources: &sources
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
     - env: COMPILER_NAME=clang _CXX=clang++-3.7 _CC=clang-3.7
       addons:
         apt:
           packages:
             - clang-3.7
-          sources:
-            - llvm-toolchain-precise-3.7
+          sources: *sources
 
 install:
   - export PATH="$HOME/bin:$PATH"
   - export CXX="$_CXX" CC="$_CC"
-  - echo $CXX $CC $_CXX $_CC
   -
   - mkdir ~/bin
   - wget --no-check-certificate --no-clobber -O /tmp/tools/waf https://waf.io/waf-1.8.14 || true
