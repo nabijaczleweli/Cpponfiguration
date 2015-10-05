@@ -21,6 +21,7 @@ matrix:
 install:
   - export PATH="$HOME/bin:$PATH"
   - export CXX="$_CXX" CC="$_CC"
+  - echo $CXX $CC $_CXX $_CC
   -
   - mkdir ~/bin
   - wget --no-check-certificate --no-clobber -O /tmp/tools/waf https://waf.io/waf-1.8.14 || true
@@ -29,6 +30,8 @@ install:
 script:
   - waf configure
   - waf --build-test
+  -
+  - build/tester
 
 cache:
   apt: true
