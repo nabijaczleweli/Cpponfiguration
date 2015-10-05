@@ -45,14 +45,15 @@ namespace cpponfig = cpponfiguration;
 
 namespace std {
 	template <class T>
-	struct hash<cpponfig::hashable<T>> {
+	class hash<cpponfig::hashable<T>> {
+	public:
 		inline size_t operator()(const cpponfig::hashable<T> & tohash) const {
 			return tohash.hash_code();
 		}
 	};
 
 	template <class T>
-	struct hash : hash<cpponfig::hashable<T>> {};
+	class hash : public hash<cpponfig::hashable<T>> {};
 }
 
 
