@@ -2,8 +2,6 @@ sudo: false
 language: cpp
 
 matrix:
-  allow_failures:
-    - env: _CXX=clang++-3.8 _CC=clang-3.8
   include:
     - env: _CXX=g++-5 _CC=gcc-5
       addons:
@@ -13,14 +11,6 @@ matrix:
           sources: &sources
             - llvm-toolchain-precise
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-    - env: _CXX=clang++-3.7 _CC=clang-3.7
-      addons:
-        apt:
-          packages:
-            - clang-3.7
-          sources: *sources
-    # Clang trunk (allowed to fail)
     - env: _CXX=clang++-3.8 _CC=clang-3.8
       addons:
         apt:
