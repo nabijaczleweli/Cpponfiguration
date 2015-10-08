@@ -165,7 +165,7 @@ void configuration::save_properties(ostream & to) const {
 	if(datetime_footer_type != datetime_mode::none) {
 		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
 		const time_t tme = time(nullptr);
-		to << '\n' << comment_character << std::put_time(isgmt ? gmtime(&tme) : localtime(&tme), "  %d.%m.%Y %H:%M:%S") << (isgmt ? " GMT" : "");
+		to << '\n' << comment_character << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "  %d.%m.%Y %H:%M:%S") << (isgmt ? " GMT" : "");
 	}
 }
 
