@@ -34,12 +34,6 @@ using namespace cpponfig;
 using namespace cpponfig::util;
 
 
-configuration_category::configuration_category() {}
-configuration_category::configuration_category(const configuration_category & other) : properties(other.properties) {}
-configuration_category::configuration_category(configuration_category && other) : properties(move(other.properties)) {}
-
-configuration_category::~configuration_category() {}
-
 void configuration_category::swap(configuration_category & other) {
 	properties.swap(other.properties);
 }
@@ -65,19 +59,12 @@ size_t configuration_category::hash_code() const {
 #undef COLHASH
 }
 
-configuration_category & configuration_category::operator=(const configuration_category & other) {
-	configuration_category temp(other);
-	swap(temp);
-	return *this;
-}
-
 configuration_category & configuration_category::operator+=(const configuration_category & other) {
 	properties.insert(other.properties.begin(), other.properties.end());
 
 	return *this;
 }
 
-// Better version? This is (I think) from O(n) to O(n^2), where n: `other.properties.size()`.
 configuration_category & configuration_category::operator-=(const configuration_category & other) {
 	for(const auto & kv : other.properties)
 		properties.erase(kv.first);

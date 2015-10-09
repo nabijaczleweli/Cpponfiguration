@@ -33,16 +33,17 @@ using namespace cpponfig;
 using namespace cpponfig::util;
 
 
-typedef property::signed_type signed_type;
-typedef property::unsigned_type unsigned_type;
-typedef property::floating_type floating_type;
-typedef property::boolean_list_type boolean_list_type;
-typedef property::signed_list_type signed_list_type;
-typedef property::unsigned_list_type unsigned_list_type;
-typedef property::floating_list_type floating_list_type;
+using boolean_type       = property::boolean_type;
+using signed_type        = property::signed_type;
+using unsigned_type      = property::unsigned_type;
+using floating_type      = property::floating_type;
+using boolean_list_type  = property::boolean_list_type;
+using signed_list_type   = property::signed_list_type;
+using unsigned_list_type = property::unsigned_list_type;
+using floating_list_type = property::floating_list_type;
 
 
-unsigned int property::floating_precision = std::numeric_limits<floating_type>::digits10 + 1;
+unsigned int property::floating_precision = numeric_limits<floating_type>::digits10 + 1;
 
 
 static ios_base & empty_modifier(ios_base & base) {
@@ -78,7 +79,7 @@ static bool string_to_boolean(const string & str) {
 }
 
 
-void property::compute_logical() {
+void property::compute_boolean() {
 	if(!boolean_value)
 		boolean_value = make_unique<boolean_type>(string_to_boolean(raw_value));
 }
@@ -148,89 +149,43 @@ void property::clear_except(const void * except) {
 #undef DEL
 }
 
-bool & property::boolean() {
-	compute_logical();
-	return *boolean_value;
-}
 
-signed_type & property::integer() {
-	compute_integer();
-	return *signed_value;
-}
+#define PROPERTY(type, name, computer) \
+	type##_type & property::name() {     \
+		compute_##computer();              \
+		return *type##_value;              \
+	}
 
-unsigned_type & property::unsigned_integer() {
-	compute_integer();
-	return *unsigned_value;
-}
+PROPERTY(boolean, boolean, boolean)
+PROPERTY(signed, integer, integer)
+PROPERTY(unsigned, unsigned_integer, integer)
+PROPERTY(floating, floating, floating)
+PROPERTY(boolean_list, boolean_list, list)
+PROPERTY(signed_list, integer_list, list)
+PROPERTY(unsigned_list, unsigned_integer_list, list)
+PROPERTY(floating_list, floating_list, list)
 
-floating_type & property::floating() {
-	compute_floating();
-	return *floating_value;
-}
+#undef PROPERTY
+#define UPDATE(type, name, updatetype, format)                \
+	void property::update_from_##name() {                       \
+		generic_##updatetype##_update(name(), raw_value, format); \
+		clear_except(type##_value);                               \
+	}
 
-boolean_list_type & property::boolean_list() {
-	compute_list();
-	return *boolean_list_value;
-}
-
-signed_list_type & property::integer_list() {
-	compute_list();
-	return *signed_list_value;
-}
-
-unsigned_list_type & property::unsigned_integer_list() {
-	compute_list();
-	return *unsigned_list_value;
-}
-
-floating_list_type & property::floating_list() {
-	compute_list();
-	return *floating_list_value;
-}
-
-void property::update_from_boolean() {
-	generic_single_update(boolean(), raw_value, boolalpha);
-	clear_except(boolean_value);
-}
-
-void property::update_from_integer() {
-	generic_single_update(integer(), raw_value);
-	clear_except(signed_value);
-}
-
-void property::update_from_unsigned_integer() {
-	generic_single_update(unsigned_integer(), raw_value);
-	clear_except(unsigned_value);
-}
-
-void property::update_from_floating() {
-	generic_single_update(floating(), raw_value, precision_modifier);
-	clear_except(floating_value);
-}
+UPDATE(boolean, boolean, single, boolalpha)
+UPDATE(signed, integer, single, empty_modifier)
+UPDATE(unsigned, unsigned_integer, single, empty_modifier)
+UPDATE(floating, floating, single, precision_modifier)
+UPDATE(boolean_list, boolean_list, list, boolalpha)
+UPDATE(signed_list, integer_list, list, empty_modifier)
+UPDATE(unsigned_list, unsigned_integer_list, list, empty_modifier)
+UPDATE(floating_list, floating_list, list, precision_modifier)
 
 void property::update_from_textual() {
 	clear();
 }
 
-void property::update_from_boolean_list() {
-	generic_list_update(boolean_list(), raw_value, boolalpha);
-	clear_except(boolean_list_value);
-}
-
-void property::update_from_integer_list() {
-	generic_list_update(integer_list(), raw_value);
-	clear_except(signed_list_value);
-}
-
-void property::update_from_unsigned_integer_list() {
-	generic_list_update(unsigned_integer_list(), raw_value);
-	clear_except(unsigned_list_value);
-}
-
-void property::update_from_floating_list() {
-	generic_list_update(floating_list(), raw_value, precision_modifier);
-	clear_except(floating_list_value);
-}
+#undef UPDATE
 
 void property::clear() {
 	clear_except(nullptr);

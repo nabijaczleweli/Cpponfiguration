@@ -57,7 +57,7 @@ namespace cpponfiguration {
 		std::unique_ptr<floating_list_type> floating_list_value;
 
 
-		void compute_logical();
+		void compute_boolean();
 		void compute_integer();
 		void compute_floating();
 		void compute_list();

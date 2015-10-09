@@ -30,7 +30,7 @@
 #include "hashable.hpp"
 #include "configuration_category.hpp"
 #include "util/salt.hpp"
-#include <list>
+#include <vector>
 #include <iosfwd>
 #include <string>
 #include <map>
@@ -65,7 +65,7 @@ namespace cpponfiguration {
 		static std::pair<std::string, std::string> property_path(const std::string & name);
 
 
-		std::list<std::string> sof_comments;
+		std::vector<std::string> sof_comments;
 
 
 		configuration();

@@ -42,19 +42,19 @@ namespace cpponfiguration {
 		virtual size_t hash_code() const override;
 
 	public:
-		configuration_category();
+		configuration_category() = default;
 		template <class Iterator>
 		configuration_category(const Iterator & begin, const Iterator & end) {
 			properties.insert(begin, end);
 		}
-		configuration_category(const configuration_category & other);
-		configuration_category(configuration_category && other);
+		configuration_category(const configuration_category & other) = default;
+		configuration_category(configuration_category && other) = default;
 
-		~configuration_category();
+		~configuration_category() = default;
 
 		virtual void swap(configuration_category & other) override;
 
-		configuration_category & operator=(const configuration_category & other);
+		configuration_category & operator=(const configuration_category & other) = default;
 		configuration_category & operator+=(const configuration_category & other);
 		configuration_category & operator-=(const configuration_category & other);
 

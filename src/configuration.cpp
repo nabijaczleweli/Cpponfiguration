@@ -23,6 +23,7 @@
 #include "../include/cpponfig/configuration.hpp"
 #include "../include/cpponfig/util/strings.hpp"
 #include "../include/cpponfig/util/salt.hpp"
+#include <iomanip>
 #include <istream>
 #include <fstream>
 #include <cstring>
@@ -109,13 +110,12 @@ configuration & configuration::operator+=(const configuration & other) {
 	return *this;
 }
 
-// Better version? This is (I think) from O(n) to O(n^2), where n: `other.categories.size()`.
 configuration & configuration::operator-=(const configuration & other) {
 	for(const auto & kv : other.categories)
 		categories.erase(kv.first);
 
 	for(const auto & cmt : other.sof_comments)
-		sof_comments.remove(cmt);
+		sof_comments.erase(find(sof_comments.begin(), sof_comments.end(), cmt));
 
 	return *this;
 }
@@ -163,21 +163,9 @@ void configuration::save_properties(ostream & to) const {
 	}
 
 	if(datetime_footer_type != datetime_mode::none) {
-		const bool isgmt   = datetime_footer_type == datetime_mode::gmt;
-		const time_t * tme = new time_t(time(nullptr));
-		char * buf         = new char[20];
-
-		to << '\n' << comment_character << "  ";
-		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(tme) : localtime(tme)))
-			to << buf << (isgmt ? " GMT" : "");
-		else
-			to << "<<DATE ERROR>>";
-		to << "\n\n";
-
-		delete tme;
-		tme = nullptr;
-		delete[] buf;
-		buf = nullptr;
+		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
+		const time_t tme = time(nullptr);
+		to << '\n' << comment_character << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "  %d.%m.%Y %H:%M:%S") << (isgmt ? " GMT" : "");
 	}
 }
 
@@ -229,7 +217,7 @@ bool configuration::save(ostream & stream) const {
 }
 
 property & configuration::get(const string & key, const string & default_value) {
-	return get(key, property(trim(string(default_value))));  // Construct string because `*trim()`s are mutating
+	return get(key, property(trim(string(default_value))));
 }
 
 property & configuration::get(const string & key, const property & default_value) {
@@ -260,8 +248,7 @@ void configuration::rename(const string & name) {
 }
 
 bool configuration::empty() const {
-	return (categories.empty() || find_if(categories.begin(), categories.end(), [&](const auto & pr) { return pr.second.empty(); }) != categories.end()) &&
-	       sof_comments.empty();
+	return sof_comments.empty() && all_of(categories.begin(), categories.end(), [](const auto & pr) { return pr.second.empty(); });
 }
 
 

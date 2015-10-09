@@ -3,7 +3,7 @@
 		// Targets and syntaxes for colored output with the SublimeANSI plugin (https://github.com/aziz/SublimeANSI)
 		{
 			"working_dir": "$project_path",
-			"shell_cmd": "waf --color=yes",
+			"shell_cmd": "waf --color=yes --build-test",
 			"name": "Build Cpponfiguration",
 
 			"target": "ansi_color_build",
@@ -11,7 +11,7 @@
 		},
 		{
 			"working_dir": "$project_path",
-			"shell_cmd": "waf --color=yes configure",
+			"shell_cmd": "waf --color=yes configure --build-test",
 			"name": "Configure Cpponfiguration for building",
 
 			"target": "ansi_color_build",
