@@ -23,6 +23,7 @@
 #include "../include/cpponfig/configuration.hpp"
 #include "../include/cpponfig/util/strings.hpp"
 #include "../include/cpponfig/util/salt.hpp"
+#include "config.h"
 #include <iomanip>
 #include <istream>
 #include <fstream>
@@ -34,7 +35,7 @@ using namespace cpponfig;
 using namespace cpponfig::util;
 
 
-typedef configuration::datetime_mode datetime_mode;
+using datetime_mode = configuration::datetime_mode;
 
 
 bool configuration::save_on_destruction           = true;
@@ -54,12 +55,28 @@ std::pair<std::string, std::string> configuration::property_path(const std::stri
 		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
 }
 
+static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
+	if(mode != datetime_mode::none) {
+		const bool isgmt = mode == datetime_mode::gmt;
+		const time_t tme = time(nullptr);
+		to << '\n' << comment << "  ";
+#ifdef HAVE_STD_PUT_TIME_CHAR_
+		to << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "%d.%m.%Y %H:%M:%S");
+#else
+		char buf[20];
+		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)))
+			to << buf;
+		else
+			to << "<<DATE ERROR>>";
+#endif
+		if(isgmt)
+			to << " GMT";
+		to << "\n\n";
+	}
+}
 
-configuration::configuration() {}
+
 configuration::configuration(const string & name) : filename(name) {}
-configuration::configuration(const configuration & other) : categories(other.categories), filename(other.filename), sof_comments(other.sof_comments) {}
-configuration::configuration(configuration && other)
-      : categories(move(other.categories)), filename(move(other.filename)), sof_comments(move(other.sof_comments)) {}
 
 configuration::~configuration() {
 	if(save_on_destruction)
@@ -162,17 +179,7 @@ void configuration::save_properties(ostream & to) const {
 		to << category_end_character << "\n\n";
 	}
 
-	if(datetime_footer_type != datetime_mode::none) {
-		const bool isgmt = datetime_footer_type == datetime_mode::gmt;
-		const time_t tme = time(nullptr);
-		char buf[20];
-		to << '\n' << comment_character << "  ";
-		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)))
-			to << buf << (isgmt ? " GMT" : "");
-		else
-			to << "<<DATE ERROR>>";
-		to << "\n\n";
-	}
+	actually_put_time(to, datetime_footer_type, comment_character);
 }
 
 bool configuration::load() {

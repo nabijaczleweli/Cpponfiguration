@@ -68,10 +68,10 @@ namespace cpponfiguration {
 		std::vector<std::string> sof_comments;
 
 
-		configuration();
+		configuration() = default;
 		explicit configuration(const std::string & name);
-		configuration(const configuration & other);
-		configuration(configuration && other);
+		configuration(const configuration & other) = default;
+		configuration(configuration && other) = default;
 
 		~configuration();
 
