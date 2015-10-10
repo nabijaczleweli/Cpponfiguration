@@ -1,4 +1,4 @@
-Cpponfiguration [![Build Status](https://travis-ci.org/nabijaczleweli/Cpponfiguration.svg?branch=master)](https://travis-ci.org/nabijaczleweli/Cpponfiguration)
+Cpponfiguration [![Build Status](https://travis-ci.org/nabijaczleweli/Cpponfiguration.svg?branch=master)](https://travis-ci.org/nabijaczleweli/Cpponfiguration) [![Licence](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 ===============
 
 A pretty simple configuration library, inspired by MCF's one.
