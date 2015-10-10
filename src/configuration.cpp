@@ -67,7 +67,7 @@ static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 		to << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "%d.%m.%Y %H:%M:%S");
 #else
 		char buf[20];
-		to << strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)) ? buf : "<<DATE ERROR>>";
+		to << (strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)) ? buf : "<<DATE ERROR>>");
 #endif
 		if(isgmt)
 			to << " GMT";
