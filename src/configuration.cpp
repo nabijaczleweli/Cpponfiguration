@@ -21,13 +21,16 @@
 
 
 #include "../include/cpponfig/configuration.hpp"
+#include "../include/cpponfig/parsing_error.hpp"
 #include "../include/cpponfig/util/strings.hpp"
+#include "../include/cpponfig/util/regex.hpp"
 #include "../include/cpponfig/util/salt.hpp"
 #include "config.h"
 #include <iomanip>
 #include <istream>
 #include <fstream>
 #include <cstring>
+#include <regex>
 
 
 using namespace std;
@@ -64,10 +67,7 @@ static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 		to << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "%d.%m.%Y %H:%M:%S");
 #else
 		char buf[20];
-		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)))
-			to << buf;
-		else
-			to << "<<DATE ERROR>>";
+		to << strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)) ? buf : "<<DATE ERROR>>";
 #endif
 		if(isgmt)
 			to << " GMT";
@@ -138,35 +138,35 @@ configuration & configuration::operator-=(const configuration & other) {
 }
 
 void configuration::load_properties(istream & from) {
-	static const auto readfromline = [&](string & line) {
-		size_t open_idx              = 0;
+	static const auto readfromline = [&](string & line, size_t lineno) {
+		//
+		static const auto is_comment       = CPPONFIG_CHARCACHED_REGEX("(?:[[:space:]]*(?:"s + chr + "[[:space:]]*(.*))?)?");
+		static const auto is_tagless_start = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + ".*)?");
+		static const auto is_tagged_start  = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*([^[:space:]]+)[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + ".*)?");
 
-		if(line.empty() || line[0] == comment_character || (open_idx = line.find_first_of(category_start_character)) == string::npos)
-			return;
-
-		ltrim(line);
-		if(line.empty() || line[0] == comment_character)
-			return;
-		open_idx = line.find_first_of(category_start_character);
-
-		categories.emplace(trim(line.substr(0, open_idx)), configuration_category()).first->second.load(from);
+		smatch match;
+		if(regex_match(line, match, is_comment(comment_character)))
+			return match.str(1);
+		else if(regex_match(line, is_tagless_start(comment_character, category_start_character)))
+			categories.emplace("", configuration_category()).first->second.load(from);
+		else if(regex_match(line, match, is_tagged_start(comment_character, category_start_character)))
+			categories.emplace(match.str(1), configuration_category()).first->second.load(from);
+		else
+			throw parsing_error("Line " + to_string(lineno) + " (\"" + line + "\") is not a comment nor a category start");
+		return ""s;
 	};
 
-	for(string line; getline(from, line);) {
-		if(line.empty())
+	size_t lineno = 1;
+	for(string line; getline(from, line); ++lineno) {
+		const auto & comment = readfromline(line, lineno);
+		if(!comment.empty())
+			sof_comments.emplace_back(comment);
+		else
 			break;
-
-		ltrim(line);
-		if(line[0] != comment_character) {
-			readfromline(line);
-			break;
-		}
-
-		sof_comments.emplace_back(trim(string(line.c_str() + 1)));
 	}
 
-	for(string line; getline(from, line);)
-		readfromline(line);
+	for(string line; getline(from, line); ++lineno)
+		readfromline(line, lineno);
 }
 
 void configuration::save_properties(ostream & to) const {

@@ -61,18 +61,20 @@ int main() {
 	property::floating_precision        = 10;
 
 	dumping_configuration cfg;
-	istringstream input_stream("# This is a test\n"
-	                           "# SOF comment\n"
-	                           "\n"
-	                           "{\n"
-	                           "  mo0 = asdf\n"
-	                           "  asdf=m#00\n"
-	                           "  moo=asdf # asdf moo\n"
-	                           "  #moo=asdf\n"
-	                           "  m0o=[0,1,2,3,4]\n"
-	                           "  0m0=[false,true,false,false,true]\n"
-	                           "  m00=[1.25,3.7,233.7,20,1.99090909909]\n"
-	                           "}\n");
+	istringstream input_stream(R"TEXT(
+	                           # This is a test
+	                           # SOF comment
+
+	                           {
+	                             mo0 = asdf
+	                             asdf=m#00
+	                             moo=asdf # asdf moo
+	                             #moo=asdf
+	                             m0o=[0,1,2,3,4]
+	                             0m0=[false,true,false,false,true]
+	                             m00=[1.25,3.7,233.7,20,1.99090909909]
+	                           }
+	                           )TEXT");
 	try {
 		cfg.load(input_stream);
 		cout << "Loading succeeded!\n";
@@ -86,7 +88,7 @@ int main() {
 				what = e.what();
 			} catch(...) {
 			}
-		cout << "Loading failed!" << (what ? (string(" What: ") + what + '.') : "") << '\n';
+		cout << "Loading failed!" << (what ? (" What: "s + what + '.') : "") << '\n';
 	}
 	cfg.dump(cout);
 
