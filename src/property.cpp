@@ -97,8 +97,8 @@ void property::compute_floating() {
 }
 
 void property::compute_list() {
-	if(!raw_value.empty() && raw_value[0] == '[' && raw_value.find(']') != string::npos && raw_value.find(',') != string::npos &&
-	   (!boolean_list_value || !signed_list_value || !unsigned_list_value || !floating_list_value)) {
+	if((!boolean_list_value || !signed_list_value || !unsigned_list_value || !floating_list_value) && !raw_value.empty() && raw_value[0] == '[' &&
+	   raw_value.find(']') != string::npos && raw_value.find(',') != string::npos) {
 		boolean_list_value  = make_unique<boolean_list_type>();
 		signed_list_value   = make_unique<signed_list_type>();
 		unsigned_list_value = make_unique<unsigned_list_type>();

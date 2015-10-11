@@ -42,11 +42,17 @@ namespace cpponfiguration {
 		virtual size_t hash_code() const override;
 
 	public:
+		std::string comment;
+
+
 		configuration_category() = default;
 		template <class Iterator>
-		configuration_category(const Iterator & begin, const Iterator & end) {
-			properties.insert(begin, end);
-		}
+		configuration_category(const Iterator & begin, const Iterator & end)
+		      : properties(begin, end) {}
+		template <class Iterator>
+		configuration_category(const std::string & cmt, const Iterator & begin, const Iterator & end)
+		      : properties(begin, end), comment(cmt) {}
+		configuration_category(const std::string & cmt);
 		configuration_category(const configuration_category & other) = default;
 		configuration_category(configuration_category && other) = default;
 
@@ -59,7 +65,7 @@ namespace cpponfiguration {
 		configuration_category & operator-=(const configuration_category & other);
 
 		void load(std::istream & stream);
-		void save(std::ostream & stream) const;
+		void save(std::ostream & stream, const std::string & name) const;
 
 		property & get(const std::string & key, const property & default_value);
 		void remove(const std::string & key);

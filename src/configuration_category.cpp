@@ -75,6 +75,8 @@ configuration_category & configuration_category::operator-=(const configuration_
 	return *this;
 }
 
+configuration_category::configuration_category(const string & cmt) : comment(cmt) {}
+
 void configuration_category::load(istream & from) {
 	static const auto is_comment    = CPPONFIG_CHARCACHED_REGEX("[[:space:]]*\\"s + chr + ".*");
 	static const auto is_assignment = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*([^[:space:]]+)[[:space:]]*\\"s + chr1 +
@@ -99,16 +101,20 @@ void configuration_category::load(istream & from) {
 	}
 }
 
-void configuration_category::save(ostream & to) const {
+void configuration_category::save(ostream & to, const string & name) const {
+	to << name << (name.empty() ? "" : " ") << configuration::category_start_character;
+	if(!comment.empty())
+		to << ' ' << configuration::comment_character << ' ' << comment << '\n';
 	for(const auto & pr : properties)
 		to << '\t' << pr.first << configuration::assignment_character << pr.second.textual()
 		   << (pr.second.comment.empty() ? "" : " "s + configuration::comment_character + " " + pr.second.comment) << '\n';
+	to << configuration::category_end_character << "\n\n";
 }
 
 property & configuration_category::get(const string & key, const property & default_value) {
 	auto itr = properties.find(key);
 	if(itr == properties.end())
-		itr = properties.emplace(trim(string(key)), default_value).first;  // Construct string because `*trim()`s are mutating
+		itr = properties.emplace(trim(string(key)), default_value).first;
 	return itr->second;
 }
 

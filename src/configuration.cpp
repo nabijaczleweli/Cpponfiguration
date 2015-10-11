@@ -53,7 +53,7 @@ datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 std::pair<std::string, std::string> configuration::property_path(const std::string & name) {
 	const auto idx = name.find(category_character);
 	if(idx == string::npos)
-		return {"", trim(string(name))};
+		return {"", trim(name)};
 	else
 		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
 }
@@ -141,16 +141,17 @@ void configuration::load_properties(istream & from) {
 	static const auto readfromline = [&](string & line, size_t lineno) {
 		//
 		static const auto is_comment       = CPPONFIG_CHARCACHED_REGEX("(?:[[:space:]]*(?:"s + chr + "[[:space:]]*(.*))?)?");
-		static const auto is_tagless_start = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + ".*)?");
-		static const auto is_tagged_start  = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*([^[:space:]]+)[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + ".*)?");
+		static const auto is_tagless_start = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + "[[:space:]]*(.*))?");
+		static const auto is_tagged_start =
+		    CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*([^[:space:]]+)[[:space:]]*\\"s + chr2 + "[[:space:]]*(?:\\" + chr1 + "[[:space:]]*(.*))?");
 
 		smatch match;
 		if(regex_match(line, match, is_comment(comment_character)))
 			return match.str(1);
-		else if(regex_match(line, is_tagless_start(comment_character, category_start_character)))
-			categories.emplace("", configuration_category()).first->second.load(from);
+		else if(regex_match(line, match, is_tagless_start(comment_character, category_start_character)))
+			categories.emplace("", configuration_category(match.str(1))).first->second.load(from);
 		else if(regex_match(line, match, is_tagged_start(comment_character, category_start_character)))
-			categories.emplace(match.str(1), configuration_category()).first->second.load(from);
+			categories.emplace(match.str(1), configuration_category(match.str(2))).first->second.load(from);
 		else
 			throw parsing_error("Line " + to_string(lineno) + " (\"" + line + "\") is not a comment nor a category start");
 		return ""s;
@@ -173,11 +174,8 @@ void configuration::save_properties(ostream & to) const {
 	for(const auto & cmt : sof_comments)
 		to << comment_character << ' ' << cmt << '\n';
 	to << (sof_comments.empty() ? "" : "\n\n");
-	for(const auto & pr : categories) {
-		to << pr.first << (pr.first.empty() ? "" : " ") << category_start_character << '\n';
-		pr.second.save(to);
-		to << category_end_character << "\n\n";
-	}
+	for(const auto & pr : categories)
+		pr.second.save(to, pr.first);
 
 	actually_put_time(to, datetime_footer_type, comment_character);
 }
