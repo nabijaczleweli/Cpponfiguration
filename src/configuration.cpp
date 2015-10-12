@@ -128,11 +128,17 @@ configuration & configuration::operator+=(const configuration & other) {
 }
 
 configuration & configuration::operator-=(const configuration & other) {
-	for(const auto & kv : other.categories)
-		categories.erase(kv.first);
+	for(const auto & kv : other.categories) {
+		const auto itr = categories.find(kv.first);
+		if(itr != categories.end())
+			itr->second -= kv.second;
+	}
 
-	for(const auto & cmt : other.sof_comments)
-		sof_comments.erase(find(sof_comments.begin(), sof_comments.end(), cmt));
+	for(const auto & cmt : sof_comments) {
+		const auto itr = find(sof_comments.begin(), sof_comments.end(), cmt);
+		if(itr != sof_comments.end())
+			sof_comments.erase(itr);
+	}
 
 	return *this;
 }
