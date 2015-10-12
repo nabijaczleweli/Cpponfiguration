@@ -17,7 +17,6 @@ def configure(conf):
 	conf.write_config_header('config.h')
 
 def build(buld):
-	print(buld.env)
 	buld(features='cxx cxxstlib', source=buld.path.ant_glob('src/**/*.cpp'), target='cpponfig', use='M')
 	if listdir('bandit'):
 		buld(features='cxx cxxprogram', source=buld.path.ant_glob('test/**/*.cpp'), target='cpponfig_test', use=['M', 'cpponfig'])
