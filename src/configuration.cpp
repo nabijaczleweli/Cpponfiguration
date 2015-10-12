@@ -114,14 +114,14 @@ size_t configuration::hash_code() const {
 #undef COLHASH
 }
 
-configuration & configuration::operator=(const configuration & other) {
-	configuration temp(other);
-	swap(temp);
-	return *this;
-}
-
 configuration & configuration::operator+=(const configuration & other) {
-	categories.insert(other.categories.begin(), other.categories.end());
+	for(const auto & kv : other.categories) {
+		const auto itr = categories.find(kv.first);
+		if(itr == categories.end())
+			categories.emplace(kv.first, kv.second);
+		else
+			itr->second += kv.second;
+	}
 	sof_comments.insert(sof_comments.end(), other.sof_comments.begin(), other.sof_comments.end());
 
 	return *this;

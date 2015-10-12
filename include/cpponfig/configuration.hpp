@@ -77,7 +77,8 @@ namespace cpponfiguration {
 
 		virtual void swap(configuration & other) override;
 
-		configuration & operator=(const configuration & other);
+		configuration & operator=(const configuration & other) = default;
+		configuration & operator=(configuration && other) = default;
 		configuration & operator+=(const configuration & other);
 		configuration & operator-=(const configuration & other);
 
