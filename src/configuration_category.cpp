@@ -104,7 +104,8 @@ void configuration_category::load(istream & from) {
 void configuration_category::save(ostream & to, const string & name) const {
 	to << name << (name.empty() ? "" : " ") << configuration::category_start_character;
 	if(!comment.empty())
-		to << ' ' << configuration::comment_character << ' ' << comment << '\n';
+		to << ' ' << configuration::comment_character << ' ' << comment;
+	to << '\n';
 	for(const auto & pr : properties)
 		to << '\t' << pr.first << configuration::assignment_character << pr.second.textual()
 		   << (pr.second.comment.empty() ? "" : " "s + configuration::comment_character + " " + pr.second.comment) << '\n';
