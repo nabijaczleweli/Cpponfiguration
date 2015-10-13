@@ -95,6 +95,8 @@ namespace cpponfiguration {
 		void remove(const std::string & key);
 		bool contains(const std::string & key) const;
 
+		std::string & comment(const std::string & cat);
+
 		void rename(const std::string & name);
 		bool empty() const;
 	};

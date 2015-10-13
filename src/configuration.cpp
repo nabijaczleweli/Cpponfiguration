@@ -260,6 +260,10 @@ bool configuration::contains(const string & key) const {
 	return itr != categories.end() && itr->second.contains(path.second);
 }
 
+string & configuration::comment(const std::string & cat) {
+	return categories[cat].comment;
+}
+
 void configuration::rename(const string & name) {
 	filename = name;
 }
