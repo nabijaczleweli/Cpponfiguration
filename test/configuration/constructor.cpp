@@ -46,10 +46,11 @@ go_bandit([] {
 				const auto save_on_destruction     = configuration::save_on_destruction;
 				configuration::save_on_destruction = false;
 
-				configuration c("AAAAAAAAAA.BBBBBBBBBB");
-				AssertThat(c.empty(), Is().EqualTo(true));
-				AssertThat(c.sof_comments, Is().Empty());
-				c.~configuration();
+				{
+					configuration c("AAAAAAAAAA.BBBBBBBBBB");
+					AssertThat(c.empty(), Is().EqualTo(true));
+					AssertThat(c.sof_comments, Is().Empty());
+				}
 
 				configuration::save_on_destruction = save_on_destruction;
 			});
