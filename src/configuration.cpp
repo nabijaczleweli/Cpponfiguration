@@ -64,14 +64,7 @@ static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 		to << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "%d.%m.%Y %H:%M:%S");
 #else
 		char buf[20];
-<<<<<<< HEAD
 		to << (strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)) ? buf : "<<DATE ERROR>>");
-=======
-		if(strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)))
-			to << buf;
-		else
-			to << "<<DATE ERROR>>";
->>>>>>> parent of 50085d8... Add parsing_error exception. Use regices for parsing. Closes #4
 #endif
 		if(isgmt)
 			to << " GMT";
