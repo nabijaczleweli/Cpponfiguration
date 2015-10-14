@@ -22,14 +22,11 @@
 
 #include "../include/cpponfig/configuration_category.hpp"
 #include "../include/cpponfig/configuration.hpp"
-#include "../include/cpponfig/parsing_error.hpp"
 #include "../include/cpponfig/util/strings.hpp"
-#include "../include/cpponfig/util/regex.hpp"
 #include "../include/cpponfig/util/salt.hpp"
 #include <istream>
 #include <fstream>
 #include <cstring>
-#include <regex>
 
 
 using namespace std;
@@ -78,26 +75,32 @@ configuration_category & configuration_category::operator-=(const configuration_
 configuration_category::configuration_category(const string & cmt) : comment(cmt) {}
 
 void configuration_category::load(istream & from) {
-	static const auto is_comment    = CPPONFIG_CHARCACHED_REGEX("[[:space:]]*\\"s + chr + ".*");
-	static const auto is_assignment = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*([^[:space:]]+)[[:space:]]*\\"s + chr1 +
-	                                                               "[[:space:]]*([^[:space:]]+)[[:space:]]*(?:\\" + chr2 + "[[:space:]]*(.*))?");
-	static const auto is_end_of_category = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*\\"s + chr1 + "[[:space:]]*(?:\\" + chr2 + ".*)?");
+	for(string line; getline(from, line);) {
+		size_t equals_idx = 0;
 
+		if(line.empty() || line[0] == configuration::comment_character || (equals_idx = line.find_first_of(configuration::assignment_character)) == string::npos)
+			return;
+		if(line[0] == configuration::category_end_character)
+			break;
 
-	smatch match;
-	size_t lineno = 1;
-	for(string line; getline(from, line); ++lineno) {
-		if(line.empty() || regex_match(line, is_comment(configuration::comment_character)))
-			continue;
+		ltrim(line);
+		if(line.empty() || line[0] == configuration::comment_character)
+			return;
+		if(line[0] == configuration::category_end_character)
+			break;
+		equals_idx = line.find_first_of(configuration::assignment_character);
 
-		if(!regex_match(line, match, is_assignment(configuration::assignment_character, configuration::comment_character))) {
-			if(regex_match(line, is_end_of_category(configuration::category_end_character, configuration::comment_character)))
-				break;
-			else
-				throw parsing_error("Line " + to_string(lineno) + " (\"" + line + "\") is not a comment nor an assignment");
+		const size_t comment_idx = line.find_first_of(configuration::comment_character);
+		string comment;
+		if(comment_idx != string::npos) {
+			comment = line.substr(line.find_first_of(configuration::comment_character) + 1);
+			line = line.substr(0, line.find_first_of(configuration::comment_character));
+			rtrim(line);
+			if(line.empty() || comment_idx < equals_idx)
+				return;
 		}
 
-		properties.emplace(match.str(1), property(match.str(2), match.str(3)));
+		properties.emplace(trim(line.substr(0, equals_idx)), property(trim(line.substr(equals_idx + 1)), trim(comment)));
 	}
 }
 
