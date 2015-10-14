@@ -20,9 +20,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "bandit/bandit/bandit.h"
+#include "bandit/bandit.h"
 
 
-int main(int argc, char * argv[]) {
+int main(int argc, char ** argv) {
 	return bandit::run(argc, argv);
 }

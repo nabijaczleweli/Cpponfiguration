@@ -232,3 +232,8 @@ property::property(property && other)
       : CTR(raw_value), CTR(boolean_value), CTR(signed_value), CTR(unsigned_value), CTR(floating_value), CTR(boolean_list_value), CTR(signed_list_value),
         CTR(unsigned_list_value), CTR(floating_list_value), CTR(comment) {}
 #undef CTR
+
+
+bool operator==(const property & lhs, const property & rhs) {
+	return lhs.textual() == rhs.textual() && lhs.comment == rhs.comment;
+}

@@ -120,4 +120,7 @@ namespace cpponfiguration {
 namespace cpponfig = cpponfiguration;
 
 
+bool operator==(const cpponfig::property & lhs, const cpponfig::property & rhs);
+
+
 #endif  // PROPERTY_HPP

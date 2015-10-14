@@ -83,16 +83,16 @@ void configuration_category::load(istream & from) {
 	                                                               "[[:space:]]*([^[:space:]]+)[[:space:]]*(?:\\" + chr2 + "[[:space:]]*(.*))?");
 	static const auto is_end_of_category = CPPONFIG_TWOCHARCACHED_REGEX("[[:space:]]*\\"s + chr1 + "[[:space:]]*(?:\\" + chr2 + ".*)?");
 
+
 	smatch match;
 	size_t lineno = 1;
 	for(string line; getline(from, line); ++lineno) {
-		++lineno;
 		if(line.empty() || regex_match(line, is_comment(configuration::comment_character)))
 			continue;
 
 		if(!regex_match(line, match, is_assignment(configuration::assignment_character, configuration::comment_character))) {
 			if(regex_match(line, is_end_of_category(configuration::category_end_character, configuration::comment_character)))
-				return;
+				break;
 			else
 				throw parsing_error("Line " + to_string(lineno) + " (\"" + line + "\") is not a comment nor an assignment");
 		}
