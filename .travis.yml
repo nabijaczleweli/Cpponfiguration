@@ -34,7 +34,7 @@ before_script:
 script:
   - waf configure
   - waf
-  - build/cpponfig_test
+  - build/cpponfig_test --reporter=info
 
 cache:
   apt: true
