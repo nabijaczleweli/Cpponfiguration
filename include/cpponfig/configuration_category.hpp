@@ -52,7 +52,7 @@ namespace cpponfiguration {
 		template <class Iterator>
 		configuration_category(const std::string & cmt, const Iterator & begin, const Iterator & end)
 		      : properties(begin, end), comment(cmt) {}
-		configuration_category(const std::string & cmt);
+		configuration_category(const std::string & comment);
 		configuration_category(const configuration_category & other) = default;
 		configuration_category(configuration_category && other) = default;
 

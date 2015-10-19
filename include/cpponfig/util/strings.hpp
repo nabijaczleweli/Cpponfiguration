@@ -52,17 +52,17 @@ namespace cpponfiguration {
 			return ltrim(rtrim(s));
 		}
 
-		static inline std::string && ltrim(std::string && s) {
+		static inline std::string ltrim(std::string && s) {
 			s.erase(s.begin(), std::find_if(s.begin(), s.end(), whitespace_selector));
 			return std::move(s);
 		}
 
-		static inline std::string && rtrim(std::string && s) {
+		static inline std::string rtrim(std::string && s) {
 			s.erase(std::find_if(s.rbegin(), s.rend(), whitespace_selector).base(), s.end());
 			return std::move(s);
 		}
 
-		static inline std::string && trim(std::string && s) {
+		static inline std::string trim(std::string && s) {
 			return ltrim(rtrim(move(s)));
 		}
 

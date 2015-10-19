@@ -47,14 +47,6 @@ char configuration::category_end_character        = '}';
 datetime_mode configuration::datetime_footer_type = datetime_mode::none;
 
 
-std::pair<std::string, std::string> configuration::property_path(const std::string & name) {
-	const auto idx = name.find(category_character);
-	if(idx == string::npos)
-		return {"", trim(name)};
-	else
-		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
-}
-
 static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 	if(mode != datetime_mode::none) {
 		const bool isgmt = mode == datetime_mode::gmt;
@@ -72,6 +64,14 @@ static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 	}
 }
 
+
+std::pair<std::string, std::string> configuration::property_path(const std::string & name) {
+	const auto idx = name.find(category_character);
+	if(idx == string::npos)
+		return {"", trim(name)};
+	else
+		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
+}
 
 configuration::configuration(const string & name) : filename(name) {}
 
@@ -152,7 +152,12 @@ void configuration::load_properties(istream & from) {
 			return;
 		open_idx = line.find_first_of(category_start_character);
 
-		categories.emplace(trim(line.substr(0, open_idx)), configuration_category()).first->second.load(from);
+		const auto comment_idx = line.find_first_of(comment_character);
+		string comment = (comment_idx == string::npos ? "" : trim(line.substr(comment_idx)));
+
+		const auto itpr = categories.emplace(trim(line.substr(0, open_idx)), configuration_category(comment));
+
+		itpr.first->second.load(from);
 	};
 
 	for(string line; getline(from, line);) {
