@@ -22,42 +22,36 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("get", [&] {
-			property testprop("WsAd", "DaSw");
+static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
 
-			it("carries over simple defaults", [&] {
-				configuration c;
-				AssertThat(c.get("a").textual(), Is().EqualTo(""));
-				AssertThat(c.get("b", "").textual(), Is().EqualTo(""));
-				AssertThat(c.get("c", "AsDf").textual(), Is().EqualTo("AsDf"));
-			});
 
-			it("doesn't override with simple defaults provided", [&] {
-				configuration c;
-				c.get("a", "AsDf");
-				AssertThat(c.get("a", "FdSa").textual(), Is().EqualTo("AsDf"));
-			});
+TEST_CASE("Defaults are carried over", "[configuration] [get]") {
+	configuration c;
+	REQUIRE(c.get("a").textual() == "");
+	REQUIRE(c.get("b", "").textual() == "");
+	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
+}
 
-			it("carries over explicit defaults", [&] {
-				configuration c;
-				AssertThat(c.get("a", testprop), Is().EqualTo(testprop));
-			});
+TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
+	configuration c;
+	c.get("a", "AsDf");
+	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
+}
 
-			it("doesn't override with explicit defaults provided", [&] {
-				configuration c;
-				c.get("a", testprop);
-				AssertThat(c.get("a", property("ASDFASDF", "DSAASD")), Is().EqualTo(testprop));
-			});
-		});
-	});
-});
+TEST_CASE("protperty-defaults are carried over", "[configuration] [get]") {
+	configuration c;
+	REQUIRE(c.get("a", testprop) == testprop);
+}
+
+TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
+	configuration c;
+	c.get("a", testprop);
+	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+}

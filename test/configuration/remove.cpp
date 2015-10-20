@@ -22,21 +22,16 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		it("is able to remove a remove a property", [&] {
-			configuration c;
-			c.get("asdf", "fdsa");
-			c.remove("asdf");
-			AssertThat(c.contains("asdf"), Is().EqualTo(false));
-		});
-	});
-});
+TEST_CASE("Properties can be removed", "[configuration] [remove]") {
+	configuration c;
+	c.get("asdf", "fdsa");
+	c.remove("asdf");
+	CHECK_FALSE(c.contains("asdf"));
+}

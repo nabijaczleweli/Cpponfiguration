@@ -22,159 +22,151 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("operator", [&] {
-			describe("=", [&] {
-				it("copies comments", [&] {
-					configuration empty, full;
-					full.sof_comments = {"asdf", "fdsa"};
+TEST_CASE("=", "[configuration] [operator]") {
+	SECTION("Comments are copied") {
+		configuration empty, full;
+		full.sof_comments = {"asdf", "fdsa"};
 
-					empty = full;
-					AssertThat(empty.empty(), Is().EqualTo(false));
-					AssertThat(empty.sof_comments, Is().EqualToContainer(vector<string>{"asdf", "fdsa"}));
-				});
+		empty = full;
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.sof_comments == full.sof_comments);
+	}
 
-				it("copies properties", [&] {
-					configuration full, empty;
-					full.get("asdf", "fdsa");
-					full.get("a:asdf", "a:fdsa");
+	SECTION("Properties are copied") {
+		configuration full, empty;
+		full.get("asdf", "fdsa");
+		full.get("a:asdf", "a:fdsa");
 
-					empty = full;
-					AssertThat(empty.empty(), Is().EqualTo(false));
-					AssertThat(empty.get("asdf").textual(), Is().EqualTo("fdsa"));
-					AssertThat(empty.get("a:asdf").textual(), Is().EqualTo("a:fdsa"));
-				});
+		empty = full;
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.get("asdf").textual() == "fdsa");
+		REQUIRE(empty.get("a:asdf").textual() == "a:fdsa");
+	}
 
-				it("moves comments and empties", [&] {
-					configuration empty, full;
-					full.sof_comments = {"asdf", "fdsa"};
+	SECTION("Comments are moved") {
+		const vector<string> cmts({"asdf", "fdsa"});
 
-					empty = move(full);
-					AssertThat(full.empty(), Is().EqualTo(true));
-					AssertThat(empty.empty(), Is().EqualTo(false));
-					AssertThat(empty.sof_comments, Is().EqualToContainer(vector<string>{"asdf", "fdsa"}));
-				});
+		configuration empty, full;
+		full.sof_comments = cmts;
 
-				it("moves properties and empties", [&] {
-					configuration full, empty;
-					full.get("asdf", "fdsa");
-					full.get("a:asdf", "a:fdsa");
+		empty = move(full);
+		CHECK(full.empty());
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.sof_comments == cmts);
+	}
 
-					empty = move(full);
-					AssertThat(full.empty(), Is().EqualTo(true));
-					AssertThat(empty.empty(), Is().EqualTo(false));
-					AssertThat(empty.get("asdf").textual(), Is().EqualTo("fdsa"));
-					AssertThat(empty.get("a:asdf").textual(), Is().EqualTo("a:fdsa"));
-				});
-			});
+	SECTION("Properties are moved") {
+		configuration full, empty;
+		full.get("asdf", "fdsa");
+		full.get("a:asdf", "a:fdsa");
 
-			describe("+=", [&] {
-				it("appends comments", [&] {
-					configuration first, second;
-					first.sof_comments  = {"first", "one"};
-					second.sof_comments = {"second", "two"};
+		empty = move(full);
+		CHECK(full.empty());
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.get("asdf").textual() == "fdsa");
+		REQUIRE(empty.get("a:asdf").textual() == "a:fdsa");
+	}
+}
 
-					first += second;
-					AssertThat(first.sof_comments, Is().EqualToContainer(vector<string>{"first", "one", "second", "two"}));
-				});
+TEST_CASE("+=", "[configuration] [operator]") {
+	SECTION("Comments are appended") {
+		configuration first, second;
+		first.sof_comments  = {"first", "one"};
+		second.sof_comments = {"second", "two"};
 
-				it("appends properties", [&] {
-					configuration first, second;
-					first.get("first", "one");
-					first.get("a:first", "a:one");
-					second.get("second", "two");
-					second.get("b:second", "b:two");
+		first += second;
+		REQUIRE(first.sof_comments == (vector<string>{"first", "one", "second", "two"}));
+	}
 
-					first += second;
-					AssertThat(first.get("first").textual(), Is().EqualTo("one"));
-					AssertThat(first.get("a:first").textual(), Is().EqualTo("a:one"));
-					AssertThat(first.get("second").textual(), Is().EqualTo("two"));
-					AssertThat(first.get("b:second").textual(), Is().EqualTo("b:two"));
-				});
-			});
+	SECTION("Properties are appended") {
+		configuration first, second;
+		first.get("first", "one");
+		first.get("a:first", "a:one");
+		second.get("second", "two");
+		second.get("b:second", "b:two");
 
-			describe("-=", [&] {
-				it("removes comments", [&] {
-					configuration first, second;
-					first.sof_comments  = {"first", "one"};
-					second.sof_comments = {"first", "two"};
+		first += second;
+		REQUIRE(first.get("first").textual() == "one");
+		REQUIRE(first.get("a:first").textual() == "a:one");
+		REQUIRE(first.get("second").textual() == "two");
+		REQUIRE(first.get("b:second").textual() == "b:two");
+	}
+}
 
-					first -= second;
-					AssertThat(first.sof_comments, Is().EqualToContainer(vector<string>{"one"}));
-				});
+TEST_CASE("-=", "[configuration] [operator]") {
+	SECTION("Comments are removed") {
+		configuration first, second;
+		first.sof_comments  = {"first", "one"};
+		second.sof_comments = {"first", "two"};
 
-				it("removes properties", [&] {
-					configuration first, second;
-					first.get("first", "one");
-					first.get("a:first", "a:one");
-					second.get("first", "two");
-					second.get("a:first", "a:two");
+		first -= second;
+		REQUIRE(first.sof_comments == (vector<string>{"one"}));
+	}
 
-					first -= second;
-					AssertThat(first.get("first").textual(), Is().EqualTo(""));
-					AssertThat(first.get("a:first").textual(), Is().EqualTo(""));
-				});
-			});
+	SECTION("Properties are removed") {
+		configuration first, second;
+		first.get("first", "one");
+		first.get("a:first", "a:one");
+		second.get("first", "two");
+		second.get("a:first", "a:two");
 
-			describe("+", [&] {
-				it("appends comments", [&] {
-					configuration first, second;
-					first.sof_comments  = {"first", "one"};
-					second.sof_comments = {"second", "two"};
+		first -= second;
+		REQUIRE(first.get("first").textual() == "");
+		REQUIRE(first.get("a:first").textual() == "");
+	}
+}
 
-					auto added = first + second;
-					AssertThat(added.sof_comments, Is().EqualToContainer(vector<string>{"first", "one", "second", "two"}));
-				});
+TEST_CASE("+", "[configuration] [operator]") {
+	SECTION("Comments are appended") {
+		configuration first, second;
+		first.sof_comments  = {"first", "one"};
+		second.sof_comments = {"second", "two"};
 
-				it("appends properties", [&] {
-					configuration first, second;
-					first.get("first", "one");
-					first.get("a:first", "a:one");
-					second.get("second", "two");
-					second.get("b:second", "b:two");
+		auto added = first + second;
+		REQUIRE(added.sof_comments == (vector<string>{"first", "one", "second", "two"}));
+	}
 
-					auto added = first + second;
-					AssertThat(added.get("first").textual(), Is().EqualTo("one"));
-					AssertThat(added.get("a:first").textual(), Is().EqualTo("a:one"));
-					AssertThat(added.get("second").textual(), Is().EqualTo("two"));
-					AssertThat(added.get("b:second").textual(), Is().EqualTo("b:two"));
-				});
-			});
+	SECTION("Properties are appended") {
+		configuration first, second;
+		first.get("first", "one");
+		first.get("a:first", "a:one");
+		second.get("second", "two");
+		second.get("b:second", "b:two");
 
-			describe("-", [&] {
-				it("removes comments", [&] {
-					configuration first, second;
-					first.sof_comments  = {"first", "one"};
-					second.sof_comments = {"first", "two"};
+		auto added = first + second;
+		REQUIRE(added.get("first").textual() == "one");
+		REQUIRE(added.get("a:first").textual() == "a:one");
+		REQUIRE(added.get("second").textual() == "two");
+		REQUIRE(added.get("b:second").textual() == "b:two");
+	}
+}
 
-					auto substracted = first - second;
-					AssertThat(substracted.sof_comments, Is().EqualToContainer(vector<string>{"one"}));
-				});
+TEST_CASE("-", "[configuration] [operator]") {
+	SECTION("Comments are appended") {
+		configuration first, second;
+		first.sof_comments  = {"first", "one"};
+		second.sof_comments = {"first", "two"};
 
-				it("removes properties", [&] {
-					configuration first, second;
-					first.get("first", "one");
-					first.get("a:first", "a:one");
-					second.get("first", "two");
-					second.get("a:first", "a:two");
+		auto substracted = first - second;
+		REQUIRE(substracted.sof_comments == (vector<string>{"one"}));
+	}
 
-					auto substracted = first - second;
-					AssertThat(substracted.get("first").textual(), Is().EqualTo(""));
-					AssertThat(substracted.get("a:first").textual(), Is().EqualTo(""));
-				});
-			});
-		});
-	});
-});
+	SECTION("Properties are appended") {
+		configuration first, second;
+		first.get("first", "one");
+		first.get("a:first", "a:one");
+		second.get("first", "two");
+		second.get("a:first", "a:two");
+
+		auto substracted = first - second;
+		REQUIRE(substracted.get("first").textual() == "");
+		REQUIRE(substracted.get("a:first").textual() == "");
+	}
+}

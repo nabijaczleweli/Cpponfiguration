@@ -22,63 +22,59 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
+#include "catch.hpp"
 #include <fstream>
-#include <sstream>
-#include <cstdlib>
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("load", [&] {
-			before_each([&] { ofstream("emptest.cfg"); });
-			after_each([&] { remove("emptest.cfg"); });
+TEST_CASE("Cannot load from empty filename", "[configuration] [load]") {
+	CHECK_FALSE(configuration().load());
+	CHECK_FALSE(configuration("").load());
+	CHECK_FALSE(configuration().load(""));
+	CHECK_FALSE(configuration("").load(""));
+}
+
+TEST_CASE("Cannot load from nonexistant file", "[configuration] [load]") {
+	const static string filename = "NkKVhzgfmSdLlzvsZxGF.LtCzOgFHxxnUlFwNVNgf";
+
+	const auto save_on_destruction     = configuration::save_on_destruction;
+	configuration::save_on_destruction = false;
+
+	CHECK_FALSE(configuration(filename).load());
+	CHECK_FALSE(configuration().load(filename));
+	CHECK_FALSE(configuration(filename).load(filename));
+
+	configuration::save_on_destruction = save_on_destruction;
+}
+
+TEST_CASE("Reads from empty file", "[configuration] [load]") {
+	const static string filename = "BdPlUUSHRLUSwvyOZunFIzF.CeluUepoeCPBfeDSHqF";
 
 
-			it("returns false with empty `filename`", [&] {
-				AssertThat(configuration().load(), Is().EqualTo(false));
-				AssertThat(configuration("").load(), Is().EqualTo(false));
-				AssertThat(configuration().load(""), Is().EqualTo(false));
-				AssertThat(configuration("").load(""), Is().EqualTo(false));
-			});
+	ofstream{filename};
 
-			it("returns false with nonexistant file", [&] {
-				const auto save_on_destruction     = configuration::save_on_destruction;
-				configuration::save_on_destruction = false;
+	const auto save_on_destruction     = configuration::save_on_destruction;
+	configuration::save_on_destruction = false;
 
-				AssertThat(configuration("AAAAAAAAAA.BBBBBBBBBB").load(), Is().EqualTo(false));
-				AssertThat(configuration().load("AAAAAAAAAA.BBBBBBBBBB"), Is().EqualTo(false));
-				AssertThat(configuration("AAAAAAAAAA.BBBBBBBBBB").load("AAAAAAAAAA.BBBBBBBBBB"), Is().EqualTo(false));
+	CHECK(configuration(filename).load());
+	CHECK(configuration().load(filename));
+	CHECK(configuration(filename).load(filename));
 
-				configuration::save_on_destruction = save_on_destruction;
-			});
+	configuration::save_on_destruction = save_on_destruction;
 
-			it("returns true with empty file", [&] {
-				const auto save_on_destruction     = configuration::save_on_destruction;
-				configuration::save_on_destruction = false;
+	remove(filename.c_str());
+}
 
-				AssertThat(configuration("emptest.cfg").load(), Is().EqualTo(true));
-				AssertThat(configuration().load("emptest.cfg"), Is().EqualTo(true));
-				AssertThat(configuration("emptest.cfg").load("emptest.cfg"), Is().EqualTo(true));
+TEST_CASE("Reads from empty istream", "[configuration] [load]") {
+	istringstream ss;
+	CHECK(configuration().load(ss));
+}
 
-				configuration::save_on_destruction = save_on_destruction;
-			});
-
-			it("returns true with empty istream", [&] {
-				istringstream ss;
-				AssertThat(configuration().load(ss), Is().EqualTo(true));
-			});
-
-			it("returns true with failed istream", [&] {
-				istringstream ss;
-				ss.setstate(ios::failbit);
-				AssertThat(configuration().load(ss), Is().EqualTo(false));
-			});
-		});
-	});
-});
+TEST_CASE("Doesn't read from failed istream", "[configuration] [load]") {
+	istringstream ss;
+	ss.setstate(ios::failbit);
+	CHECK_FALSE(configuration().load(ss));
+}

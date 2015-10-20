@@ -19,8 +19,11 @@
 		},
 		{
 			"working_dir": "$project_path",
-			"shell_cmd": "build\\cpponfig_test --reporter=spec",
+			"shell_cmd": "build\\cpponfig_test --force-colour",
 			"name": "Run Cpponfiguration tests",
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
 		}
 	],
 	"folders":

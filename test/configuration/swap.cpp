@@ -22,45 +22,35 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("swap", [&] {
-			it("swaps comments", [&] {
-				configuration first, second;
-				first.sof_comments  = {"first", "one"};
-				second.sof_comments = {"second", "two"};
+TEST_CASE("Properties are swapped", "[configuration] [swap]") {
+	configuration first, second;
+	first.get("first", "one");
+	first.get("a:first", "a:one");
+	second.get("second", "two");
+	second.get("b:second", "b:two");
 
-				swap(first, second);
+	REQUIRE_NOTHROW(swap(first, second));
 
-				AssertThat(first.sof_comments, Is().EqualToContainer(vector<string>{"second", "two"}));
-				AssertThat(second.sof_comments, Is().EqualToContainer(vector<string>{"first", "one"}));
-			});
+	REQUIRE(first.get("second").textual() == "two");
+	REQUIRE(first.get("b:second").textual() == "b:two");
+	REQUIRE(second.get("first").textual() == "one");
+	REQUIRE(second.get("a:first").textual() == "a:one");
+}
 
-			it("swaps elements", [&] {
-				configuration first, second;
-				first.get("first", "one");
-				first.get("a:first", "a:one");
-				second.get("second", "two");
-				second.get("b:second", "b:two");
+TEST_CASE("SOF comments are swapped", "[configuration] [swap]") {
+	configuration first, second;
+	first.sof_comments  = {"first", "one"};
+	second.sof_comments = {"second", "two"};
 
-				swap(first, second);
+	REQUIRE_NOTHROW(swap(first, second));
 
-				AssertThat(first.get("second").textual(), Is().EqualTo("two"));
-				AssertThat(first.get("b:second").textual(), Is().EqualTo("b:two"));
-				AssertThat(second.get("first").textual(), Is().EqualTo("one"));
-				AssertThat(second.get("a:first").textual(), Is().EqualTo("a:one"));
-			});
-		});
-	});
-});
+	REQUIRE(first.sof_comments == (vector<string>{"second", "two"}));
+	REQUIRE(second.sof_comments == (vector<string>{"first", "one"}));
+}

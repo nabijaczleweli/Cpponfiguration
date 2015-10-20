@@ -20,9 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "bandit/bandit.h"
-
-
-int main(int argc, char ** argv) {
-	return bandit::run(argc, argv);
-}
+#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_COLOUR_ANSI
+#include "catch.hpp"

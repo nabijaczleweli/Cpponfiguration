@@ -22,14 +22,10 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
@@ -41,105 +37,97 @@ static bool exists(const char * fname) {
 }
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("save", [&] {
-			before_each([&] { remove("emptest.cfg"); });
-			after_each([&] { remove("emptest.cfg"); });
+TEST_CASE("Saving fails with empty filename", "[configuration] [save]") {
+	CHECK_FALSE(configuration().save());
+	CHECK_FALSE(configuration("").save());
+	CHECK_FALSE(configuration().save(""));
+	CHECK_FALSE(configuration("").save(""));
+}
 
+TEST_CASE("Saving creates file with nonexistant file", "[configuration] [save]") {
+	configuration("conftest.cfg").save();
+	CHECK(exists("conftest.cfg"));
+	remove("conftest.cfg");
 
-			it("returns false with empty `filename`", [&] {
-				AssertThat(configuration().save(), Is().EqualTo(false));
-				AssertThat(configuration("").save(), Is().EqualTo(false));
-				AssertThat(configuration().save(""), Is().EqualTo(false));
-				AssertThat(configuration("").save(""), Is().EqualTo(false));
-			});
+	configuration().save("conftest.cfg");
+	CHECK(exists("conftest.cfg"));
+	remove("conftest.cfg");
 
-			it("creates nonexistant files", [&] {
-				configuration("conftest.cfg").save();
-				AssertThat(exists("conftest.cfg"), Is().EqualTo(true));
-				remove("conftest.cfg");
+	configuration().save("conftest.cfg");
+	CHECK(exists("conftest.cfg"));
+	remove("conftest.cfg");
 
-				configuration().save("conftest.cfg");
-				AssertThat(exists("conftest.cfg"), Is().EqualTo(true));
-				remove("conftest.cfg");
+	configuration("conftest.cfg").save("conftest.cfg");
+	CHECK(exists("conftest.cfg"));
+	remove("conftest.cfg");
+}
 
-				configuration().save("conftest.cfg");
-				AssertThat(exists("conftest.cfg"), Is().EqualTo(true));
-				remove("conftest.cfg");
+TEST_CASE("Saving yields \"\" empty config", "[configuration] [save]") {
+	ostringstream strm;
+	configuration().save(strm);
+	REQUIRE(strm.str().find_first_not_of("\n") == string::npos);
+}
 
-				configuration("conftest.cfg").save("conftest.cfg");
-				AssertThat(exists("conftest.cfg"), Is().EqualTo(true));
-				remove("conftest.cfg");
-			});
+TEST_CASE("SOF comments are saved", "[configuration] [save]") {
+	configuration c;
+	c.sof_comments = {"A", "B", "C"};
 
-			it("writes \"\" on nothing", [&] {
-				ostringstream strm;
-				configuration().save(strm);
-				AssertThat(strm.str(), Is().Empty());
-			});
+	ostringstream strm;
+	c.save(strm);
 
-			it("writes SOF comments", [&] {
-				configuration c;
-				c.sof_comments = {"A", "B", "C"};
+	REQUIRE(strm.str() == "# A\n"
+	                      "# B\n"
+	                      "# C\n"
+	                      "\n"
+	                      "\n");
+}
 
-				ostringstream strm;
-				c.save(strm);
+TEST_CASE("Local datetime is saved", "[configuration] [save]") {
+	const auto datetime_footer_type     = configuration::datetime_footer_type;
+	configuration::datetime_footer_type = configuration::dt_m::local;
 
-				AssertThat(strm.str(), Is().EqualTo("# A\n"
-				                                    "# B\n"
-				                                    "# C\n"
-				                                    "\n"
-				                                    "\n"));
-			});
+	configuration c;
 
-			it("writes local datetime", [&] {
-				const auto datetime_footer_type     = configuration::datetime_footer_type;
-				configuration::datetime_footer_type = configuration::dt_m::local;
+	ostringstream strm;
+	c.save(strm);
 
-				configuration c;
+	REQUIRE(strm.str().find("\n#  ") == 0);
+	REQUIRE(strm.str().find("GMT") == string::npos);
 
-				ostringstream strm;
-				c.save(strm);
+	configuration::datetime_footer_type = datetime_footer_type;
+}
 
-				AssertThat(strm.str(), Is().StartingWith("\n#  ").And().Not().Containing("GMT"));
+TEST_CASE("GMT datetime is saved", "[configuration] [save]") {
+	const auto datetime_footer_type     = configuration::datetime_footer_type;
+	configuration::datetime_footer_type = configuration::dt_m::gmt;
 
-				configuration::datetime_footer_type = datetime_footer_type;
-			});
+	configuration c;
 
-			it("writes GMT datetime", [&] {
-				const auto datetime_footer_type     = configuration::datetime_footer_type;
-				configuration::datetime_footer_type = configuration::dt_m::gmt;
+	ostringstream strm;
+	c.save(strm);
 
-				configuration c;
+	REQUIRE(strm.str().find("\n#  ") == 0);
+	REQUIRE(strm.str().find("GMT") != string::npos);
 
-				ostringstream strm;
-				c.save(strm);
+	configuration::datetime_footer_type = datetime_footer_type;
+}
 
-				AssertThat(strm.str(), Is().StartingWith("\n#  ").And().Containing("GMT"));
+TEST_CASE("Nameless category brace isn't prefixed by ' '", "[configuration] [save]") {
+	configuration c;
+	c.get("", "");
 
-				configuration::datetime_footer_type = datetime_footer_type;
-			});
+	ostringstream strm;
+	c.save(strm);
 
-			it("correctly doesn't prefix the brace with ' '", [&] {
-				configuration c;
-				c.get("", "");
+	REQUIRE(strm.str()[0] == '{');
+}
 
-				ostringstream strm;
-				c.save(strm);
+TEST_CASE("Named category brace is prefixed by ' '", "[configuration] [save]") {
+	configuration c;
+	c.get("a:", "");
 
-				AssertThat(strm.str(), Is().StartingWith("{"));
-			});
+	ostringstream strm;
+	c.save(strm);
 
-			it("correctly prefixes the brace with ' '", [&] {
-				configuration c;
-				c.get("a:", "");
-
-				ostringstream strm;
-				c.save(strm);
-
-				AssertThat(strm.str(), Is().StartingWith("a {"));
-			});
-		});
-	});
-});
+	REQUIRE(strm.str().find("a {") == 0);
+}

@@ -22,76 +22,66 @@
 
 
 #include "configuration.hpp"
-#include "bandit/bandit.h"
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
+#include "catch.hpp"
 
 
 using namespace std;
-using namespace bandit;
 using namespace cpponfig;
 
 
-go_bandit([] {
-	describe("configuration", [&] {
-		describe("constructor", [&] {
-			it("is empty by default", [&] {
-				configuration c;
-				AssertThat(c.empty(), Is().EqualTo(true));
-				AssertThat(c.sof_comments, Is().Empty());
-			});
+TEST_CASE("Empty is default state", "[configuration] [constructor]") {
+	configuration c;
+	CHECK(c.empty());
+	CHECK(c.sof_comments.empty());
+}
 
-			it("is empty when constructed with filename", [&] {
-				const auto save_on_destruction     = configuration::save_on_destruction;
-				configuration::save_on_destruction = false;
+TEST_CASE("Empty after load from nonexistant file", "[configuration] [constructor]") {
+	const auto save_on_destruction     = configuration::save_on_destruction;
+	configuration::save_on_destruction = false;
 
-				{
-					configuration c("AAAAAAAAAA.BBBBBBBBBB");
-					AssertThat(c.empty(), Is().EqualTo(true));
-					AssertThat(c.sof_comments, Is().Empty());
-				}
+	{
+		configuration c("arEAODBbJZ.EufHuyVyrwbTRNMmEm");
+		CHECK(c.empty());
+		CHECK(c.sof_comments.empty());
+	}
 
-				configuration::save_on_destruction = save_on_destruction;
-			});
+	configuration::save_on_destruction = save_on_destruction;
+}
 
-			it("copies properties", [&] {
-				configuration full;
-				full.get("asdf", "fdsa");
+TEST_CASE("Properties are copied", "[configuration] [constructor]") {
+	configuration full;
+	full.get("asdf", "fdsa");
 
-				configuration empty(full);
-				AssertThat(empty.empty(), Is().EqualTo(false));
-				AssertThat(empty.get("asdf").textual(), Is().EqualTo("fdsa"));
-			});
+	configuration empty(full);
+	CHECK_FALSE(empty.empty());
+	REQUIRE(empty.get("asdf").textual() == "fdsa");
+}
 
-			it("copies comments", [&] {
-				configuration full;
-				full.sof_comments = {"asdf", "fdsa"};
+TEST_CASE("SOF comments are copied", "[configuration] [constructor]") {
+	configuration full;
+	full.sof_comments = {"asdf", "fdsa"};
 
-				configuration empty(full);
-				AssertThat(empty.empty(), Is().EqualTo(false));
-				AssertThat(empty.sof_comments, Is().EqualToContainer(vector<string>{"asdf", "fdsa"}));
-			});
+	configuration empty(full);
+	CHECK_FALSE(empty.empty());
+	REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
+}
 
-			it("moves properties and empties", [&] {
-				configuration full;
-				full.get("asdf", "fdsa");
+TEST_CASE("Properties are moved", "[configuration] [constructor]") {
+	configuration full;
+	full.get("asdf", "fdsa");
 
-				configuration empty(move(full));
-				AssertThat(full.empty(), Is().EqualTo(true));
-				AssertThat(empty.empty(), Is().EqualTo(false));
-				AssertThat(empty.get("asdf").textual(), Is().EqualTo("fdsa"));
-			});
+	configuration empty(move(full));
+	CHECK(full.empty());
+	CHECK_FALSE(empty.empty());
+	REQUIRE(empty.get("asdf").textual() == "fdsa");
+}
 
-			it("moves comments and empties", [&] {
-				configuration full;
-				full.sof_comments = {"asdf", "fdsa"};
+TEST_CASE("SOF comments are moved", "[configuration] [constructor]") {
+	configuration full;
+	full.sof_comments = {"asdf", "fdsa"};
 
-				configuration empty(move(full));
-				AssertThat(full.empty(), Is().EqualTo(true));
-				AssertThat(empty.empty(), Is().EqualTo(false));
-				AssertThat(empty.sof_comments, Is().EqualToContainer(vector<string>{"asdf", "fdsa"}));
-			});
-		});
-	});
-});
+	configuration empty(move(full));
+	CHECK(full.empty());
+	CHECK_FALSE(empty.empty());
+	REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
+}
