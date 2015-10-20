@@ -7,6 +7,7 @@ from os import listdir
 
 def options(opts):
 	opts.load('compiler_cxx')
+	opts.add_option('--cpponfig-no-build-test', dest='build_test', default=True, action='store_false', help='force building tests off')
 
 def configure(conf):
 	conf.load('compiler_cxx')
@@ -18,5 +19,5 @@ def configure(conf):
 
 def build(buld):
 	buld(features='cxx cxxstlib', source=buld.path.ant_glob('src/**/*.cpp'), target='cpponfig', use='M')
-	if listdir('Catch'):
+	if buld.options.build_test and listdir('Catch'):
 		buld(features='cxx cxxprogram', source=buld.path.ant_glob('test/**/*.cpp'), target='cpponfig_test', use=['M', 'cpponfig'])
