@@ -12,7 +12,8 @@ def options(opts):
 def configure(conf):
 	conf.load('compiler_cxx')
 	conf.env.append_value('INCLUDES', ['.', '../include/cpponfig', '../Catch/include'])
-	conf.check(features='cxx cxxprogram', cxxflags=['-std=c++14', '-Wall', '-Wextra', '-O3', '-pedantic', '-pipe'], uselib_store='M')
+	conf.check(features='cxx cxxprogram', cxxflags=['-std=c++14', '-Wall', '-Wextra', '-O3', '-pedantic', '-pipe'] if conf.env['CXX_NAME'] is not 'msvc' else ['/O3'],
+	           uselib_store='M')
 	conf.check(features='cxx cxxprogram', function_name='std::put_time<char>', header_name='iomanip', use='M', mandatory=False)
 	conf.define('CPPONFIGURATION_VERSION', datetime.utcnow().strftime('%Y.%m.%d %H:%M:%S UTC'))
 	conf.write_config_header('config.h')
