@@ -47,10 +47,10 @@ namespace cpponfiguration {
 
 		configuration_category() = default;
 		template <class Iterator>
-		configuration_category(const Iterator & begin, const Iterator & end)
+		configuration_category(Iterator begin, Iterator end)
 		      : properties(begin, end) {}
 		template <class Iterator>
-		configuration_category(const std::string & cmt, const Iterator & begin, const Iterator & end)
+		configuration_category(const std::string & cmt, Iterator begin, Iterator end)
 		      : properties(begin, end), comment(cmt) {}
 		configuration_category(const std::string & comment);
 		configuration_category(const configuration_category & other) = default;
@@ -61,6 +61,7 @@ namespace cpponfiguration {
 		virtual void swap(configuration_category & other) override;
 
 		configuration_category & operator=(const configuration_category & other) = default;
+		configuration_category & operator=(configuration_category && other) = default;
 		configuration_category & operator+=(const configuration_category & other);
 		configuration_category & operator-=(const configuration_category & other);
 

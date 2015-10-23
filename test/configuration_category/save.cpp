@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "configuration_category.hpp"
 #include "catch.hpp"
 
 
@@ -29,29 +29,37 @@ using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
+TEST_CASE("configuration_category - save") {
+	SECTION("comment is saved", "[configuration_category] [save]") {
+		configuration_category c;
+		c.comment = "ABC";
 
+		ostringstream strm;
+		c.save(strm, "");
 
-TEST_CASE("Defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a").textual() == "");
-	REQUIRE(c.get("b", "").textual() == "");
-	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
-}
+		REQUIRE(strm.str() == "{ # ABC\n"
+		                      "}"
+		                      "\n"
+		                      "\n");
+	}
 
-TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", "AsDf");
-	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-}
+	SECTION("namelessness is saved", "[configuration_category] [save]") {
+		ostringstream strm;
+		configuration_category().save(strm, "");
 
-TEST_CASE("property-defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a", testprop) == testprop);
-}
+		REQUIRE(strm.str() == "{\n"
+		                      "}"
+		                      "\n"
+		                      "\n");
+	}
 
-TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", testprop);
-	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+	SECTION("name is saved", "[configuration_category] [save]") {
+		ostringstream strm;
+		configuration_category().save(strm, "asdfasdf");
+
+		REQUIRE(strm.str() == "asdfasdf {\n"
+		                      "}"
+		                      "\n"
+		                      "\n");
+	}
 }

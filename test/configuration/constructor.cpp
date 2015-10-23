@@ -29,59 +29,61 @@ using namespace std;
 using namespace cpponfig;
 
 
-TEST_CASE("Empty is default state", "[configuration] [constructor]") {
-	configuration c;
-	CHECK(c.empty());
-	CHECK(c.sof_comments.empty());
-}
-
-TEST_CASE("Empty after load from nonexistant file", "[configuration] [constructor]") {
-	const auto save_on_destruction     = configuration::save_on_destruction;
-	configuration::save_on_destruction = false;
-
-	{
-		configuration c("arEAODBbJZ.EufHuyVyrwbTRNMmEm");
+TEST_CASE("configuration - constructor") {
+	SECTION("Empty is default state", "[configuration] [constructor]") {
+		configuration c;
 		CHECK(c.empty());
 		CHECK(c.sof_comments.empty());
 	}
 
-	configuration::save_on_destruction = save_on_destruction;
-}
+	SECTION("Empty after load from nonexistant file", "[configuration] [constructor]") {
+		const auto save_on_destruction     = configuration::save_on_destruction;
+		configuration::save_on_destruction = false;
 
-TEST_CASE("Properties are copied", "[configuration] [constructor]") {
-	configuration full;
-	full.get("asdf", "fdsa");
+		{
+			configuration c("arEAODBbJZ.EufHuyVyrwbTRNMmEm");
+			CHECK(c.empty());
+			CHECK(c.sof_comments.empty());
+		}
 
-	configuration empty(full);
-	CHECK_FALSE(empty.empty());
-	REQUIRE(empty.get("asdf").textual() == "fdsa");
-}
+		configuration::save_on_destruction = save_on_destruction;
+	}
 
-TEST_CASE("SOF comments are copied", "[configuration] [constructor]") {
-	configuration full;
-	full.sof_comments = {"asdf", "fdsa"};
+	SECTION("Properties are copied", "[configuration] [constructor]") {
+		configuration full;
+		full.get("asdf", "fdsa");
 
-	configuration empty(full);
-	CHECK_FALSE(empty.empty());
-	REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
-}
+		configuration empty(full);
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.get("asdf").textual() == "fdsa");
+	}
 
-TEST_CASE("Properties are moved", "[configuration] [constructor]") {
-	configuration full;
-	full.get("asdf", "fdsa");
+	SECTION("SOF comments are copied", "[configuration] [constructor]") {
+		configuration full;
+		full.sof_comments = {"asdf", "fdsa"};
 
-	configuration empty(move(full));
-	CHECK(full.empty());
-	CHECK_FALSE(empty.empty());
-	REQUIRE(empty.get("asdf").textual() == "fdsa");
-}
+		configuration empty(full);
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
+	}
 
-TEST_CASE("SOF comments are moved", "[configuration] [constructor]") {
-	configuration full;
-	full.sof_comments = {"asdf", "fdsa"};
+	SECTION("Properties are moved", "[configuration] [constructor]") {
+		configuration full;
+		full.get("asdf", "fdsa");
 
-	configuration empty(move(full));
-	CHECK(full.empty());
-	CHECK_FALSE(empty.empty());
-	REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
+		configuration empty(move(full));
+		CHECK(full.empty());
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.get("asdf").textual() == "fdsa");
+	}
+
+	SECTION("SOF comments are moved", "[configuration] [constructor]") {
+		configuration full;
+		full.sof_comments = {"asdf", "fdsa"};
+
+		configuration empty(move(full));
+		CHECK(full.empty());
+		CHECK_FALSE(empty.empty());
+		REQUIRE(empty.sof_comments == (vector<string>{"asdf", "fdsa"}));
+	}
 }

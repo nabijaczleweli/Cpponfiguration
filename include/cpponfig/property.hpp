@@ -107,7 +107,8 @@ namespace cpponfiguration {
 		void clear();
 
 
-		property & operator=(const property & other);
+		property & operator=(const property & other) = default;
+		property & operator=(property && other) = default;
 
 		virtual void swap(property & other) override;
 

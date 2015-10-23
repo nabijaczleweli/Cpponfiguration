@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "configuration_category.hpp"
 #include "catch.hpp"
 
 
@@ -29,29 +29,29 @@ using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
+static const property empty_prop("");
 
 
-TEST_CASE("Defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a").textual() == "");
-	REQUIRE(c.get("b", "").textual() == "");
-	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
-}
+TEST_CASE("configuration_category - swap") {
+	SECTION("Properties are swapped", "[configuration_category] [swap]") {
+		configuration_category first, second;
+		first.get("first", {"one"});
+		second.get("second", {"two"});
 
-TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", "AsDf");
-	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-}
+		REQUIRE_NOTHROW(swap(first, second));
 
-TEST_CASE("property-defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a", testprop) == testprop);
-}
+		REQUIRE(first.get("second", empty_prop).textual() == "two");
+		REQUIRE(second.get("first", empty_prop).textual() == "one");
+	}
 
-TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", testprop);
-	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+	SECTION("Comment is swapped", "[configuration_category] [swap]") {
+		configuration_category first, second;
+		first.comment  = "first";
+		second.comment = "second";
+
+		REQUIRE_NOTHROW(swap(first, second));
+
+		REQUIRE(first.comment == "second");
+		REQUIRE(second.comment == "first");
+	}
 }

@@ -29,9 +29,11 @@ using namespace std;
 using namespace cpponfig;
 
 
-TEST_CASE("Properties can be removed", "[configuration] [remove]") {
-	configuration c;
-	c.get("asdf", "fdsa");
-	c.remove("asdf");
-	CHECK_FALSE(c.contains("asdf"));
+TEST_CASE("configuration - remove") {
+	SECTION("Properties can be removed", "[configuration] [remove]") {
+		configuration c;
+		c.get("asdf", "fdsa");
+		c.remove("asdf");
+		CHECK_FALSE(c.contains("asdf"));
+	}
 }

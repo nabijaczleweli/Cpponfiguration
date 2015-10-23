@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "configuration_category.hpp"
 #include "catch.hpp"
 
 
@@ -29,29 +29,11 @@ using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
-
-
-TEST_CASE("Defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a").textual() == "");
-	REQUIRE(c.get("b", "").textual() == "");
-	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
-}
-
-TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", "AsDf");
-	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-}
-
-TEST_CASE("property-defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a", testprop) == testprop);
-}
-
-TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", testprop);
-	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+TEST_CASE("configuration_category - remove") {
+	SECTION("Properties can be removed", "[configuration_category] [remove]") {
+		configuration_category c;
+		c.get("asdf", {"fdsa"s, "DQILCCE"s});
+		c.remove("asdf");
+		CHECK_FALSE(c.contains("asdf"));
+	}
 }

@@ -21,37 +21,45 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "configuration_category.hpp"
 #include "catch.hpp"
+#include <fstream>
 
 
 using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
+static const property empty_prop("");
 
 
-TEST_CASE("Defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a").textual() == "");
-	REQUIRE(c.get("b", "").textual() == "");
-	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
-}
+TEST_CASE("configuration_category - load") {
+	SECTION("Reads from empty istream", "[configuration_category] [load]") {
+		istringstream ss;
 
-TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", "AsDf");
-	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-}
+		configuration_category c;
+		c.load(ss);
 
-TEST_CASE("property-defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a", testprop) == testprop);
-}
+		CHECK(c.empty());
+	}
 
-TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", testprop);
-	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+	SECTION("Reads from nonempty istream", "[configuration_category] [load]") {
+		istringstream ss(" \tasdf=fdsa # assa\n"
+		                 "}");
+
+		configuration_category c;
+		c.load(ss);
+
+		REQUIRE(c.get("asdf", empty_prop) == property("fdsa", "assa"));
+	}
+
+	SECTION("Doesn't read from failed istream", "[configuration_category] [load]") {
+		istringstream ss;
+		ss.setstate(ios::failbit);
+
+		configuration_category c;
+		c.load(ss);
+
+		CHECK(c.empty());
+	}
 }

@@ -191,12 +191,6 @@ void property::clear() {
 	clear_except(nullptr);
 }
 
-property & property::operator=(const property & other) {
-	property temp(other);
-	swap(temp);
-	return *this;
-}
-
 void property::swap(property & other) {
 	using std::swap;
 	swap(raw_value, other.raw_value);

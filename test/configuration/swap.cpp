@@ -29,28 +29,30 @@ using namespace std;
 using namespace cpponfig;
 
 
-TEST_CASE("Properties are swapped", "[configuration] [swap]") {
-	configuration first, second;
-	first.get("first", "one");
-	first.get("a:first", "a:one");
-	second.get("second", "two");
-	second.get("b:second", "b:two");
+TEST_CASE("configuration - swap") {
+	SECTION("Properties are swapped", "[configuration] [swap]") {
+		configuration first, second;
+		first.get("first", "one");
+		first.get("a:first", "a:one");
+		second.get("second", "two");
+		second.get("b:second", "b:two");
 
-	REQUIRE_NOTHROW(swap(first, second));
+		REQUIRE_NOTHROW(swap(first, second));
 
-	REQUIRE(first.get("second").textual() == "two");
-	REQUIRE(first.get("b:second").textual() == "b:two");
-	REQUIRE(second.get("first").textual() == "one");
-	REQUIRE(second.get("a:first").textual() == "a:one");
-}
+		REQUIRE(first.get("second").textual() == "two");
+		REQUIRE(first.get("b:second").textual() == "b:two");
+		REQUIRE(second.get("first").textual() == "one");
+		REQUIRE(second.get("a:first").textual() == "a:one");
+	}
 
-TEST_CASE("SOF comments are swapped", "[configuration] [swap]") {
-	configuration first, second;
-	first.sof_comments  = {"first", "one"};
-	second.sof_comments = {"second", "two"};
+	SECTION("SOF comments are swapped", "[configuration] [swap]") {
+		configuration first, second;
+		first.sof_comments  = {"first", "one"};
+		second.sof_comments = {"second", "two"};
 
-	REQUIRE_NOTHROW(swap(first, second));
+		REQUIRE_NOTHROW(swap(first, second));
 
-	REQUIRE(first.sof_comments == (vector<string>{"second", "two"}));
-	REQUIRE(second.sof_comments == (vector<string>{"first", "one"}));
+		REQUIRE(first.sof_comments == (vector<string>{"second", "two"}));
+		REQUIRE(second.sof_comments == (vector<string>{"first", "one"}));
+	}
 }

@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "configuration_category.hpp"
 #include "catch.hpp"
 
 
@@ -29,29 +29,18 @@ using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
+static const property test_prop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
 
 
-TEST_CASE("Defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a").textual() == "");
-	REQUIRE(c.get("b", "").textual() == "");
-	REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
-}
+TEST_CASE("configuration_category - get") {
+	SECTION("Defaults are carried over", "[configuration_category] [get]") {
+		configuration_category c;
+		REQUIRE(c.get("c", test_prop) == test_prop);
+	}
 
-TEST_CASE("Values aren't overriden with defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", "AsDf");
-	REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-}
-
-TEST_CASE("property-defaults are carried over", "[configuration] [get]") {
-	configuration c;
-	REQUIRE(c.get("a", testprop) == testprop);
-}
-
-TEST_CASE("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-	configuration c;
-	c.get("a", testprop);
-	REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
+	SECTION("Values aren't overriden with defaults provided", "[configuration_category] [get]") {
+		configuration_category c;
+		c.get("a", test_prop);
+		REQUIRE(c.get("a", {"MNTnHLIDEaAxtE"s, "ioYqiEoDt"s}) == test_prop);
+	}
 }
