@@ -79,7 +79,7 @@
 	}
 
 #define LIST_TESTER(func, type)                                                                         \
-	if(true) {                                                                                            \
+	{                                                                                            \
 		uniform_int_distribution<property::type##_type> dist(numeric_limits<property::type##_type>::min()); \
 		LIST_TESTER_DIST(func, type, dist)                                                                  \
 	}
