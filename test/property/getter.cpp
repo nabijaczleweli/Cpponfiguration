@@ -47,7 +47,7 @@
 	}
 
 #define FUNDAMENTAL_TESTER(func, type)                                                                  \
-	{                                                                                            \
+	{                                                                                                     \
 		uniform_int_distribution<property::type##_type> dist(numeric_limits<property::type##_type>::min()); \
 		FUNDAMENTAL_TESTER_DIST(func, type, dist)                                                           \
 	}
