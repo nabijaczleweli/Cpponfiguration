@@ -27,4 +27,5 @@
 
 extern const char * const cpponfiguration_version;
 
+
 #endif  // CPPONFIG_VERSION_HPP
