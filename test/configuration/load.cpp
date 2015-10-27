@@ -30,51 +30,53 @@ using namespace std;
 using namespace cpponfig;
 
 
-TEST_CASE("Cannot load from empty filename", "[configuration] [load]") {
-	CHECK_FALSE(configuration().load());
-	CHECK_FALSE(configuration("").load());
-	CHECK_FALSE(configuration().load(""));
-	CHECK_FALSE(configuration("").load(""));
-}
+TEST_CASE("configuration - load") {
+	SECTION("Cannot load from empty filename", "[configuration] [load]") {
+		CHECK_FALSE(configuration().load());
+		CHECK_FALSE(configuration("").load());
+		CHECK_FALSE(configuration().load(""));
+		CHECK_FALSE(configuration("").load(""));
+	}
 
-TEST_CASE("Cannot load from nonexistant file", "[configuration] [load]") {
-	const static string filename = "NkKVhzgfmSdLlzvsZxGF.LtCzOgFHxxnUlFwNVNgf";
+	SECTION("Cannot load from nonexistant file", "[configuration] [load]") {
+		const static string filename = "NkKVhzgfmSdLlzvsZxGF.LtCzOgFHxxnUlFwNVNgf";
 
-	const auto save_on_destruction     = configuration::save_on_destruction;
-	configuration::save_on_destruction = false;
+		const auto save_on_destruction     = configuration::save_on_destruction;
+		configuration::save_on_destruction = false;
 
-	CHECK_FALSE(configuration(filename).load());
-	CHECK_FALSE(configuration().load(filename));
-	CHECK_FALSE(configuration(filename).load(filename));
+		CHECK_FALSE(configuration(filename).load());
+		CHECK_FALSE(configuration().load(filename));
+		CHECK_FALSE(configuration(filename).load(filename));
 
-	configuration::save_on_destruction = save_on_destruction;
-}
+		configuration::save_on_destruction = save_on_destruction;
+	}
 
-TEST_CASE("Reads from empty file", "[configuration] [load]") {
-	const static string filename = "BdPlUUSHRLUSwvyOZunFIzF.CeluUepoeCPBfeDSHqF";
+	SECTION("Reads from empty file", "[configuration] [load]") {
+		const static string filename = "BdPlUUSHRLUSwvyOZunFIzF.CeluUepoeCPBfeDSHqF";
 
 
-	ofstream{filename};
+		ofstream{filename};
 
-	const auto save_on_destruction     = configuration::save_on_destruction;
-	configuration::save_on_destruction = false;
+		const auto save_on_destruction     = configuration::save_on_destruction;
+		configuration::save_on_destruction = false;
 
-	CHECK(configuration(filename).load());
-	CHECK(configuration().load(filename));
-	CHECK(configuration(filename).load(filename));
+		CHECK(configuration(filename).load());
+		CHECK(configuration().load(filename));
+		CHECK(configuration(filename).load(filename));
 
-	configuration::save_on_destruction = save_on_destruction;
+		configuration::save_on_destruction = save_on_destruction;
 
-	remove(filename.c_str());
-}
+		remove(filename.c_str());
+	}
 
-TEST_CASE("Reads from empty istream", "[configuration] [load]") {
-	istringstream ss;
-	CHECK(configuration().load(ss));
-}
+	SECTION("Reads from empty istream", "[configuration] [load]") {
+		istringstream ss;
+		CHECK(configuration().load(ss));
+	}
 
-TEST_CASE("Doesn't read from failed istream", "[configuration] [load]") {
-	istringstream ss;
-	ss.setstate(ios::failbit);
-	CHECK_FALSE(configuration().load(ss));
+	SECTION("Doesn't read from failed istream", "[configuration] [load]") {
+		istringstream ss;
+		ss.setstate(ios::failbit);
+		CHECK_FALSE(configuration().load(ss));
+	}
 }

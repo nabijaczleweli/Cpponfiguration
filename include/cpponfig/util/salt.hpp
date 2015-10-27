@@ -45,12 +45,14 @@ namespace cpponfiguration {
 	// }
 	class salt {
 	private:
-		static const std::unique_ptr<std::mt19937> randomizer;  // Use a smart pointer here because static and `mt19937` is huge
+		static std::mt19937 randomizer;
+		static std::uniform_int_distribution<size_t> dist;
 
-		const size_t value = randomize_salt ? (*randomizer)() : 0x249393A9;
+		const size_t value = randomize_salt ? dist(randomizer) : 0x249393A9;
 
 	public:
 		static bool randomize_salt;  // Useful for debugging
+
 
 		constexpr inline operator size_t() const {
 			return value;

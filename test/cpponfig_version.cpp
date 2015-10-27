@@ -23,12 +23,12 @@
 
 #include "cpponfig_version.hpp"
 #include "catch.hpp"
-#include "config.h"
+#include <regex>
 
 
 using namespace std;
 
 
 TEST_CASE("cpponfig_version") {
-	REQUIRE(cpponfiguration_version == string(CPPONFIGURATION_VERSION));
+	CHECK(regex_match(cpponfiguration_version, regex("[[:digit:]]{4}\\.[[:digit:]]{2}.[[:digit:]]{2} [[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2} UTC")));
 }

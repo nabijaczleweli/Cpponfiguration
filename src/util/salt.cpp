@@ -27,5 +27,6 @@ using namespace std;
 using namespace cpponfig;
 
 
-const unique_ptr<mt19937> salt::randomizer = make_unique<mt19937>(random_device()());
-bool salt::randomize_salt                  = true;
+mt19937 salt::randomizer(random_device{}());
+std::uniform_int_distribution<size_t> salt::dist;
+bool salt::randomize_salt = true;

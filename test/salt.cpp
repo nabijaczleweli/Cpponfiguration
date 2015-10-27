@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include "configuration.hpp"
+#include "util/salt.hpp"
 #include "catch.hpp"
 
 
@@ -29,31 +29,23 @@ using namespace std;
 using namespace cpponfig;
 
 
-static property testprop("NPUyAWsAd", "DAdwTIFybvBYtwFOlzDaSw");
+TEST_CASE("salt") {
+	SECTION("randomize_salt") {
+		REQUIRE(salt{} != salt{});
 
+		const auto randomize_salt = salt::randomize_salt;
+		salt::randomize_salt      = false;
 
-TEST_CASE("configuration - get") {
-	SECTION("Defaults are carried over", "[configuration] [get]") {
-		configuration c;
-		REQUIRE(c.get("a").textual() == "");
-		REQUIRE(c.get("b", "").textual() == "");
-		REQUIRE(c.get("c", "AsDf").textual() == "AsDf");
+		REQUIRE(salt{} == salt{});
+
+		salt::randomize_salt = randomize_salt;
+
+		REQUIRE(salt{} != salt{});
 	}
 
-	SECTION("Values aren't overriden with defaults provided", "[configuration] [get]") {
-		configuration c;
-		c.get("a", "AsDf");
-		REQUIRE(c.get("a", "FdSa").textual() == "AsDf");
-	}
+	for(int i = 0; i < 10; ++i)
+		REQUIRE(salt{} != salt{});
 
-	SECTION("property-defaults are carried over", "[configuration] [get]") {
-		configuration c;
-		REQUIRE(c.get("a", testprop) == testprop);
-	}
-
-	SECTION("Values aren't overriden with property-defaults provided", "[configuration] [get]") {
-		configuration c;
-		c.get("a", testprop);
-		REQUIRE(c.get("a", property("ASDFASDF", "DSAASD")) == testprop);
-	}
+	vector<salt> salts(1000000);
+	REQUIRE(accumulate(salts.begin(), salts.end(), size_t(0)) == Approx(numeric_limits<size_t>::max() / 2).epsilon(numeric_limits<size_t>::max() / salts.size()));
 }
