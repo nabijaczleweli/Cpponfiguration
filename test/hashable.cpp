@@ -46,7 +46,7 @@ TEST_CASE("hashable") {
 	mt19937 rng;
 	uniform_int_distribution<size_t> dist(numeric_limits<size_t>::min());
 
-	const hash<testhash> hasher;
+	const hash<testhash> hasher{};
 
 	for(auto i : {numeric_limits<size_t>::min(), numeric_limits<size_t>::max()})
 		REQUIRE(hasher(testhash{i}) == i);
