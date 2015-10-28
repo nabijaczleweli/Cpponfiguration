@@ -25,8 +25,6 @@
 #define PROPERTY_HPP
 
 
-#include "swappable.hpp"
-#include "hashable.hpp"
 #include <limits>
 #include <memory>
 #include <string>
@@ -34,7 +32,9 @@
 
 
 namespace cpponfiguration {
-	class property : swappable<property>, public hashable<property> {
+	class property {
+		friend struct std::hash<property>;
+
 	public:
 		using boolean_type       = bool;
 		using signed_type        = long long int;
@@ -68,7 +68,7 @@ namespace cpponfiguration {
 			clear_except(except ? std::addressof(except) : nullptr);
 		}
 
-		virtual size_t hash_code() const override;
+		size_t hash_code() const;
 
 	public:
 		static unsigned int floating_precision;
@@ -107,7 +107,7 @@ namespace cpponfiguration {
 		property & operator=(const property & other);
 		property & operator=(property && other) = default;
 
-		virtual void swap(property & other) override;
+		void swap(property & other) noexcept;
 
 		property(const std::string & val, const std::string & cmt = "");
 		property(const property & other);
@@ -120,6 +120,18 @@ namespace cpponfig = cpponfiguration;
 
 bool operator==(const cpponfig::property & lhs, const cpponfig::property & rhs);
 bool operator!=(const cpponfig::property & lhs, const cpponfig::property & rhs);
+
+
+namespace std {
+	void swap(cpponfiguration::property & lhs, cpponfiguration::property & rhs) noexcept;
+
+	template <>
+	struct hash<cpponfiguration::property> {
+		inline size_t operator()(const cpponfiguration::property & tohash) const {
+			return tohash.hash_code();
+		}
+	};
+}
 
 
 #endif  // PROPERTY_HPP

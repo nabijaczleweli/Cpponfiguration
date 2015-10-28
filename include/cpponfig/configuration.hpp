@@ -26,8 +26,6 @@
 
 
 #include "property.hpp"
-#include "swappable.hpp"
-#include "hashable.hpp"
 #include "configuration_category.hpp"
 #include "util/salt.hpp"
 #include <vector>
@@ -37,7 +35,9 @@
 
 
 namespace cpponfiguration {
-	class configuration : swappable<configuration>, public hashable<configuration> {
+	class configuration {
+		friend struct std::hash<configuration>;
+
 	protected:
 		std::map<std::string, configuration_category> categories;
 		std::string filename;
@@ -46,7 +46,7 @@ namespace cpponfiguration {
 		void load_properties(std::istream & from);
 		void save_properties(std::ostream & to) const;
 
-		virtual size_t hash_code() const override;
+		size_t hash_code() const;
 
 	public:
 		enum class datetime_mode : unsigned char { none, gmt, local };
@@ -75,7 +75,7 @@ namespace cpponfiguration {
 
 		~configuration();
 
-		virtual void swap(configuration & other) override;
+		void swap(configuration & other) noexcept;
 
 		configuration & operator=(const configuration & other) = default;
 		configuration & operator=(configuration && other) = default;
@@ -110,6 +110,8 @@ cpponfig::configuration operator-(const cpponfig::configuration & lhs, const cpp
 
 
 namespace std {
+	void swap(cpponfiguration::configuration & lhs, cpponfiguration::configuration & rhs) noexcept;
+
 	// All hex numbers here are primes
 	template <class T0, class T1>
 	struct hash<pair<T0, T1>> {
@@ -119,6 +121,13 @@ namespace std {
 			static const hash<T1> T1_hash{};
 
 			return 0x2E48EDC9 ^ slt ^ T0_hash(pr.first) ^ T1_hash(pr.second);
+		}
+	};
+
+	template <>
+	struct hash<cpponfiguration::configuration> {
+		inline size_t operator()(const cpponfiguration::configuration & tohash) const {
+			return tohash.hash_code();
 		}
 	};
 }

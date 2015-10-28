@@ -193,18 +193,17 @@ property & property::operator=(const property & other) {
 	return *this;
 }
 
-void property::swap(property & other) {
-	using std::swap;
-	swap(raw_value, other.raw_value);
-	swap(boolean_value, other.boolean_value);
-	swap(signed_value, other.signed_value);
-	swap(unsigned_value, other.unsigned_value);
-	swap(floating_value, other.floating_value);
-	swap(boolean_list_value, other.boolean_list_value);
-	swap(signed_list_value, other.signed_list_value);
-	swap(unsigned_list_value, other.unsigned_list_value);
-	swap(floating_list_value, other.floating_list_value);
-	swap(comment, other.comment);
+void property::swap(property & other) noexcept {
+	raw_value.swap(other.raw_value);
+	boolean_value.swap(other.boolean_value);
+	signed_value.swap(other.signed_value);
+	unsigned_value.swap(other.unsigned_value);
+	floating_value.swap(other.floating_value);
+	boolean_list_value.swap(other.boolean_list_value);
+	signed_list_value.swap(other.signed_list_value);
+	unsigned_list_value.swap(other.unsigned_list_value);
+	floating_list_value.swap(other.floating_list_value);
+	comment.swap(other.comment);
 }
 
 // All hex numbers here are primes
@@ -236,4 +235,9 @@ bool operator==(const property & lhs, const property & rhs) {
 
 bool operator!=(const property & lhs, const property & rhs) {
 	return !(lhs == rhs);
+}
+
+
+void std::swap(property & lhs, property & rhs) noexcept {
+	lhs.swap(rhs);
 }

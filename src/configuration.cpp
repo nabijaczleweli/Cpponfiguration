@@ -51,13 +51,16 @@ static void actually_put_time(ostream & to, datetime_mode mode, char comment) {
 	if(mode != datetime_mode::none) {
 		const bool isgmt = mode == datetime_mode::gmt;
 		const time_t tme = time(nullptr);
+
 		to << '\n' << comment << "  ";
+
 #ifdef HAVE_STD_PUT_TIME_CHAR_
 		to << put_time(isgmt ? gmtime(&tme) : localtime(&tme), "%d.%m.%Y %H:%M:%S");
 #else
 		char buf[20];
 		to << (strftime(buf, 20, "%d.%m.%Y %H:%M:%S", isgmt ? gmtime(&tme) : localtime(&tme)) ? buf : "<<DATE ERROR>>");
 #endif
+
 		if(isgmt)
 			to << " GMT";
 		to << "\n\n";
@@ -80,11 +83,10 @@ configuration::~configuration() {
 		save();
 }
 
-void configuration::swap(configuration & other) {
-	using std::swap;
-	swap(categories, other.categories);
-	swap(filename, other.filename);
-	swap(sof_comments, other.sof_comments);
+void configuration::swap(configuration & other) noexcept {
+	categories.swap(other.categories);
+	filename.swap(other.filename);
+	sof_comments.swap(other.sof_comments);
 }
 
 // All hex numbers here are primes
@@ -153,7 +155,7 @@ void configuration::load_properties(istream & from) {
 		open_idx = line.find_first_of(category_start_character);
 
 		const auto comment_idx = line.find_first_of(comment_character);
-		string comment = (comment_idx == string::npos ? "" : trim(line.substr(comment_idx)));
+		string comment         = (comment_idx == string::npos ? "" : trim(line.substr(comment_idx)));
 
 		const auto itpr = categories.emplace(trim(line.substr(0, open_idx)), configuration_category(comment));
 
@@ -284,4 +286,9 @@ configuration operator-(const configuration & lhs, const configuration & rhs) {
 	configuration temp(lhs);
 	temp -= rhs;
 	return temp;
+}
+
+
+void std::swap(configuration & lhs, configuration & rhs) noexcept {
+	lhs.swap(rhs);
 }

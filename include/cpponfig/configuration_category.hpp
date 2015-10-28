@@ -26,20 +26,20 @@
 
 
 #include "property.hpp"
-#include "swappable.hpp"
-#include "hashable.hpp"
 #include <iosfwd>
 #include <string>
 #include <map>
 
 
 namespace cpponfiguration {
-	class configuration_category : swappable<configuration_category>, public hashable<configuration_category> {
+	class configuration_category {
+		friend struct std::hash<configuration_category>;
+
 	protected:
 		std::map<std::string, property> properties;
 
 
-		virtual size_t hash_code() const override;
+		size_t hash_code() const;
 
 	public:
 		std::string comment;
@@ -58,7 +58,7 @@ namespace cpponfiguration {
 
 		~configuration_category() = default;
 
-		virtual void swap(configuration_category & other) override;
+		void swap(configuration_category & other) noexcept;
 
 		configuration_category & operator=(const configuration_category & other) = default;
 		configuration_category & operator=(configuration_category && other) = default;
@@ -81,6 +81,18 @@ namespace cpponfig = cpponfiguration;
 
 cpponfig::configuration_category operator+(const cpponfig::configuration_category & lhs, const cpponfig::configuration_category & rhs);
 cpponfig::configuration_category operator-(const cpponfig::configuration_category & lhs, const cpponfig::configuration_category & rhs);
+
+
+namespace std {
+	void swap(cpponfiguration::configuration_category & lhs, cpponfiguration::configuration_category & rhs) noexcept;
+
+	template <>
+	struct hash<cpponfiguration::configuration_category> {
+		inline size_t operator()(const cpponfiguration::configuration_category & tohash) const {
+			return tohash.hash_code();
+		}
+	};
+}
 
 
 #endif  // CONFIGURATION_CATEGORY_HPP

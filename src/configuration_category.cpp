@@ -34,8 +34,9 @@ using namespace cpponfig;
 using namespace cpponfig::util;
 
 
-void configuration_category::swap(configuration_category & other) {
+void configuration_category::swap(configuration_category & other) noexcept {
 	properties.swap(other.properties);
+	comment.swap(other.comment);
 }
 
 // All hex numbers here are primes
@@ -145,4 +146,9 @@ configuration_category operator-(const configuration_category & lhs, const confi
 	configuration_category temp(lhs);
 	temp -= rhs;
 	return temp;
+}
+
+
+void std::swap(configuration_category & lhs, configuration_category & rhs) noexcept {
+	lhs.swap(rhs);
 }
