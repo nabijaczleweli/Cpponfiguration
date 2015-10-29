@@ -1,3 +1,5 @@
+# IT'S DEAD, GO AWAY
+
 Cpponfiguration [![Build Status](https://travis-ci.org/nabijaczleweli/Cpponfiguration.svg?branch=master)](https://travis-ci.org/nabijaczleweli/Cpponfiguration) [![Licence](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 ===============
 

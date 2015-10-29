@@ -38,6 +38,7 @@ using namespace cpponfig::util;
 using datetime_mode = configuration::datetime_mode;
 
 
+bool configuration::load_on_construction          = true;
 bool configuration::save_on_destruction           = true;
 char configuration::comment_character             = '#';
 char configuration::assignment_character          = '=';
@@ -76,7 +77,11 @@ std::pair<std::string, std::string> configuration::property_path(const std::stri
 		return {trim(name.substr(0, idx)), trim(name.substr(idx + 1))};
 }
 
-configuration::configuration(const string & name) : filename(name) {}
+
+configuration::configuration(const string & name) : filename(name) {
+	if(load_on_construction)
+		load();
+}
 
 configuration::~configuration() {
 	if(save_on_destruction)
@@ -133,11 +138,9 @@ configuration & configuration::operator-=(const configuration & other) {
 			itr->second -= kv.second;
 	}
 
-	for(const auto & cmt : sof_comments) {
-		const auto itr = find(sof_comments.begin(), sof_comments.end(), cmt);
-		if(itr != sof_comments.end())
-			sof_comments.erase(itr);
-	}
+	sof_comments.erase(remove_if(sof_comments.begin(), sof_comments.end(), [&](const auto & el) {
+		                   return find(other.sof_comments.begin(), other.sof_comments.end(), el) != other.sof_comments.end();
+		                 }), sof_comments.end());
 
 	return *this;
 }

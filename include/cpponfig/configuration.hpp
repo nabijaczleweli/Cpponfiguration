@@ -50,9 +50,10 @@ namespace cpponfiguration {
 
 	public:
 		enum class datetime_mode : unsigned char { none, gmt, local };
-		typedef datetime_mode dt_m;
+		using dt_m = datetime_mode;
 
 
+		static bool load_on_construction;
 		static bool save_on_destruction;
 		static char comment_character;
 		static char assignment_character;

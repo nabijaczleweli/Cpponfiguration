@@ -23,6 +23,7 @@
 
 #include "configuration.hpp"
 #include "catch.hpp"
+#include <fstream>
 
 
 using namespace std;
@@ -47,6 +48,39 @@ TEST_CASE("configuration - constructor") {
 		}
 
 		configuration::save_on_destruction = save_on_destruction;
+	}
+
+	SECTION("Doesn't load from file with load_on_construction disabled", "[configuration] [constructor]") {
+		const auto load_on_construction     = configuration::load_on_construction;
+		configuration::load_on_construction = false;
+
+		ofstream("config.cfg") << "# asdf\n"
+		                          "\n"
+		                          "{\n"
+		                          "  a=b\n"
+		                          "}";
+
+		configuration c("config.cfg");
+		CHECK(c.empty());
+		CHECK(c.sof_comments.empty());
+
+		remove("config.cfg");
+
+		configuration::load_on_construction = load_on_construction;
+	}
+
+	SECTION("Loads from file with on construction", "[configuration] [constructor]") {
+		ofstream("config.cfg") << "# asdf\n"
+		                          "\n"
+		                          "{\n"
+		                          "  a=b\n"
+		                          "}";
+
+		configuration c("config.cfg");
+		REQUIRE(c.get("a").textual() == "b");
+		REQUIRE(c.sof_comments == vector<string>({"asdf"}));
+
+		remove("config.cfg");
 	}
 
 	SECTION("Properties are copied", "[configuration] [constructor]") {
